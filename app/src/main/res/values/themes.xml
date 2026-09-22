@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Application theme used before Compose takes over. Material Design 3
+     theming (including dynamic color) is applied at runtime by BudgeTheme. -->
+<resources>
+    <style name="Theme.Budge" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

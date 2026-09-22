@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Budge</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_stats">Statistics</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home -->
+    <string name="home_empty">No transactions yet</string>
+    <string name="home_expense">Expense</string>
+    <string name="home_income">Income</string>
+    <string name="home_balance">Balance: %1$s</string>
+
+    <!-- Entry -->
+    <string name="entry_new">New Transaction</string>
+    <string name="entry_edit">Edit Transaction</string>
+    <string name="entry_type">Type</string>
+    <string name="entry_expense">Expense</string>
+    <string name="entry_income">Income</string>
+    <string name="entry_amount">Amount</string>
+    <string name="entry_category">Category</string>
+    <string name="entry_note">Note (optional)</string>
+    <string name="entry_date_time">Date &amp; Time</string>
+    <string name="entry_time">Time</string>
+    <string name="entry_save">Save</string>
+    <string name="entry_saving">Saving…</string>
+    <string name="entry_invalid_amount">Invalid amount</string>
+    <string name="entry_select_category">Please select a category</string>
+    <string name="entry_future_time">Time cannot be in the future</string>
+    <string name="entry_save_failed">Could not save the transaction</string>
+
+    <!-- Stats -->
+    <string name="stats_budget">Budget</string>
+    <string name="stats_remaining">%1$s remaining</string>
+    <string name="stats_budget_progress">%1$s / %2$s</string>
+    <string name="stats_period_year">Year</string>
+    <string name="stats_period_month">Month</string>
+    <string name="stats_period_day">Day</string>
+    <string name="stats_summary_yearly">Yearly Summary</string>
+    <string name="stats_summary_monthly">Monthly Summary</string>
+    <string name="stats_summary_daily">Daily Summary</string>
+    <string name="stats_donut_description">Donut chart of %1$d categories</string>
+
+    <!-- Category -->
+    <string name="category_title">Categories</string>
+    <string name="category_new">New Category</string>
+    <string name="category_edit">Edit Category</string>
+    <string name="category_name">Name</string>
+    <string name="category_type">Type</string>
+    <string name="category_color">Color</string>
+    <string name="category_color_option">Color %1$d</string>
+    <string name="category_delete_title">Delete Category</string>
+    <string name="category_delete_confirm">Delete %1$s permanently? This cannot be undone.</string>
+    <string name="category_cannot_delete">Cannot delete category with transactions</string>
+    <string name="category_name_empty">Name cannot be empty</string>
+    <string name="category_save_failed">Could not save the category</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_currency">Currency</string>
+    <string name="settings_currency_symbol">Currency Symbol</string>
+    <string name="settings_categories">Categories</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_system">Follow System</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">Follow System</string>
+    <string name="settings_data">Data</string>
+    <string name="settings_clear_all">Clear All Records</string>
+    <string name="settings_clear_all_confirm">Are you sure you want to delete all records? This cannot be undone.</string>
+    <string name="settings_clear_all_title">Clear All Records</string>
+    <string name="settings_export">Export Records</string>
+    <string name="settings_import">Import Records</string>
+    <string name="settings_import_overwrite">Overwrite existing records?</string>
+    <string name="settings_import_overwrite_confirm">This will replace all current records with the imported data. Continue?</string>
+    <string name="settings_export_success">Export successful</string>
+    <string name="settings_export_failed">Export failed</string>
+    <string name="settings_import_success">Import successful</string>
+    <string name="settings_import_failed">Import failed</string>
+    <string name="settings_import_invalid">Invalid backup file</string>
+    <string name="settings_import_reassigned">Imported, but %1$d transactions had no matching category and were moved to a default one</string>
+    <string name="settings_clear_all_failed">Could not clear the records</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version</string>
+
+    <!-- Common -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="confirm_delete">Are you sure you want to delete this transaction?</string>
+    <string name="delete_transaction">Delete Transaction</string>
+    <string name="confirm">Confirm</string>
+
+    <!-- Accessibility labels for icon-only actions. These must never be inline
+         literals: screen readers would otherwise announce English in Chinese. -->
+    <string name="cd_back">Back</string>
+    <string name="cd_save">Save</string>
+    <string name="cd_delete">Delete</string>
+    <string name="cd_edit">Edit</string>
+    <string name="cd_add_transaction">Add transaction</string>
+    <string name="cd_add_category">Add category</string>
+    <string name="cd_previous_period">Previous period</string>
+    <string name="cd_next_period">Next period</string>
+
+    <!-- About: release history, licences and the update check. -->
+    <!-- update_status_unreachable must never read as "up to date": a failed
+         check leaves freshness unknown. -->
+    <string name="settings_licenses">Licences</string>
+    <string name="settings_check_update">Check for updates</string>
+    <string name="update_status_checking">Checking…</string>
+    <string name="update_status_up_to_date">You have the latest version</string>
+    <string name="update_status_available">Version %1$s is available</string>
+    <string name="update_status_unreachable">Could not reach the update source, so whether this build is up to date is unknown</string>
+    <string name="update_status_unconfigured">No update source is configured yet (placeholder address)</string>
+    <string name="update_download">Download</string>
+    <string name="close">Close</string>
+    <string name="changelog_title">Release history</string>
+    <string name="changelog_empty">No release has been published for this channel yet</string>
+    <string name="changelog_current">Installed</string>
+    <string name="channel_alpha">Alpha</string>
+    <string name="channel_beta">Beta</string>
+    <string name="channel_stable">Stable</string>
+    <string name="licenses_intro">Your records live in a local database on this device and are never uploaded. The one network request the app can make is the update check: a read-only request to the configured releases address, carrying no ledger data and no identifier. Export and import work on a local JSON file you choose.</string>
+    <string name="licenses_third_party">Open-source components</string>
+    <string name="licenses_full_text_note">The full licence text of each component is available at its project page.</string>
+    <string name="release_notes_0_1_0_alpha_1">First published build: manual entry with categories and notes, a day-grouped month view, year/month/day statistics, nine languages and JSON backup.</string>
+    <string name="update_status_no_releases">The update source has published no releases yet</string>
+    <string name="update_status_not_found">The update source was not found: the repository does not exist yet, or is not public</string>
+    <!-- What each channel promises the user. -->
+    <string name="channel_alpha_note">Unstable test build: major problems are possible, including security issues.</string>
+    <string name="channel_beta_note">Stable test build: no security issues, but crashes and other major problems are still possible.</string>
+    <string name="channel_stable_note">Stable release: no known problems.</string>
+</resources>

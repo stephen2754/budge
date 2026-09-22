@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Backup rules for Android 11 (API 30) and below, referenced by
+  android:fullBackupContent. The <full-backup-content> root is the schema for those
+  releases only — Android 12+ reads data_extraction_rules.xml instead.
+-->
+<full-backup-content>
+    <include domain="database" path="." />
+    <include domain="sharedpref" path="." />
+    <include domain="file" path="." />
+</full-backup-content>

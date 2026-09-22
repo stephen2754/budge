@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Backup rules for Android 12 (API 31) and above, referenced by
+  android:dataExtractionRules.
+
+  This file must use the <data-extraction-rules> schema. The attribute previously
+  pointed at backup_rules.xml, whose <full-backup-content> root is the *legacy*
+  schema: on API 31+ the platform calls verifyTopLevelTag(parser,
+  "data-extraction-rules"), which throws on that root, logs the failure, and falls
+  back to the legacy path — so these rules were never actually applied.
+
+  Both destinations are listed explicitly, which mirrors what the legacy file
+  expressed: the Room database, the DataStore preferences, and app files
+  (including exported JSON backups) are eligible. Add an <exclude> here if the
+  exported ledger should stay off cloud backups.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="database" path="." />
+        <include domain="sharedpref" path="." />
+        <include domain="file" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="database" path="." />
+        <include domain="sharedpref" path="." />
+        <include domain="file" path="." />
+    </device-transfer>
+</data-extraction-rules>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Russian. -->
+<resources>
+    <string name="app_name">Budge</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_stats">Статистика</string>
+    <string name="nav_settings">Настройки</string>
+
+    <!-- Home -->
+    <string name="home_empty">Пока нет операций</string>
+    <string name="home_expense">Расходы</string>
+    <string name="home_income">Доходы</string>
+    <string name="home_balance">Баланс: %1$s</string>
+
+    <!-- Entry -->
+    <string name="entry_new">Новая операция</string>
+    <string name="entry_edit">Изменить операцию</string>
+    <string name="entry_type">Тип</string>
+    <string name="entry_expense">Расход</string>
+    <string name="entry_income">Доход</string>
+    <string name="entry_amount">Сумма</string>
+    <string name="entry_category">Категория</string>
+    <string name="entry_note">Заметка (необязательно)</string>
+    <string name="entry_date_time">Дата и время</string>
+    <string name="entry_time">Время</string>
+    <string name="entry_save">Сохранить</string>
+    <string name="entry_saving">Сохранение…</string>
+    <string name="entry_invalid_amount">Неверная сумма</string>
+    <string name="entry_select_category">Выберите категорию</string>
+    <string name="entry_future_time">Время не может быть в будущем</string>
+    <string name="entry_save_failed">Не удалось сохранить операцию</string>
+
+    <!-- Stats -->
+    <string name="stats_budget">Бюджет</string>
+    <string name="stats_remaining">Осталось %1$s</string>
+    <string name="stats_budget_progress">%1$s / %2$s</string>
+    <string name="stats_period_year">Год</string>
+    <string name="stats_period_month">Месяц</string>
+    <string name="stats_period_day">День</string>
+    <string name="stats_summary_yearly">Итоги за год</string>
+    <string name="stats_summary_monthly">Итоги за месяц</string>
+    <string name="stats_summary_daily">Итоги за день</string>
+    <string name="stats_donut_description">Кольцевая диаграмма, категорий: %1$d</string>
+
+    <!-- Category -->
+    <string name="category_title">Категории</string>
+    <string name="category_new">Новая категория</string>
+    <string name="category_edit">Изменить категорию</string>
+    <string name="category_name">Название</string>
+    <string name="category_type">Тип</string>
+    <string name="category_color">Цвет</string>
+    <string name="category_color_option">Цвет %1$d</string>
+    <string name="category_delete_title">Удалить категорию</string>
+    <string name="category_delete_confirm">Удалить %1$s безвозвратно? Отменить это нельзя.</string>
+    <string name="category_cannot_delete">Нельзя удалить категорию с операциями</string>
+    <string name="category_name_empty">Название не может быть пустым</string>
+    <string name="category_save_failed">Не удалось сохранить категорию</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_currency">Валюта</string>
+    <string name="settings_currency_symbol">Символ валюты</string>
+    <string name="settings_categories">Категории</string>
+    <string name="settings_appearance">Оформление</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Тёмная</string>
+    <string name="settings_theme_system">Как в системе</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_language_system">Как в системе</string>
+    <string name="settings_data">Данные</string>
+    <string name="settings_clear_all">Удалить все записи</string>
+    <string name="settings_clear_all_confirm">Удалить все записи? Отменить это нельзя.</string>
+    <string name="settings_clear_all_title">Удалить все записи</string>
+    <string name="settings_export">Экспорт записей</string>
+    <string name="settings_import">Импорт записей</string>
+    <string name="settings_import_overwrite">Перезаписать существующие записи?</string>
+    <string name="settings_import_overwrite_confirm">Все текущие записи будут заменены импортированными данными. Продолжить?</string>
+    <string name="settings_export_success">Экспорт выполнен</string>
+    <string name="settings_export_failed">Не удалось выполнить экспорт</string>
+    <string name="settings_import_success">Импорт выполнен</string>
+    <string name="settings_import_failed">Не удалось выполнить импорт</string>
+    <string name="settings_import_invalid">Недопустимый файл резервной копии</string>
+    <string name="settings_import_reassigned">Импорт выполнен, но %1$d операций без подходящей категории были отнесены к категории по умолчанию</string>
+    <string name="settings_clear_all_failed">Не удалось удалить записи</string>
+    <string name="settings_about">О программе</string>
+    <string name="settings_version">Версия</string>
+
+    <!-- Common -->
+    <string name="save">Сохранить</string>
+    <string name="cancel">Отмена</string>
+    <string name="delete">Удалить</string>
+    <string name="confirm_delete">Удалить эту операцию?</string>
+    <string name="delete_transaction">Удалить операцию</string>
+    <string name="confirm">Подтвердить</string>
+
+    <!-- Accessibility labels for icon-only actions. -->
+    <string name="cd_back">Назад</string>
+    <string name="cd_save">Сохранить</string>
+    <string name="cd_delete">Удалить</string>
+    <string name="cd_edit">Изменить</string>
+    <string name="cd_add_transaction">Добавить операцию</string>
+    <string name="cd_add_category">Добавить категорию</string>
+    <string name="cd_previous_period">Предыдущий период</string>
+    <string name="cd_next_period">Следующий период</string>
+
+    <!-- About: release history, licences and the update check. -->
+    <!-- update_status_unreachable must never read as "up to date": a failed
+         check leaves freshness unknown. -->
+    <string name="settings_licenses">Лицензии</string>
+    <string name="settings_check_update">Проверить обновления</string>
+    <string name="update_status_checking">Проверка…</string>
+    <string name="update_status_up_to_date">Установлена последняя версия</string>
+    <string name="update_status_available">Доступна версия %1$s</string>
+    <string name="update_status_unreachable">Не удалось связаться с источником обновлений, поэтому неизвестно, последняя ли это версия</string>
+    <string name="update_status_unconfigured">Источник обновлений ещё не настроен (адрес-заглушка)</string>
+    <string name="update_download">Скачать</string>
+    <string name="close">Закрыть</string>
+    <string name="changelog_title">История версий</string>
+    <string name="changelog_empty">Для этого канала ещё нет опубликованных версий</string>
+    <string name="changelog_current">Установлена</string>
+    <string name="channel_alpha">Alpha</string>
+    <string name="channel_beta">Beta</string>
+    <string name="channel_stable">Стабильная</string>
+    <string name="licenses_intro">Записи хранятся в локальной базе на этом устройстве и никуда не отправляются. Единственный сетевой запрос приложения — проверка обновлений: запрос только на чтение по настроенному адресу, без данных о записях и без идентификаторов. Экспорт и импорт работают с локальным файлом JSON, который выбираете вы.</string>
+    <string name="licenses_third_party">Открытые компоненты</string>
+    <string name="licenses_full_text_note">Полный текст лицензии каждого компонента доступен на его странице проекта.</string>
+    <string name="update_status_no_releases">В источнике обновлений ещё нет опубликованных версий</string>
+    <string name="update_status_not_found">Источник обновлений не найден: репозитория ещё нет или он не является публичным</string>
+    <!-- What each channel promises the user. -->
+    <string name="channel_alpha_note">Нестабильная тестовая сборка: возможны серьёзные проблемы, включая проблемы безопасности.</string>
+    <string name="channel_beta_note">Стабильная тестовая сборка: проблем безопасности нет, но возможны вылеты и другие серьёзные проблемы.</string>
+    <string name="channel_stable_note">Стабильная версия: известных проблем нет.</string>
+</resources>

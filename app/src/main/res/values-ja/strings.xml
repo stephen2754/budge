@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Japanese. -->
+<resources>
+    <string name="app_name">Budge</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">ホーム</string>
+    <string name="nav_stats">統計</string>
+    <string name="nav_settings">設定</string>
+
+    <!-- Home -->
+    <string name="home_empty">取引はまだありません</string>
+    <string name="home_expense">支出</string>
+    <string name="home_income">収入</string>
+    <string name="home_balance">残高: %1$s</string>
+
+    <!-- Entry -->
+    <string name="entry_new">新しい取引</string>
+    <string name="entry_edit">取引を編集</string>
+    <string name="entry_type">種類</string>
+    <string name="entry_expense">支出</string>
+    <string name="entry_income">収入</string>
+    <string name="entry_amount">金額</string>
+    <string name="entry_category">カテゴリ</string>
+    <string name="entry_note">メモ（任意）</string>
+    <string name="entry_date_time">日付と時刻</string>
+    <string name="entry_time">時刻</string>
+    <string name="entry_save">保存</string>
+    <string name="entry_saving">保存中…</string>
+    <string name="entry_invalid_amount">金額が正しくありません</string>
+    <string name="entry_select_category">カテゴリを選択してください</string>
+    <string name="entry_future_time">未来の時刻は指定できません</string>
+    <string name="entry_save_failed">取引を保存できませんでした</string>
+
+    <!-- Stats -->
+    <string name="stats_budget">予算</string>
+    <string name="stats_remaining">残り %1$s</string>
+    <string name="stats_budget_progress">%1$s / %2$s</string>
+    <string name="stats_period_year">年</string>
+    <string name="stats_period_month">月</string>
+    <string name="stats_period_day">日</string>
+    <string name="stats_summary_yearly">年間集計</string>
+    <string name="stats_summary_monthly">月間集計</string>
+    <string name="stats_summary_daily">日別集計</string>
+    <string name="stats_donut_description">%1$d 件のカテゴリのドーナツグラフ</string>
+
+    <!-- Category -->
+    <string name="category_title">カテゴリ</string>
+    <string name="category_new">新しいカテゴリ</string>
+    <string name="category_edit">カテゴリを編集</string>
+    <string name="category_name">名前</string>
+    <string name="category_type">種類</string>
+    <string name="category_color">色</string>
+    <string name="category_color_option">色 %1$d</string>
+    <string name="category_delete_title">カテゴリを削除</string>
+    <string name="category_delete_confirm">%1$s を完全に削除しますか？元に戻せません。</string>
+    <string name="category_cannot_delete">取引があるカテゴリは削除できません</string>
+    <string name="category_name_empty">名前を入力してください</string>
+    <string name="category_save_failed">カテゴリを保存できませんでした</string>
+
+    <!-- Settings -->
+    <string name="settings_title">設定</string>
+    <string name="settings_currency">通貨</string>
+    <string name="settings_currency_symbol">通貨記号</string>
+    <string name="settings_categories">カテゴリ</string>
+    <string name="settings_appearance">外観</string>
+    <string name="settings_theme">テーマ</string>
+    <string name="settings_theme_light">ライト</string>
+    <string name="settings_theme_dark">ダーク</string>
+    <string name="settings_theme_system">システムに従う</string>
+    <string name="settings_language">言語</string>
+    <string name="settings_language_system">システムに従う</string>
+    <string name="settings_data">データ</string>
+    <string name="settings_clear_all">すべての記録を削除</string>
+    <string name="settings_clear_all_confirm">すべての記録を削除しますか？元に戻せません。</string>
+    <string name="settings_clear_all_title">すべての記録を削除</string>
+    <string name="settings_export">記録をエクスポート</string>
+    <string name="settings_import">記録をインポート</string>
+    <string name="settings_import_overwrite">既存の記録を上書きしますか？</string>
+    <string name="settings_import_overwrite_confirm">現在のすべての記録がインポートしたデータに置き換わります。続行しますか？</string>
+    <string name="settings_export_success">エクスポートしました</string>
+    <string name="settings_export_failed">エクスポートに失敗しました</string>
+    <string name="settings_import_success">インポートしました</string>
+    <string name="settings_import_failed">インポートに失敗しました</string>
+    <string name="settings_import_invalid">バックアップファイルが無効です</string>
+    <string name="settings_import_reassigned">インポートしましたが、一致するカテゴリがない %1$d 件の取引は既定のカテゴリに移動しました</string>
+    <string name="settings_clear_all_failed">記録を削除できませんでした</string>
+    <string name="settings_about">このアプリについて</string>
+    <string name="settings_version">バージョン</string>
+
+    <!-- Common -->
+    <string name="save">保存</string>
+    <string name="cancel">キャンセル</string>
+    <string name="delete">削除</string>
+    <string name="confirm_delete">この取引を削除しますか？</string>
+    <string name="delete_transaction">取引を削除</string>
+    <string name="confirm">確認</string>
+
+    <!-- Accessibility labels for icon-only actions. -->
+    <string name="cd_back">戻る</string>
+    <string name="cd_save">保存</string>
+    <string name="cd_delete">削除</string>
+    <string name="cd_edit">編集</string>
+    <string name="cd_add_transaction">取引を追加</string>
+    <string name="cd_add_category">カテゴリを追加</string>
+    <string name="cd_previous_period">前の期間</string>
+    <string name="cd_next_period">次の期間</string>
+
+    <!-- About: release history, licences and the update check. -->
+    <!-- update_status_unreachable must never read as "up to date": a failed
+         check leaves freshness unknown. -->
+    <string name="settings_licenses">ライセンス</string>
+    <string name="settings_check_update">更新を確認</string>
+    <string name="update_status_checking">確認中…</string>
+    <string name="update_status_up_to_date">最新バージョンです</string>
+    <string name="update_status_available">バージョン %1$s が公開されています</string>
+    <string name="update_status_unreachable">更新元に接続できないため、最新かどうかを確認できません</string>
+    <string name="update_status_unconfigured">更新元が未設定です（仮のアドレス）</string>
+    <string name="update_download">ダウンロード</string>
+    <string name="close">閉じる</string>
+    <string name="changelog_title">更新履歴</string>
+    <string name="changelog_empty">このチャンネルにはまだ公開されたバージョンがありません</string>
+    <string name="changelog_current">インストール済み</string>
+    <string name="channel_alpha">Alpha</string>
+    <string name="channel_beta">Beta</string>
+    <string name="channel_stable">正式版</string>
+    <string name="licenses_intro">記録はこの端末のローカルデータベースに保存され、送信されることはありません。アプリが行う唯一の通信は更新の確認で、設定されたアドレスへの読み取り専用のリクエストであり、記録の内容も識別情報も含みません。エクスポートとインポートは、選んだローカルの JSON ファイルで行います。</string>
+    <string name="licenses_third_party">オープンソースコンポーネント</string>
+    <string name="licenses_full_text_note">各コンポーネントのライセンス全文は、そのプロジェクトページで確認できます。</string>
+    <string name="update_status_no_releases">更新元にはまだ公開されたバージョンがありません</string>
+    <string name="update_status_not_found">更新元が見つかりません。リポジトリがまだ存在しないか、公開されていません</string>
+    <!-- What each channel promises the user. -->
+    <string name="channel_alpha_note">不安定なテスト版です。セキュリティ上の問題を含む重大な問題が起きる可能性があります。</string>
+    <string name="channel_beta_note">安定したテスト版です。セキュリティ上の問題はありませんが、強制終了などの重大な問題が起きる可能性があります。</string>
+    <string name="channel_stable_note">正式版です。既知の問題はありません。</string>
+</resources>

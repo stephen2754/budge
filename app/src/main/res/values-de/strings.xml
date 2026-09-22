@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- German. -->
+<resources>
+    <string name="app_name">Budge</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Start</string>
+    <string name="nav_stats">Statistik</string>
+    <string name="nav_settings">Einstellungen</string>
+
+    <!-- Home -->
+    <string name="home_empty">Noch keine Buchungen</string>
+    <string name="home_expense">Ausgaben</string>
+    <string name="home_income">Einnahmen</string>
+    <string name="home_balance">Saldo: %1$s</string>
+
+    <!-- Entry -->
+    <string name="entry_new">Neue Buchung</string>
+    <string name="entry_edit">Buchung bearbeiten</string>
+    <string name="entry_type">Typ</string>
+    <string name="entry_expense">Ausgabe</string>
+    <string name="entry_income">Einnahme</string>
+    <string name="entry_amount">Betrag</string>
+    <string name="entry_category">Kategorie</string>
+    <string name="entry_note">Notiz (optional)</string>
+    <string name="entry_date_time">Datum und Uhrzeit</string>
+    <string name="entry_time">Uhrzeit</string>
+    <string name="entry_save">Speichern</string>
+    <string name="entry_saving">Wird gespeichert…</string>
+    <string name="entry_invalid_amount">Ungültiger Betrag</string>
+    <string name="entry_select_category">Bitte eine Kategorie wählen</string>
+    <string name="entry_future_time">Die Uhrzeit darf nicht in der Zukunft liegen</string>
+    <string name="entry_save_failed">Die Buchung konnte nicht gespeichert werden</string>
+
+    <!-- Stats -->
+    <string name="stats_budget">Budget</string>
+    <string name="stats_remaining">%1$s verbleibend</string>
+    <string name="stats_budget_progress">%1$s / %2$s</string>
+    <string name="stats_period_year">Jahr</string>
+    <string name="stats_period_month">Monat</string>
+    <string name="stats_period_day">Tag</string>
+    <string name="stats_summary_yearly">Jahresübersicht</string>
+    <string name="stats_summary_monthly">Monatsübersicht</string>
+    <string name="stats_summary_daily">Tagesübersicht</string>
+    <string name="stats_donut_description">Ringdiagramm mit %1$d Kategorien</string>
+
+    <!-- Category -->
+    <string name="category_title">Kategorien</string>
+    <string name="category_new">Neue Kategorie</string>
+    <string name="category_edit">Kategorie bearbeiten</string>
+    <string name="category_name">Name</string>
+    <string name="category_type">Typ</string>
+    <string name="category_color">Farbe</string>
+    <string name="category_color_option">Farbe %1$d</string>
+    <string name="category_delete_title">Kategorie löschen</string>
+    <string name="category_delete_confirm">%1$s endgültig löschen? Das kann nicht rückgängig gemacht werden.</string>
+    <string name="category_cannot_delete">Kategorien mit Buchungen können nicht gelöscht werden</string>
+    <string name="category_name_empty">Der Name darf nicht leer sein</string>
+    <string name="category_save_failed">Die Kategorie konnte nicht gespeichert werden</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_currency">Währung</string>
+    <string name="settings_currency_symbol">Währungssymbol</string>
+    <string name="settings_categories">Kategorien</string>
+    <string name="settings_appearance">Darstellung</string>
+    <string name="settings_theme">Design</string>
+    <string name="settings_theme_light">Hell</string>
+    <string name="settings_theme_dark">Dunkel</string>
+    <string name="settings_theme_system">Systemeinstellung folgen</string>
+    <string name="settings_language">Sprache</string>
+    <string name="settings_language_system">Systemeinstellung folgen</string>
+    <string name="settings_data">Daten</string>
+    <string name="settings_clear_all">Alle Buchungen löschen</string>
+    <string name="settings_clear_all_confirm">Alle Buchungen wirklich löschen? Das kann nicht rückgängig gemacht werden.</string>
+    <string name="settings_clear_all_title">Alle Buchungen löschen</string>
+    <string name="settings_export">Buchungen exportieren</string>
+    <string name="settings_import">Buchungen importieren</string>
+    <string name="settings_import_overwrite">Vorhandene Buchungen überschreiben?</string>
+    <string name="settings_import_overwrite_confirm">Alle aktuellen Buchungen werden durch die importierten Daten ersetzt. Fortfahren?</string>
+    <string name="settings_export_success">Export erfolgreich</string>
+    <string name="settings_export_failed">Export fehlgeschlagen</string>
+    <string name="settings_import_success">Import erfolgreich</string>
+    <string name="settings_import_failed">Import fehlgeschlagen</string>
+    <string name="settings_import_invalid">Ungültige Sicherungsdatei</string>
+    <string name="settings_import_reassigned">Import erfolgreich, aber %1$d Buchungen ohne passende Kategorie wurden einer Standardkategorie zugeordnet</string>
+    <string name="settings_clear_all_failed">Die Buchungen konnten nicht gelöscht werden</string>
+    <string name="settings_about">Über</string>
+    <string name="settings_version">Version</string>
+
+    <!-- Common -->
+    <string name="save">Speichern</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="delete">Löschen</string>
+    <string name="confirm_delete">Diese Buchung wirklich löschen?</string>
+    <string name="delete_transaction">Buchung löschen</string>
+    <string name="confirm">Bestätigen</string>
+
+    <!-- Accessibility labels for icon-only actions. -->
+    <string name="cd_back">Zurück</string>
+    <string name="cd_save">Speichern</string>
+    <string name="cd_delete">Löschen</string>
+    <string name="cd_edit">Bearbeiten</string>
+    <string name="cd_add_transaction">Buchung hinzufügen</string>
+    <string name="cd_add_category">Kategorie hinzufügen</string>
+    <string name="cd_previous_period">Vorheriger Zeitraum</string>
+    <string name="cd_next_period">Nächster Zeitraum</string>
+
+    <!-- About: release history, licences and the update check. -->
+    <!-- update_status_unreachable must never read as "up to date": a failed
+         check leaves freshness unknown. -->
+    <string name="settings_licenses">Lizenzen</string>
+    <string name="settings_check_update">Nach Updates suchen</string>
+    <string name="update_status_checking">Wird geprüft…</string>
+    <string name="update_status_up_to_date">Die neueste Version ist installiert</string>
+    <string name="update_status_available">Version %1$s ist verfügbar</string>
+    <string name="update_status_unreachable">Die Update-Quelle ist nicht erreichbar – ob diese Version aktuell ist, lässt sich nicht feststellen</string>
+    <string name="update_status_unconfigured">Es ist noch keine Update-Quelle eingerichtet (Platzhalteradresse)</string>
+    <string name="update_download">Herunterladen</string>
+    <string name="close">Schließen</string>
+    <string name="changelog_title">Versionsverlauf</string>
+    <string name="changelog_empty">Für diesen Kanal ist noch keine Version veröffentlicht</string>
+    <string name="changelog_current">Installiert</string>
+    <string name="channel_alpha">Alpha</string>
+    <string name="channel_beta">Beta</string>
+    <string name="channel_stable">Stabil</string>
+    <string name="licenses_intro">Deine Buchungen liegen in einer lokalen Datenbank auf diesem Gerät und werden nie hochgeladen. Die einzige Netzwerkanfrage der App ist die Update-Suche: eine reine Leseanfrage an die eingerichtete Adresse, ohne Buchungsdaten und ohne Kennung. Export und Import arbeiten mit einer lokalen JSON-Datei deiner Wahl.</string>
+    <string name="licenses_third_party">Open-Source-Komponenten</string>
+    <string name="licenses_full_text_note">Der vollständige Lizenztext jeder Komponente steht auf ihrer Projektseite.</string>
+    <string name="update_status_no_releases">Die Update-Quelle hat noch keine Version veröffentlicht</string>
+    <string name="update_status_not_found">Update-Quelle nicht gefunden: das Repository gibt es noch nicht oder es ist nicht öffentlich</string>
+    <!-- What each channel promises the user. -->
+    <string name="channel_alpha_note">Instabile Testversion: ernste Probleme bis hin zu Sicherheitslücken sind möglich.</string>
+    <string name="channel_beta_note">Stabile Testversion: keine Sicherheitslücken, aber Abstürze und andere ernste Probleme bleiben möglich.</string>
+    <string name="channel_stable_note">Stabile Version: keine bekannten Probleme.</string>
+</resources>

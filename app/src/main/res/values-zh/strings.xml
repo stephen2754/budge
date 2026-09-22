@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Budge</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">首页</string>
+    <string name="nav_stats">统计</string>
+    <string name="nav_settings">设置</string>
+
+    <!-- Home -->
+    <string name="home_empty">暂无交易记录</string>
+    <string name="home_expense">支出</string>
+    <string name="home_income">收入</string>
+    <string name="home_balance">余额: %1$s</string>
+
+    <!-- Entry -->
+    <string name="entry_new">新建交易</string>
+    <string name="entry_edit">编辑交易</string>
+    <string name="entry_type">类型</string>
+    <string name="entry_expense">支出</string>
+    <string name="entry_income">收入</string>
+    <string name="entry_amount">金额</string>
+    <string name="entry_category">分类</string>
+    <string name="entry_note">备注（可选）</string>
+    <string name="entry_date_time">日期时间</string>
+    <string name="entry_time">时间</string>
+    <string name="entry_save">保存</string>
+    <string name="entry_saving">保存中…</string>
+    <string name="entry_invalid_amount">金额无效</string>
+    <string name="entry_select_category">请选择分类</string>
+    <string name="entry_future_time">时间不能晚于现在</string>
+    <string name="entry_save_failed">保存交易失败</string>
+
+    <!-- Stats -->
+    <string name="stats_budget">预算</string>
+    <string name="stats_remaining">%1$s 剩余</string>
+    <string name="stats_budget_progress">%1$s / %2$s</string>
+    <string name="stats_period_year">年</string>
+    <string name="stats_period_month">月</string>
+    <string name="stats_period_day">日</string>
+    <string name="stats_summary_yearly">年度汇总</string>
+    <string name="stats_summary_monthly">月度汇总</string>
+    <string name="stats_summary_daily">日汇总</string>
+    <string name="stats_donut_description">包含 %1$d 个分类的环形图</string>
+
+    <!-- Category -->
+    <string name="category_title">分类管理</string>
+    <string name="category_new">新建分类</string>
+    <string name="category_edit">编辑分类</string>
+    <string name="category_name">名称</string>
+    <string name="category_type">类型</string>
+    <string name="category_color">颜色</string>
+    <string name="category_color_option">颜色 %1$d</string>
+    <string name="category_delete_title">删除分类</string>
+    <string name="category_delete_confirm">确定永久删除 %1$s 吗？此操作无法撤销。</string>
+    <string name="category_cannot_delete">无法删除包含交易的分类</string>
+    <string name="category_name_empty">名称不能为空</string>
+    <string name="category_save_failed">保存分类失败</string>
+
+    <!-- Settings -->
+    <string name="settings_title">设置</string>
+    <string name="settings_currency">货币</string>
+    <string name="settings_currency_symbol">货币符号</string>
+    <string name="settings_categories">分类</string>
+    <string name="settings_appearance">外观</string>
+    <string name="settings_theme">主题</string>
+    <string name="settings_theme_light">浅色</string>
+    <string name="settings_theme_dark">深色</string>
+    <string name="settings_theme_system">跟随系统</string>
+    <string name="settings_language">语言</string>
+    <string name="settings_language_system">跟随系统</string>
+    <string name="settings_data">数据</string>
+    <string name="settings_clear_all">清除所有记录</string>
+    <string name="settings_clear_all_confirm">确定要删除所有记录吗？此操作无法撤销。</string>
+    <string name="settings_clear_all_title">清除所有记录</string>
+    <string name="settings_export">导出记录</string>
+    <string name="settings_import">导入记录</string>
+    <string name="settings_import_overwrite">覆盖当前记录？</string>
+    <string name="settings_import_overwrite_confirm">这将用导入的数据替换所有当前记录。继续吗？</string>
+    <string name="settings_export_success">导出成功</string>
+    <string name="settings_export_failed">导出失败</string>
+    <string name="settings_import_success">导入成功</string>
+    <string name="settings_import_failed">导入失败</string>
+    <string name="settings_import_invalid">备份文件无效</string>
+    <string name="settings_import_reassigned">导入完成，但有 %1$d 笔交易的分类不存在，已归入默认分类</string>
+    <string name="settings_clear_all_failed">清除记录失败</string>
+    <string name="settings_about">关于</string>
+    <string name="settings_version">版本</string>
+
+    <!-- Common -->
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="delete">删除</string>
+    <string name="confirm_delete">确定要删除这笔交易吗？</string>
+    <string name="delete_transaction">删除交易</string>
+    <string name="confirm">确认</string>
+
+    <!-- 仅含图标按钮的无障碍标签，不能写成硬编码字面量。 -->
+    <string name="cd_back">返回</string>
+    <string name="cd_save">保存</string>
+    <string name="cd_delete">删除</string>
+    <string name="cd_edit">编辑</string>
+    <string name="cd_add_transaction">添加交易</string>
+    <string name="cd_add_category">添加分类</string>
+    <string name="cd_previous_period">上一周期</string>
+    <string name="cd_next_period">下一周期</string>
+
+    <!-- About: release history, licences and the update check. -->
+    <!-- update_status_unreachable must never read as "up to date": a failed
+         check leaves freshness unknown. -->
+    <string name="settings_licenses">应用协议</string>
+    <string name="settings_check_update">检查更新</string>
+    <string name="update_status_checking">正在检查…</string>
+    <string name="update_status_up_to_date">已是最新版本</string>
+    <string name="update_status_available">发现新版本 %1$s</string>
+    <string name="update_status_unreachable">无法连接更新源，因此无法确定当前是否为最新版本</string>
+    <string name="update_status_unconfigured">尚未配置更新源（当前为占位地址）</string>
+    <string name="update_download">下载</string>
+    <string name="close">关闭</string>
+    <string name="changelog_title">版本更新记录</string>
+    <string name="changelog_empty">该通道暂无已发布的版本</string>
+    <string name="changelog_current">当前版本</string>
+    <string name="channel_alpha">Alpha 测试版</string>
+    <string name="channel_beta">Beta 测试版</string>
+    <string name="channel_stable">正式版</string>
+    <string name="licenses_intro">账目数据保存在本机数据库中，不会上传。应用唯一的联网行为是检查更新：它只向配置好的版本发布地址发起一次只读请求，不包含任何账目数据，也不包含任何标识信息。导出与导入使用你自己选择的本地 JSON 文件。</string>
+    <string name="licenses_third_party">开源组件</string>
+    <string name="licenses_full_text_note">各组件的完整许可文本见其项目主页。</string>
+    <string name="release_notes_0_1_0_alpha_1">首个公开版本：支持带分类与备注的手动记账、按日分组的月视图、年 / 月 / 日统计、九种语言与 JSON 备份。</string>
+    <string name="update_status_no_releases">更新源还没有发布任何版本</string>
+    <string name="update_status_not_found">找不到更新源：仓库尚未创建，或还未公开</string>
+    <!-- What each channel promises the user. -->
+    <string name="channel_alpha_note">不稳定测试版：可能出现重大问题，包括安全性问题。</string>
+    <string name="channel_beta_note">稳定测试版：不会出现安全性问题，但可能出现闪退等重大问题。</string>
+    <string name="channel_stable_note">稳定版（正式版）：不会出现任何已知问题。</string>
+</resources>

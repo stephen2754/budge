@@ -1,0 +1,54 @@
+# ---------------------------------------------------------------------------
+# Budge
+#
+# Only files that belong to the project are tracked. Everything a build, an IDE
+# or a local machine produces is ignored, so a fresh clone builds from a clean
+# tree and `git status` stays quiet.
+# ---------------------------------------------------------------------------
+
+# Gradle build output and project-local caches
+.gradle/
+build/
+app/build/
+
+# Kotlin incremental compilation data
+.kotlin/
+app/.kotlin/
+
+# Android SDK location. Machine-specific; see README.md for the expected contents.
+local.properties
+
+# Signing material. Never commit a keystore, and never commit the file that
+# points at one.
+*.jks
+*.keystore
+*.p12
+keystore.properties
+
+# Secrets and environment overrides
+.env
+.env.*
+!/.env.example
+secrets.properties
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+captures/
+.navigation/
+
+# Local agent tooling (not part of the app)
+.opencode/
+opencode.json
+
+# OS noise
+.DS_Store
+._*
+Thumbs.db
+
+# Logs and crash dumps
+*.log
+hs_err_pid*

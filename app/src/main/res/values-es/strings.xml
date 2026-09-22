@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spanish. -->
+<resources>
+    <string name="app_name">Budge</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_stats">Estadísticas</string>
+    <string name="nav_settings">Ajustes</string>
+
+    <!-- Home -->
+    <string name="home_empty">Aún no hay movimientos</string>
+    <string name="home_expense">Gastos</string>
+    <string name="home_income">Ingresos</string>
+    <string name="home_balance">Saldo: %1$s</string>
+
+    <!-- Entry -->
+    <string name="entry_new">Nuevo movimiento</string>
+    <string name="entry_edit">Editar movimiento</string>
+    <string name="entry_type">Tipo</string>
+    <string name="entry_expense">Gasto</string>
+    <string name="entry_income">Ingreso</string>
+    <string name="entry_amount">Importe</string>
+    <string name="entry_category">Categoría</string>
+    <string name="entry_note">Nota (opcional)</string>
+    <string name="entry_date_time">Fecha y hora</string>
+    <string name="entry_time">Hora</string>
+    <string name="entry_save">Guardar</string>
+    <string name="entry_saving">Guardando…</string>
+    <string name="entry_invalid_amount">Importe no válido</string>
+    <string name="entry_select_category">Selecciona una categoría</string>
+    <string name="entry_future_time">La hora no puede ser futura</string>
+    <string name="entry_save_failed">No se pudo guardar el movimiento</string>
+
+    <!-- Stats -->
+    <string name="stats_budget">Presupuesto</string>
+    <string name="stats_remaining">%1$s restantes</string>
+    <string name="stats_budget_progress">%1$s / %2$s</string>
+    <string name="stats_period_year">Año</string>
+    <string name="stats_period_month">Mes</string>
+    <string name="stats_period_day">Día</string>
+    <string name="stats_summary_yearly">Resumen anual</string>
+    <string name="stats_summary_monthly">Resumen mensual</string>
+    <string name="stats_summary_daily">Resumen diario</string>
+    <string name="stats_donut_description">Gráfico circular de %1$d categorías</string>
+
+    <!-- Category -->
+    <string name="category_title">Categorías</string>
+    <string name="category_new">Nueva categoría</string>
+    <string name="category_edit">Editar categoría</string>
+    <string name="category_name">Nombre</string>
+    <string name="category_type">Tipo</string>
+    <string name="category_color">Color</string>
+    <string name="category_color_option">Color %1$d</string>
+    <string name="category_delete_title">Eliminar categoría</string>
+    <string name="category_delete_confirm">¿Eliminar %1$s de forma permanente? Esta acción no se puede deshacer.</string>
+    <string name="category_cannot_delete">No se puede eliminar una categoría con movimientos</string>
+    <string name="category_name_empty">El nombre no puede estar vacío</string>
+    <string name="category_save_failed">No se pudo guardar la categoría</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_currency">Moneda</string>
+    <string name="settings_currency_symbol">Símbolo de moneda</string>
+    <string name="settings_categories">Categorías</string>
+    <string name="settings_appearance">Apariencia</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Oscuro</string>
+    <string name="settings_theme_system">Seguir el sistema</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_language_system">Seguir el sistema</string>
+    <string name="settings_data">Datos</string>
+    <string name="settings_clear_all">Borrar todos los registros</string>
+    <string name="settings_clear_all_confirm">¿Seguro que quieres borrar todos los registros? Esta acción no se puede deshacer.</string>
+    <string name="settings_clear_all_title">Borrar todos los registros</string>
+    <string name="settings_export">Exportar registros</string>
+    <string name="settings_import">Importar registros</string>
+    <string name="settings_import_overwrite">¿Sobrescribir los registros existentes?</string>
+    <string name="settings_import_overwrite_confirm">Esto reemplazará todos los registros actuales por los datos importados. ¿Continuar?</string>
+    <string name="settings_export_success">Exportación correcta</string>
+    <string name="settings_export_failed">Error al exportar</string>
+    <string name="settings_import_success">Importación correcta</string>
+    <string name="settings_import_failed">Error al importar</string>
+    <string name="settings_import_invalid">Archivo de copia no válido</string>
+    <string name="settings_import_reassigned">Importación completada, pero %1$d movimientos sin categoría coincidente se movieron a una categoría predeterminada</string>
+    <string name="settings_clear_all_failed">No se pudieron borrar los registros</string>
+    <string name="settings_about">Acerca de</string>
+    <string name="settings_version">Versión</string>
+
+    <!-- Common -->
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Eliminar</string>
+    <string name="confirm_delete">¿Seguro que quieres eliminar este movimiento?</string>
+    <string name="delete_transaction">Eliminar movimiento</string>
+    <string name="confirm">Confirmar</string>
+
+    <!-- Accessibility labels for icon-only actions. -->
+    <string name="cd_back">Atrás</string>
+    <string name="cd_save">Guardar</string>
+    <string name="cd_delete">Eliminar</string>
+    <string name="cd_edit">Editar</string>
+    <string name="cd_add_transaction">Añadir movimiento</string>
+    <string name="cd_add_category">Añadir categoría</string>
+    <string name="cd_previous_period">Periodo anterior</string>
+    <string name="cd_next_period">Periodo siguiente</string>
+
+    <!-- About: release history, licences and the update check. -->
+    <!-- update_status_unreachable must never read as "up to date": a failed
+         check leaves freshness unknown. -->
+    <string name="settings_licenses">Licencias</string>
+    <string name="settings_check_update">Buscar actualizaciones</string>
+    <string name="update_status_checking">Comprobando…</string>
+    <string name="update_status_up_to_date">Tienes la versión más reciente</string>
+    <string name="update_status_available">La versión %1$s ya está disponible</string>
+    <string name="update_status_unreachable">No se pudo contactar con el origen de actualizaciones, así que no se puede saber si esta versión está al día</string>
+    <string name="update_status_unconfigured">Todavía no hay un origen de actualizaciones configurado (dirección provisional)</string>
+    <string name="update_download">Descargar</string>
+    <string name="close">Cerrar</string>
+    <string name="changelog_title">Historial de versiones</string>
+    <string name="changelog_empty">Aún no hay versiones publicadas para este canal</string>
+    <string name="changelog_current">Instalada</string>
+    <string name="channel_alpha">Alpha</string>
+    <string name="channel_beta">Beta</string>
+    <string name="channel_stable">Estable</string>
+    <string name="licenses_intro">Tus movimientos se guardan en una base de datos local de este dispositivo y nunca se suben. La única petición de red que puede hacer la aplicación es la búsqueda de actualizaciones: una petición de solo lectura a la dirección configurada, sin datos contables ni identificadores. La exportación y la importación usan un archivo JSON local que tú eliges.</string>
+    <string name="licenses_third_party">Componentes de código abierto</string>
+    <string name="licenses_full_text_note">El texto completo de la licencia de cada componente está en su página de proyecto.</string>
+    <string name="update_status_no_releases">El origen de actualizaciones aún no ha publicado ninguna versión</string>
+    <string name="update_status_not_found">No se encontró el origen de actualizaciones: el repositorio aún no existe o no es público</string>
+    <!-- What each channel promises the user. -->
+    <string name="channel_alpha_note">Versión de prueba inestable: puede haber problemas graves, incluidos problemas de seguridad.</string>
+    <string name="channel_beta_note">Versión de prueba estable: sin problemas de seguridad, pero aún puede haber cierres inesperados y otros problemas graves.</string>
+    <string name="channel_stable_note">Versión estable: sin problemas conocidos.</string>
+</resources>

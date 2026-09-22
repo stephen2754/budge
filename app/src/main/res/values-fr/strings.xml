@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- French. Apostrophes are the typographic ’ so no escaping is needed. -->
+<resources>
+    <string name="app_name">Budge</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Accueil</string>
+    <string name="nav_stats">Statistiques</string>
+    <string name="nav_settings">Paramètres</string>
+
+    <!-- Home -->
+    <string name="home_empty">Aucune transaction</string>
+    <string name="home_expense">Dépenses</string>
+    <string name="home_income">Revenus</string>
+    <string name="home_balance">Solde : %1$s</string>
+
+    <!-- Entry -->
+    <string name="entry_new">Nouvelle transaction</string>
+    <string name="entry_edit">Modifier la transaction</string>
+    <string name="entry_type">Type</string>
+    <string name="entry_expense">Dépense</string>
+    <string name="entry_income">Revenu</string>
+    <string name="entry_amount">Montant</string>
+    <string name="entry_category">Catégorie</string>
+    <string name="entry_note">Note (facultatif)</string>
+    <string name="entry_date_time">Date et heure</string>
+    <string name="entry_time">Heure</string>
+    <string name="entry_save">Enregistrer</string>
+    <string name="entry_saving">Enregistrement…</string>
+    <string name="entry_invalid_amount">Montant invalide</string>
+    <string name="entry_select_category">Veuillez choisir une catégorie</string>
+    <string name="entry_future_time">L’heure ne peut pas être dans le futur</string>
+    <string name="entry_save_failed">Impossible d’enregistrer la transaction</string>
+
+    <!-- Stats -->
+    <string name="stats_budget">Budget</string>
+    <string name="stats_remaining">%1$s restants</string>
+    <string name="stats_budget_progress">%1$s / %2$s</string>
+    <string name="stats_period_year">Année</string>
+    <string name="stats_period_month">Mois</string>
+    <string name="stats_period_day">Jour</string>
+    <string name="stats_summary_yearly">Récapitulatif annuel</string>
+    <string name="stats_summary_monthly">Récapitulatif mensuel</string>
+    <string name="stats_summary_daily">Récapitulatif du jour</string>
+    <string name="stats_donut_description">Diagramme circulaire de %1$d catégories</string>
+
+    <!-- Category -->
+    <string name="category_title">Catégories</string>
+    <string name="category_new">Nouvelle catégorie</string>
+    <string name="category_edit">Modifier la catégorie</string>
+    <string name="category_name">Nom</string>
+    <string name="category_type">Type</string>
+    <string name="category_color">Couleur</string>
+    <string name="category_color_option">Couleur %1$d</string>
+    <string name="category_delete_title">Supprimer la catégorie</string>
+    <string name="category_delete_confirm">Supprimer %1$s définitivement ? Cette action est irréversible.</string>
+    <string name="category_cannot_delete">Impossible de supprimer une catégorie contenant des transactions</string>
+    <string name="category_name_empty">Le nom ne peut pas être vide</string>
+    <string name="category_save_failed">Impossible d’enregistrer la catégorie</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_currency">Devise</string>
+    <string name="settings_currency_symbol">Symbole monétaire</string>
+    <string name="settings_categories">Catégories</string>
+    <string name="settings_appearance">Apparence</string>
+    <string name="settings_theme">Thème</string>
+    <string name="settings_theme_light">Clair</string>
+    <string name="settings_theme_dark">Sombre</string>
+    <string name="settings_theme_system">Suivre le système</string>
+    <string name="settings_language">Langue</string>
+    <string name="settings_language_system">Suivre le système</string>
+    <string name="settings_data">Données</string>
+    <string name="settings_clear_all">Effacer tous les enregistrements</string>
+    <string name="settings_clear_all_confirm">Voulez-vous vraiment supprimer tous les enregistrements ? Cette action est irréversible.</string>
+    <string name="settings_clear_all_title">Effacer tous les enregistrements</string>
+    <string name="settings_export">Exporter les enregistrements</string>
+    <string name="settings_import">Importer des enregistrements</string>
+    <string name="settings_import_overwrite">Remplacer les enregistrements existants ?</string>
+    <string name="settings_import_overwrite_confirm">Tous les enregistrements actuels seront remplacés par les données importées. Continuer ?</string>
+    <string name="settings_export_success">Exportation réussie</string>
+    <string name="settings_export_failed">Échec de l’exportation</string>
+    <string name="settings_import_success">Importation réussie</string>
+    <string name="settings_import_failed">Échec de l’importation</string>
+    <string name="settings_import_invalid">Fichier de sauvegarde invalide</string>
+    <string name="settings_import_reassigned">Importation effectuée, mais %1$d transactions sans catégorie correspondante ont été déplacées vers une catégorie par défaut</string>
+    <string name="settings_clear_all_failed">Impossible d’effacer les enregistrements</string>
+    <string name="settings_about">À propos</string>
+    <string name="settings_version">Version</string>
+
+    <!-- Common -->
+    <string name="save">Enregistrer</string>
+    <string name="cancel">Annuler</string>
+    <string name="delete">Supprimer</string>
+    <string name="confirm_delete">Voulez-vous vraiment supprimer cette transaction ?</string>
+    <string name="delete_transaction">Supprimer la transaction</string>
+    <string name="confirm">Confirmer</string>
+
+    <!-- Accessibility labels for icon-only actions. -->
+    <string name="cd_back">Retour</string>
+    <string name="cd_save">Enregistrer</string>
+    <string name="cd_delete">Supprimer</string>
+    <string name="cd_edit">Modifier</string>
+    <string name="cd_add_transaction">Ajouter une transaction</string>
+    <string name="cd_add_category">Ajouter une catégorie</string>
+    <string name="cd_previous_period">Période précédente</string>
+    <string name="cd_next_period">Période suivante</string>
+
+    <!-- About: release history, licences and the update check. -->
+    <!-- update_status_unreachable must never read as "up to date": a failed
+         check leaves freshness unknown. -->
+    <string name="settings_licenses">Licences</string>
+    <string name="settings_check_update">Rechercher des mises à jour</string>
+    <string name="update_status_checking">Vérification…</string>
+    <string name="update_status_up_to_date">Vous avez la version la plus récente</string>
+    <string name="update_status_available">La version %1$s est disponible</string>
+    <string name="update_status_unreachable">Impossible de joindre la source des mises à jour : on ne peut donc pas savoir si cette version est à jour</string>
+    <string name="update_status_unconfigured">Aucune source de mise à jour n’est configurée (adresse provisoire)</string>
+    <string name="update_download">Télécharger</string>
+    <string name="close">Fermer</string>
+    <string name="changelog_title">Historique des versions</string>
+    <string name="changelog_empty">Aucune version publiée pour ce canal</string>
+    <string name="changelog_current">Installée</string>
+    <string name="channel_alpha">Alpha</string>
+    <string name="channel_beta">Bêta</string>
+    <string name="channel_stable">Stable</string>
+    <string name="licenses_intro">Vos écritures restent dans une base locale sur cet appareil et ne sont jamais envoyées. La seule requête réseau de l’application est la recherche de mises à jour : une requête en lecture seule vers l’adresse configurée, sans aucune donnée comptable ni identifiant. L’export et l’import utilisent un fichier JSON local que vous choisissez.</string>
+    <string name="licenses_third_party">Composants open source</string>
+    <string name="licenses_full_text_note">Le texte complet de la licence de chaque composant est disponible sur sa page de projet.</string>
+    <string name="update_status_no_releases">La source de mises à jour n’a encore publié aucune version</string>
+    <string name="update_status_not_found">Source de mises à jour introuvable : le dépôt n’existe pas encore ou n’est pas public</string>
+    <!-- What each channel promises the user. -->
+    <string name="channel_alpha_note">Version de test instable : des problèmes graves sont possibles, y compris de sécurité.</string>
+    <string name="channel_beta_note">Version de test stable : aucun problème de sécurité, mais des plantages et d’autres problèmes graves restent possibles.</string>
+    <string name="channel_stable_note">Version stable : aucun problème connu.</string>
+</resources>
