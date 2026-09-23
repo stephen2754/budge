@@ -41,11 +41,11 @@ android {
         applicationId = "com.example.budge"
         minSdk = 26 // Android 8.0
         targetSdk = 35
-        versionCode = 1
+        versionCode = 2
         // The channel a build belongs to is read from this string (see
         // AppVersion.channelOf): an "-alpha.N" or "-beta.N" suffix is what makes the
         // update check offer prereleases, and the absence of one is what keeps them out.
-        versionName = "0.1.0-alpha.1"
+        versionName = "0.1.0-alpha.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

@@ -115,6 +115,10 @@
     <string name="update_status_up_to_date">Vous avez la version la plus récente</string>
     <string name="update_status_available">La version %1$s est disponible</string>
     <string name="update_status_unreachable">Impossible de joindre la source des mises à jour : on ne peut donc pas savoir si cette version est à jour</string>
+    <string name="update_status_timeout">La source des mises à jour n’a pas répondu à temps : on ne peut donc pas savoir si cette version est à jour</string>
+    <string name="update_status_rate_limited">La source des mises à jour refuse les requêtes pour le moment (trop de requêtes depuis cette adresse) : on ne peut donc pas savoir si cette version est à jour ; réessayez plus tard</string>
+    <string name="update_status_http_error">La source des mises à jour a renvoyé une erreur (HTTP %1$d) : on ne peut donc pas savoir si cette version est à jour</string>
+    <string name="update_status_unreadable">La réponse de la source des mises à jour est illisible : on ne peut donc pas savoir si cette version est à jour</string>
     <string name="update_status_unconfigured">Aucune source de mise à jour n’est configurée (adresse provisoire)</string>
     <string name="update_download">Télécharger</string>
     <string name="close">Fermer</string>

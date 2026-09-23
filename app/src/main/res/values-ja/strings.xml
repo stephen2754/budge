@@ -115,6 +115,10 @@
     <string name="update_status_up_to_date">最新バージョンです</string>
     <string name="update_status_available">バージョン %1$s が公開されています</string>
     <string name="update_status_unreachable">更新元に接続できないため、最新かどうかを確認できません</string>
+    <string name="update_status_timeout">更新元が時間内に応答しなかったため、最新かどうかを確認できません</string>
+    <string name="update_status_rate_limited">更新元がリクエストを一時的に拒否しています（このアドレスからのリクエストが多すぎます）。最新かどうかを確認できません。しばらくしてからお試しください</string>
+    <string name="update_status_http_error">更新元がエラーを返しました（HTTP %1$d）。最新かどうかを確認できません</string>
+    <string name="update_status_unreadable">更新元の応答を読み取れませんでした。最新かどうかを確認できません</string>
     <string name="update_status_unconfigured">更新元が未設定です（仮のアドレス）</string>
     <string name="update_download">ダウンロード</string>
     <string name="close">閉じる</string>

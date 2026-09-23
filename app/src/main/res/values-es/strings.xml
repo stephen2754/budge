@@ -115,6 +115,10 @@
     <string name="update_status_up_to_date">Tienes la versión más reciente</string>
     <string name="update_status_available">La versión %1$s ya está disponible</string>
     <string name="update_status_unreachable">No se pudo contactar con el origen de actualizaciones, así que no se puede saber si esta versión está al día</string>
+    <string name="update_status_timeout">El origen de actualizaciones no respondió a tiempo, así que no se puede saber si esta versión está al día</string>
+    <string name="update_status_rate_limited">El origen de actualizaciones rechaza las peticiones por ahora (demasiadas desde esta dirección), así que no se puede saber si esta versión está al día; inténtalo más tarde</string>
+    <string name="update_status_http_error">El origen de actualizaciones devolvió un error (HTTP %1$d), así que no se puede saber si esta versión está al día</string>
+    <string name="update_status_unreadable">No se pudo leer la respuesta del origen de actualizaciones, así que no se puede saber si esta versión está al día</string>
     <string name="update_status_unconfigured">Todavía no hay un origen de actualizaciones configurado (dirección provisional)</string>
     <string name="update_download">Descargar</string>
     <string name="close">Cerrar</string>

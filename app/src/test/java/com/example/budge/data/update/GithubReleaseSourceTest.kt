@@ -4,6 +4,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 /**
  * Tests for reading the GitHub releases payload.
@@ -95,10 +98,21 @@ class GithubReleaseSourceTest {
         assertNull("200 is a usable response", failureForStatus(200))
         assertNull(failureForStatus(204))
         // 404 is worth separating: it is either "no such repository" or "still private",
-        // and both are things the user can fix, unlike a timeout.
+        // and both are things the user can fix, unlike a wait.
         assertEquals(UpdateFailure.NOT_FOUND, failureForStatus(404))
-        assertEquals(UpdateFailure.HTTP, failureForStatus(403))
+        // 403 and 429 are how GitHub says "too many anonymous requests from this
+        // address", which passes on its own and must not be reported as a broken source.
+        assertEquals(UpdateFailure.RATE_LIMITED, failureForStatus(403))
+        assertEquals(UpdateFailure.RATE_LIMITED, failureForStatus(429))
         assertEquals(UpdateFailure.HTTP, failureForStatus(500))
+        assertEquals(UpdateFailure.HTTP, failureForStatus(302))
+    }
+
+    @Test
+    fun `tells a timeout apart from never reaching the host`() {
+        assertEquals(UpdateFailure.TIMEOUT, failureFor(SocketTimeoutException("read timed out")))
+        assertEquals(UpdateFailure.NETWORK, failureFor(UnknownHostException("api.github.com")))
+        assertEquals(UpdateFailure.NETWORK, failureFor(ConnectException("connection refused")))
     }
 
     @Test

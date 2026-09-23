@@ -114,6 +114,10 @@
     <string name="update_status_up_to_date">已是最新版本</string>
     <string name="update_status_available">发现新版本 %1$s</string>
     <string name="update_status_unreachable">无法连接更新源，因此无法确定当前是否为最新版本</string>
+    <string name="update_status_timeout">更新源没有及时响应，因此无法确定当前是否为最新版本</string>
+    <string name="update_status_rate_limited">更新源暂时拒绝了请求（来自此地址的请求过多），因此无法确定当前是否为最新版本，请稍后再试</string>
+    <string name="update_status_http_error">更新源返回了错误（HTTP %1$d），因此无法确定当前是否为最新版本</string>
+    <string name="update_status_unreadable">更新源返回的内容无法识别，因此无法确定当前是否为最新版本</string>
     <string name="update_status_unconfigured">尚未配置更新源（当前为占位地址）</string>
     <string name="update_download">下载</string>
     <string name="close">关闭</string>
@@ -126,6 +130,7 @@
     <string name="licenses_intro">账目数据保存在本机数据库中，不会上传。应用唯一的联网行为是检查更新：它只向配置好的版本发布地址发起一次只读请求，不包含任何账目数据，也不包含任何标识信息。导出与导入使用你自己选择的本地 JSON 文件。</string>
     <string name="licenses_third_party">开源组件</string>
     <string name="licenses_full_text_note">各组件的完整许可文本见其项目主页。</string>
+    <string name="release_notes_0_1_0_alpha_2">更新检查在 GitHub API 被拒绝或读不到时改用发布订阅源；失败原因按实际情况分别说明，不再共用一句话；并为较慢的网络延长了等待时间。</string>
     <string name="release_notes_0_1_0_alpha_1">首个公开版本：支持带分类与备注的手动记账、按日分组的月视图、年 / 月 / 日统计、九种语言与 JSON 备份。</string>
     <string name="update_status_no_releases">更新源还没有发布任何版本</string>
     <string name="update_status_not_found">找不到更新源：仓库尚未创建，或还未公开</string>

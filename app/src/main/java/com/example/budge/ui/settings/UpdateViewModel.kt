@@ -66,7 +66,7 @@ class UpdateViewModel
                 _status.value = UpdateStatus.Checking
                 _status.value =
                     when (val fetched = releaseSource.releases(UpdateConfig.GITHUB_REPOSITORY)) {
-                        is ReleaseFetch.Failure -> UpdateStatus.Unreachable(fetched.failure)
+                        is ReleaseFetch.Failure -> UpdateStatus.Unreachable(fetched.failure, fetched.statusCode)
                         is ReleaseFetch.Success -> when {
                             // Nothing published at all is not the same as "nothing newer".
                             fetched.releases.isEmpty() -> UpdateStatus.NoReleases

@@ -5,7 +5,7 @@
 
 | | |
 | --- | --- |
-| **Version** | 0.1.0-alpha.1 (alpha) — see [CHANGELOG.md](CHANGELOG.md) |
+| **Version** | 0.1.0-alpha.2 (alpha) — see [CHANGELOG.md](CHANGELOG.md) |
 | **Platform** | Android 8.0+ (minSdk 26), targetSdk 35 |
 | **Stack** | Kotlin 2.0.21, Jetpack Compose (Material 3), Room, Hilt, DataStore |
 | **Languages** | English, 中文, Français, Deutsch, Español, Русский, 日本語, Italiano, Português |
@@ -123,9 +123,11 @@ version of it.
 
 - Records live in a local Room database; preferences in DataStore. Neither is uploaded.
 - Export and import work on a JSON file you pick through the system file picker.
-- The update check is the only network use: an unauthenticated read of the public release
-  list at `api.github.com/repos/stephen2754/budge/releases`. It sends no ledger data and
-  no identifier, and it carries nothing beyond the usual request headers. Because it is
+- The update check is the only network use: two unauthenticated reads of the public
+  release list, `api.github.com/repos/stephen2754/budge/releases` and — when the API
+  refuses the request or answers with something unreadable — the release feed at
+  `github.com/stephen2754/budge/releases.atom`. They send no ledger data and no
+  identifier, and carry nothing beyond the usual request headers. Because they are
   unauthenticated, that repository has to stay public for the check to work at all.
 - `android:allowBackup="true"`, so the **system** may include the app's data in a cloud
   backup or a device transfer. The rules for that are in

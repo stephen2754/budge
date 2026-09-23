@@ -18,6 +18,26 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-alpha.2] — the update check, fixed
+
+An alpha, and a small one: the first fix to the update check, which could not be completed
+at all on a network where the release page opens in a browser without trouble.
+
+### Fixed
+
+- **A failed check no longer means one sentence.** It now says what failed: nothing
+  reachable, a timeout, a refusal that will pass, a repository that is not there, a status
+  code, or an answer that arrived but could not be read. Every one of those used to be
+  reported as "could not connect", including a payload that was read and then failed to
+  parse — a state the code could not even reach.
+- **The check no longer depends on one endpoint.** GitHub's API allows sixty anonymous
+  requests an hour to everyone sharing an address, and it is the host most often
+  interfered with on the networks this app runs on. When the API refuses the request or
+  answers with something unreadable, the app now reads the repository's release feed,
+  served by `github.com` itself and not metered at all.
+- **The request waits 20 seconds instead of 10**, which a slow international route can
+  need before it reports the device as offline.
+
 ## [0.1.0-alpha.1] — first published build
 
 An alpha. Everything below is new; the app is usable, but expect the rough edges listed
@@ -49,4 +69,5 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-alpha.2]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.2
 [0.1.0-alpha.1]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.1

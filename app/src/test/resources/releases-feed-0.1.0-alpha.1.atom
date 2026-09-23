@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
+  <id>tag:github.com,2008:https://github.com/stephen2754/budge/releases</id>
+  <link type="text/html" rel="alternate" href="https://github.com/stephen2754/budge/releases"/>
+  <link type="application/atom+xml" rel="self" href="https://github.com/stephen2754/budge/releases.atom"/>
+  <title>Release notes from budge</title>
+  <updated>2026-09-22T19:10:00Z</updated>
+  <entry>
+    <id>tag:github.com,2008:Repository/1382207925/v0.1.0-alpha.1</id>
+    <updated>2026-09-22T19:10:23Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.1"/>
+    <title>0.1.0-alpha.1</title>
+    <content type="html">&lt;p&gt;The first published build of Budge, an &lt;strong&gt;alpha&lt;/strong&gt;. The app is usable and the ledger&lt;br&gt;
+features below are complete, but expect rough edges — this is an unstable test build, so&lt;br&gt;
+major problems are possible.&lt;/p&gt;
+&lt;h2&gt;Install&lt;/h2&gt;
+&lt;p&gt;Download &lt;code&gt;budge-0.1.0-alpha.1.apk&lt;/code&gt; below and open it on a device running &lt;strong&gt;Android 8.0 or&lt;br&gt;
+newer&lt;/strong&gt;. You will have to allow installing from this source, since the build is signed&lt;br&gt;
+with a key you have never seen before. That key is stable from now on, so later releases&lt;br&gt;
+install over this one without uninstalling it.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Package: &lt;code&gt;com.example.budge&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Version: &lt;code&gt;0.1.0-alpha.1&lt;/code&gt; (versionCode 1)&lt;/li&gt;
+&lt;li&gt;Size: 1,592,229 bytes&lt;/li&gt;
+&lt;li&gt;SHA-256: &lt;code&gt;40494483fb5efac4080c8dead56d58dd3c282b2bab25d0e85e139668a2554c2d&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Signing certificate SHA-256: &lt;code&gt;b13ab2ef2bac6617572b7822f4d4ae09ebe5184358dd45a1f89096c69132eeb0&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;What is in it&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Record&lt;/strong&gt; an expense or income in a few taps: type, amount, category, note, date, time.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Home&lt;/strong&gt; shows the month as a day-grouped list with daily subtotals, a monthly summary&lt;br&gt;
+and swipe-to-delete.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Statistics&lt;/strong&gt; by year, month or day: totals, balance, and a per-category breakdown as a&lt;br&gt;
+donut chart. One date anchors all three periods.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Categories&lt;/strong&gt; are seeded on first launch in the device language and are ordinary rows&lt;br&gt;
+afterwards: rename, re-colour, re-type or delete any of them.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Nine languages&lt;/strong&gt; — English, 中文, Français, Deutsch, Español, Русский, 日本語, Italiano,&lt;br&gt;
+Português — plus a choice of currency sign, which groups the common currencies that&lt;br&gt;
+share one.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Backup&lt;/strong&gt; to a JSON file you choose and restore from one, with the file validated&lt;br&gt;
+before anything is overwritten.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Settings&lt;/strong&gt; for currency, theme, language, categories and data, with an About section&lt;br&gt;
+holding the release history, third-party licences and the update check.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;No account, no sync, no analytics. Records live in a local Room database and preferences&lt;br&gt;
+in DataStore. The update check is the only network request the app can make, and it is a&lt;br&gt;
+read-only GET for this release list that carries no ledger data.&lt;/p&gt;
+&lt;h2&gt;Known limitations&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;No screen sets a monthly budget yet, although the table, DAO and the statistics card for&lt;br&gt;
+one exist.&lt;/li&gt;
+&lt;li&gt;Category icons are stored but never drawn; lists show the category&#39;s initial.&lt;/li&gt;
+&lt;li&gt;Unit tests cover formatting, storage ranges, backup and the update rules; there are no&lt;br&gt;
+instrumentation or UI tests.&lt;/li&gt;
+&lt;li&gt;Lint cannot run on a machine whose Android SDK ships platform-tools 37.x — the pinned&lt;br&gt;
+AGP 8.7.3 cannot parse that version string, so release builds skip the vital check.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Updating&lt;/h2&gt;
+&lt;p&gt;This build is an alpha, so its update check is offered everything: alpha, beta and stable&lt;br&gt;
+releases. Later versions appear under &lt;em&gt;Settings → About → Check for updates&lt;/em&gt;, and a check&lt;br&gt;
+that cannot reach GitHub reports that it could not tell, never &quot;up to date&quot;.&lt;/p&gt;</content>
+    <author>
+      <name>stephen2754</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/u/102199060?s=60&amp;v=4"/>
+  </entry>
+</feed>

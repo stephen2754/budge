@@ -115,6 +115,10 @@
     <string name="update_status_up_to_date">Установлена последняя версия</string>
     <string name="update_status_available">Доступна версия %1$s</string>
     <string name="update_status_unreachable">Не удалось связаться с источником обновлений, поэтому неизвестно, последняя ли это версия</string>
+    <string name="update_status_timeout">Источник обновлений не ответил вовремя, поэтому неизвестно, последняя ли это версия</string>
+    <string name="update_status_rate_limited">Источник обновлений пока отклоняет запросы (слишком много с этого адреса), поэтому неизвестно, последняя ли это версия; попробуйте позже</string>
+    <string name="update_status_http_error">Источник обновлений вернул ошибку (HTTP %1$d), поэтому неизвестно, последняя ли это версия</string>
+    <string name="update_status_unreadable">Не удалось прочитать ответ источника обновлений, поэтому неизвестно, последняя ли это версия</string>
     <string name="update_status_unconfigured">Источник обновлений ещё не настроен (адрес-заглушка)</string>
     <string name="update_download">Скачать</string>
     <string name="close">Закрыть</string>

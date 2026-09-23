@@ -115,6 +115,10 @@
     <string name="update_status_up_to_date">You have the latest version</string>
     <string name="update_status_available">Version %1$s is available</string>
     <string name="update_status_unreachable">Could not reach the update source, so whether this build is up to date is unknown</string>
+    <string name="update_status_timeout">The update source did not answer in time, so whether this build is up to date is unknown</string>
+    <string name="update_status_rate_limited">The update source is refusing requests for now (too many from this address), so whether this build is up to date is unknown — try again later</string>
+    <string name="update_status_http_error">The update source answered with an error (HTTP %1$d), so whether this build is up to date is unknown</string>
+    <string name="update_status_unreadable">The answer from the update source could not be read, so whether this build is up to date is unknown</string>
     <string name="update_status_unconfigured">No update source is configured yet (placeholder address)</string>
     <string name="update_download">Download</string>
     <string name="close">Close</string>
@@ -127,6 +131,7 @@
     <string name="licenses_intro">Your records live in a local database on this device and are never uploaded. The one network request the app can make is the update check: a read-only request to the configured releases address, carrying no ledger data and no identifier. Export and import work on a local JSON file you choose.</string>
     <string name="licenses_third_party">Open-source components</string>
     <string name="licenses_full_text_note">The full licence text of each component is available at its project page.</string>
+    <string name="release_notes_0_1_0_alpha_2">The update check falls back to the GitHub release feed when the API refuses or cannot be read, says which failure happened instead of one sentence for all of them, and waits longer on a slow connection.</string>
     <string name="release_notes_0_1_0_alpha_1">First published build: manual entry with categories and notes, a day-grouped month view, year/month/day statistics, nine languages and JSON backup.</string>
     <string name="update_status_no_releases">The update source has published no releases yet</string>
     <string name="update_status_not_found">The update source was not found: the repository does not exist yet, or is not public</string>

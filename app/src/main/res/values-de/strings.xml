@@ -115,6 +115,10 @@
     <string name="update_status_up_to_date">Die neueste Version ist installiert</string>
     <string name="update_status_available">Version %1$s ist verfügbar</string>
     <string name="update_status_unreachable">Die Update-Quelle ist nicht erreichbar – ob diese Version aktuell ist, lässt sich nicht feststellen</string>
+    <string name="update_status_timeout">Die Update-Quelle hat nicht rechtzeitig geantwortet – ob diese Version aktuell ist, lässt sich nicht feststellen</string>
+    <string name="update_status_rate_limited">Die Update-Quelle lehnt Anfragen vorerst ab (zu viele von dieser Adresse) – ob diese Version aktuell ist, lässt sich nicht feststellen; versuchen Sie es später erneut</string>
+    <string name="update_status_http_error">Die Update-Quelle hat einen Fehler gemeldet (HTTP %1$d) – ob diese Version aktuell ist, lässt sich nicht feststellen</string>
+    <string name="update_status_unreadable">Die Antwort der Update-Quelle ist nicht lesbar – ob diese Version aktuell ist, lässt sich nicht feststellen</string>
     <string name="update_status_unconfigured">Es ist noch keine Update-Quelle eingerichtet (Platzhalteradresse)</string>
     <string name="update_download">Herunterladen</string>
     <string name="close">Schließen</string>

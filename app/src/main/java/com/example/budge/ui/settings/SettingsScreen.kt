@@ -84,8 +84,17 @@ private fun updateStatusLabel(status: UpdateStatus): String =
         is UpdateStatus.Available -> stringResource(R.string.update_status_available, status.release.version.toString())
         is UpdateStatus.Unreachable ->
             when (status.failure) {
+                // Each failure says what happened, because each calls for something
+                // different: patience, a retry, a corrected address, or a bug report.
+                UpdateFailure.NETWORK -> stringResource(R.string.update_status_unreachable)
+                UpdateFailure.TIMEOUT -> stringResource(R.string.update_status_timeout)
+                UpdateFailure.RATE_LIMITED -> stringResource(R.string.update_status_rate_limited)
                 UpdateFailure.NOT_FOUND -> stringResource(R.string.update_status_not_found)
-                else -> stringResource(R.string.update_status_unreachable)
+                UpdateFailure.PARSE -> stringResource(R.string.update_status_unreadable)
+                UpdateFailure.HTTP ->
+                    status.statusCode
+                        ?.let { stringResource(R.string.update_status_http_error, it) }
+                        ?: stringResource(R.string.update_status_unreachable)
             }
     }
 

@@ -50,12 +50,14 @@ class PublishedReleaseTest {
     }
 
     @Test
-    fun `the installed build is the published one, so a check comes back up to date`() {
+    fun `a shipped build is offered nothing newer than the release in this payload`() {
         val installed = AppVersion.parse(BuildConfig.VERSION_NAME)
         assertNotNull("the installed versionName must be a version this app can read", installed)
-        assertEquals("0.1.0-alpha.1", installed.toString())
 
-        // Not "unknown": the endpoint answered, and nothing newer was in the answer.
+        // Not "unknown": the endpoint answered, and nothing in the answer is newer than
+        // the build that shipped. The fixture is the first release, so this keeps holding
+        // as the version moves on — what it catches is a build shipped older than the
+        // release it was cut from.
         assertNull(selectUpdate(installed!!, releases))
     }
 
