@@ -4,7 +4,51 @@
   <link type="text/html" rel="alternate" href="https://github.com/stephen2754/budge/releases"/>
   <link type="application/atom+xml" rel="self" href="https://github.com/stephen2754/budge/releases.atom"/>
   <title>Release notes from budge</title>
-  <updated>2026-09-22T19:10:00Z</updated>
+  <updated>2026-09-23T06:59:24Z</updated>
+  <entry>
+    <id>tag:github.com,2008:Repository/1382207925/v0.1.0-alpha.2</id>
+    <updated>2026-09-23T06:59:38Z</updated>
+    <link rel="alternate" type="text/html" href="https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.2"/>
+    <title>0.1.0-alpha.2</title>
+    <content type="html">&lt;p&gt;An alpha that fixes the update check. &lt;strong&gt;If you are on 0.1.0-alpha.1, install this one&lt;br&gt;
+over it&lt;/strong&gt; — it is signed with the same key, so nothing has to be uninstalled and no data&lt;br&gt;
+is touched.&lt;/p&gt;
+&lt;h2&gt;What was wrong&lt;/h2&gt;
+&lt;p&gt;The check could report &lt;em&gt;&quot;could not connect to the update source&quot;&lt;/em&gt; on a phone whose browser&lt;br&gt;
+opens the very same URL without trouble. Three different things were reported as that one&lt;br&gt;
+sentence, and a fourth — a reply that arrived but could not be parsed — was reported as a&lt;br&gt;
+network failure as well, a state the code could not even reach.&lt;/p&gt;
+&lt;h2&gt;What changed&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Every failure now says what it was&lt;/strong&gt;: nothing reachable, no answer in time, a refusal&lt;br&gt;
+that passes on its own (GitHub answers 403 or 429 when too many anonymous requests come&lt;br&gt;
+from one address), a repository that is not there, any other status code named with its&lt;br&gt;
+number, and a reply that could not be read. Each has its own sentence in all nine&lt;br&gt;
+languages.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The check no longer depends on one endpoint.&lt;/strong&gt; When the API refuses the request or&lt;br&gt;
+answers with something unreadable, the app now reads the repository release feed at&lt;br&gt;
+&lt;code&gt;github.com/stephen2754/budge/releases.atom&lt;/code&gt; — served by the same host as this release&lt;br&gt;
+page, and not subject to the API quota of sixty anonymous requests an hour per address.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The request waits 20 seconds instead of 10&lt;/strong&gt;, which a slow international route can&lt;br&gt;
+need before it wrongly reports the device as offline.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;None of these states ever says the build is up to date.&lt;/p&gt;
+&lt;h2&gt;Install&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Package: &lt;code&gt;com.example.budge&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Version: &lt;code&gt;0.1.0-alpha.2&lt;/code&gt; (versionCode 2)&lt;/li&gt;
+&lt;li&gt;Size: 1614909 bytes&lt;/li&gt;
+&lt;li&gt;SHA-256: &lt;code&gt;ddc4da35371fef1411769490e9ac60069a078477ef24406f2c2ebe22881471bf&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Signing certificate SHA-256: &lt;code&gt;b13ab2ef2bac6617572b7822f4d4ae09ebe5184358dd45a1f89096c69132eeb0&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;If the check still fails&lt;/h2&gt;
+&lt;p&gt;It will now say which of the six things happened. Send me that sentence — it names the&lt;br&gt;
+cause, and with the old build there was no way to tell.&lt;/p&gt;</content>
+    <author>
+      <name>stephen2754</name>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://avatars.githubusercontent.com/u/102199060?s=60&amp;v=4"/>
+  </entry>
   <entry>
     <id>tag:github.com,2008:Repository/1382207925/v0.1.0-alpha.1</id>
     <updated>2026-09-22T19:10:23Z</updated>

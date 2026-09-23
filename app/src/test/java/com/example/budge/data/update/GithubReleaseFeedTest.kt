@@ -14,19 +14,37 @@ import org.junit.Test
  */
 class GithubReleaseFeedTest {
     @Test
-    fun `reads the published release out of the real feed`() {
+    fun `reads the published releases out of the real feed`() {
         val releases = parseGithubFeed(fixture())
 
-        val release = releases.single()
-        assertEquals("0.1.0-alpha.1", release.version.toString())
-        assertEquals(ReleaseChannel.ALPHA, release.version.channel)
-        assertEquals("0.1.0-alpha.1", release.title)
+        assertEquals(listOf("0.1.0-alpha.2", "0.1.0-alpha.1"), releases.map { it.version.toString() })
+        assertEquals(listOf(ReleaseChannel.ALPHA, ReleaseChannel.ALPHA), releases.map { it.version.channel })
+        assertEquals("0.1.0-alpha.2", releases.first().title)
         assertEquals(
-            "https://github.com/${UpdateConfig.GITHUB_REPOSITORY}/releases/tag/v0.1.0-alpha.1",
-            release.pageUrl,
+            "https://github.com/${UpdateConfig.GITHUB_REPOSITORY}/releases/tag/v0.1.0-alpha.2",
+            releases.first().pageUrl,
         )
         // The feed carries notes as rendered HTML, which the dialog is not written for.
-        assertNull(release.notes)
+        assertNull(releases.first().notes)
+    }
+
+    @Test
+    fun `the real feed offers the newer release to the build it replaces`() {
+        // This is the upgrade path a build in the field takes when the API is refused and
+        // the feed is what answers, which is what happened the first time this check was
+        // reported broken.
+        val installed = AppVersion(0, 1, 0, ReleaseChannel.ALPHA, 1)
+
+        val offered = selectUpdate(installed, parseGithubFeed(fixture()))
+
+        assertEquals("0.1.0-alpha.2", offered?.version?.toString())
+    }
+
+    @Test
+    fun `the real feed does not offer a newer version to the build that is already on it`() {
+        val installed = AppVersion(0, 1, 0, ReleaseChannel.ALPHA, 2)
+
+        assertNull(selectUpdate(installed, parseGithubFeed(fixture())))
     }
 
     @Test
@@ -86,6 +104,6 @@ class GithubReleaseFeedTest {
         }.bufferedReader().use { it.readText() }
 
     private companion object {
-        const val FIXTURE = "/releases-feed-0.1.0-alpha.1.atom"
+        const val FIXTURE = "/releases-feed-0.1.0-alpha.2.atom"
     }
 }
