@@ -179,7 +179,7 @@ Category 1 ──── * Transaction
 ```
 
 - `transactions.categoryId` uses a RESTRICT foreign key, so a category referenced by transactions cannot be deleted.
-- Statistics SQL groups by `timestamp` ranges and aggregates by `categoryId` (see the DAO queries in `TransactionDao.kt`).
+- Statistics SQL groups by `timestamp` ranges and aggregates by `categoryId` **and the direction the transaction was recorded with** (`GROUP BY c.id, t.type`, see `TransactionDao.kt`). The direction cannot come from the category: a category can be re-typed after it has transactions, and every transaction keeps its own type, so labelling a category's sum from `c.type` moved money to the other side of the screen as soon as a category was re-typed — the donut and the totals above it stopped agreeing. A category used in both directions appears once per breakdown, which is what the two charts want.
 
 ---
 

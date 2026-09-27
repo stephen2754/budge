@@ -130,6 +130,7 @@
     <string name="licenses_intro">账目数据保存在本机数据库中，不会上传。应用唯一的联网行为是检查更新：它只向配置好的版本发布地址发起一次只读请求，不包含任何账目数据，也不包含任何标识信息。导出与导入使用你自己选择的本地 JSON 文件。</string>
     <string name="licenses_third_party">开源组件</string>
     <string name="licenses_full_text_note">各组件的完整许可文本见其项目主页。</string>
+    <string name="release_notes_0_1_0_alpha_4">统计的按分类明细改为按每笔交易自身记录时的收支方向拆分：给分类改类型不再把钱挪到另一边，环形图与上方汇总也不再对不上。</string>
     <string name="release_notes_0_1_0_alpha_3">逗号小数点键盘输入的金额不再被放大一百倍；不含任何记录的备份会被拒绝，而不是清空账本；更新对话框把发布说明按纯文本显示，不再出现 Markdown 标记。</string>
     <string name="release_notes_0_1_0_alpha_2">更新检查在 GitHub API 被拒绝或读不到时改用发布订阅源；失败原因按实际情况分别说明，不再共用一句话；并为较慢的网络延长了等待时间。</string>
     <string name="release_notes_0_1_0_alpha_1">首个公开版本：支持带分类与备注的手动记账、按日分组的月视图、年 / 月 / 日统计、九种语言与 JSON 备份。</string>

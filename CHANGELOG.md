@@ -18,6 +18,25 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-alpha.4] — the breakdown adds up now
+
+An alpha with one fix, and it is a fix to a figure rather than to a feature.
+
+### Fixed
+
+- **Re-typing a category moved its transactions to the other side of the statistics
+  screen.** The per-category query summed a category's amounts and labelled the sum with
+  the category's *current* type, while the totals and the balance above it count each
+  transaction by the type it was **recorded** with. A category that has transactions can
+  be re-typed at any time — the category dialog offers it — so one re-type was enough to
+  make the two disagree. With one 30.00 expense and one 5.00 income on a category
+  re-typed to income, the old query returned a single income row of 35.00: the income
+  donut claimed 35.00 against an income card of 5.00, and the expense side of the
+  breakdown was empty against an expense card of 30.00. The query now groups by
+  `c.id, t.type`, so each amount stays on the side it was recorded on and the breakdown
+  adds up to the cards. A category used in both directions appears once per breakdown,
+  which is what the two charts want.
+
 ## [0.1.0-alpha.3] — four ways the app could be quietly wrong
 
 An alpha with no new features: the results of reading the shipped code looking for places
@@ -102,6 +121,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-alpha.4]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.4
 [0.1.0-alpha.3]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.3
 [0.1.0-alpha.2]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.2
 [0.1.0-alpha.1]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.1

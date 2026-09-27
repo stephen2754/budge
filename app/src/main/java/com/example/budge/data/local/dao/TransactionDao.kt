@@ -86,14 +86,21 @@ interface TransactionDao {
     ): Flow<MonthlyTotal?>
 
     /**
-     * Groups spending by category for [startTime, endTime), returning each category's total
-     * and its type. Results are ordered by total so the UI can render a top-spenders
-     * breakdown.
+     * Groups amounts by category **and direction** over [startTime, endTime), returning each
+     * group's total and the direction it belongs to. Results are ordered by total so the UI
+     * can render a top-spenders breakdown.
      *
-     * The type comes from the *category* (`c.type`), not from `t.type`: a bare non-aggregated
-     * column in a `GROUP BY` query has no defined value in SQLite — it is taken from an
-     * arbitrary row of the group — and the statistics screen splits its expense and income
-     * breakdowns on exactly this column.
+     * The direction has to be `t.type`, and it has to be part of the grouping. A category
+     * can be re-typed after it already has transactions — [CategoryRepository.update] allows
+     * it, and the category dialog offers it — while every transaction keeps the type it was
+     * recorded with. Summing a category's amounts and labelling the sum from the category's
+     * *current* type therefore moved an expense onto the income side the moment a category
+     * was re-typed, and the per-category breakdown stopped adding up to the totals and
+     * balance the same screen shows above it. Grouping by the transaction's own type keeps
+     * every amount on the side it was recorded on, the side the totals query counts it on.
+     *
+     * A category used in both directions now appears once per direction, which is what the
+     * screen wants: it splits the list into an expense breakdown and an income one.
      */
     @Query(
         """
@@ -103,11 +110,11 @@ interface TransactionDao {
             c.icon AS categoryIcon,
             c.color AS categoryColor,
             SUM(t.amount) AS total,
-            c.type AS type
+            t.type AS type
         FROM transactions t
         INNER JOIN categories c ON t.categoryId = c.id
         WHERE t.timestamp >= :startTime AND t.timestamp < :endTime
-        GROUP BY c.id
+        GROUP BY c.id, t.type
         ORDER BY total DESC
         """,
     )
