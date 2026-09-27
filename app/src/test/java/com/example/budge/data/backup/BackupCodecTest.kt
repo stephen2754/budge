@@ -61,13 +61,13 @@ class BackupCodecTest {
     }
 
     @Test
-    fun `accepts a backup whose collections are all empty`() {
-        // A user who clears their records and exports is a legitimate backup: it
-        // restores to "nothing", which is what the file says.
-        val decoded = decodeBackup("""{"transactions":[],"categories":[],"budgets":[]}""")
-
-        assertNotNull(decoded)
-        assertTrue(decoded!!.isEmpty)
+    fun `refuses a backup that carries no records at all`() {
+        // An empty ledger exports to exactly this, but so does a document that merely
+        // names the keys — the format has no version marker to tell them apart. A
+        // restore wipes every table before it writes, so accepting one of these turned
+        // "import this file" into "erase my ledger" and then said it succeeded. Clearing
+        // the records is a separate, deliberate action in Settings.
+        assertNull(decodeBackup("""{"transactions":[],"categories":[],"budgets":[]}"""))
     }
 
     @Test
@@ -94,11 +94,18 @@ class BackupCodecTest {
     }
 
     @Test
-    fun `ignores unknown keys alongside a real one`() {
-        val decoded = decodeBackup("""{"transactions":[],"schemaVersion":99,"unknown":[1,2]}""")
+    fun `ignores unknown keys alongside real records`() {
+        val decoded = decodeBackup(
+            """{"transactions":[{"id":1,"type":0,"amount":5,"categoryId":2,"timestamp":1,"createdAt":1,"updatedAt":1}],"schemaVersion":99,"unknown":[1,2]}""",
+        )
 
         assertNotNull(decoded)
-        assertTrue(decoded!!.isEmpty)
+        assertEquals(1, decoded!!.transactions.size)
+    }
+
+    @Test
+    fun `a document that only mentions the keys is not a backup`() {
+        assertNull(decodeBackup("""{"transactions":[],"schemaVersion":99,"unknown":[1,2]}"""))
     }
 
     @Test

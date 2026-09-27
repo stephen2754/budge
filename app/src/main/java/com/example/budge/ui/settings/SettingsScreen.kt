@@ -51,6 +51,7 @@ import com.example.budge.data.update.ReleaseChannel
 import com.example.budge.data.update.UpdateFailure
 import com.example.budge.data.update.UpdateStatus
 import com.example.budge.data.update.openSourceComponents
+import com.example.budge.ui.releaseNotesText
 import com.example.budge.ui.theme.pageWindowInsets
 
 /** Localized name of a release channel. */
@@ -519,7 +520,12 @@ fun SettingsScreen(
                         )
                         status.release.notes?.let { notes ->
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = notes, style = MaterialTheme.typography.bodySmall)
+                            // The API sends the notes as Markdown; the dialog can only
+                            // show text, so the markup comes off before it is shown.
+                            Text(
+                                text = remember(notes) { releaseNotesText(notes) },
+                                style = MaterialTheme.typography.bodySmall,
+                            )
                         }
                     }
                 }

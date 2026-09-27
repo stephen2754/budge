@@ -65,7 +65,7 @@ fun formatMoney(
  */
 fun parseAmountToCents(text: String): Long? =
     try {
-        BigDecimal(text.trim())
+        BigDecimal(normalizeDecimalSeparator(text))
             .multiply(BigDecimal(100))
             .setScale(0, RoundingMode.HALF_UP)
             .takeIf { it.signum() > 0 }
@@ -77,20 +77,49 @@ fun parseAmountToCents(text: String): Long? =
         null
     }
 
+/** The characters a keyboard may emit for the decimal point, and a pasted amount may carry. */
+private const val DECIMAL_SEPARATORS = ".,"
+
 /**
- * Restricts raw field input to digits and a single decimal point with at most
- * two fraction digits, so the user cannot type a value the parser rejects.
+ * Rewrites a typed amount so that everything downstream sees `.` as the decimal point.
+ *
+ * The **last** separator in the text is taken as the decimal one and every other
+ * separator is dropped, which is the only reading that works for both conventions at
+ * once: `1,234.56` and `1.234,56` are the same number. Taking the comma seriously is not
+ * cosmetic — a German, French, Spanish, Italian, Portuguese or Russian keyboard emits
+ * `,` from its decimal key, and dropping it (which is what this used to do) saved `12,50`
+ * as `1250.00`, a hundredfold error in the one field that must never be wrong.
+ *
+ * A lone separator with three digits after it is read as a decimal point, so `1,234`
+ * means 1.234 rather than 1234. Those two readings cannot be told apart, and reading a
+ * pasted amount as its nearest unit is a smaller error than multiplying it by a thousand.
+ */
+private fun normalizeDecimalSeparator(text: String): String {
+    val trimmed = text.trim()
+    // A leading minus is kept so the parser can still refuse a negative amount. Dropping
+    // it here would turn "-5" into a perfectly valid 5.00.
+    val sign = if (trimmed.startsWith('-')) "-" else ""
+    val kept = trimmed.filter { it.isDigit() || it in DECIMAL_SEPARATORS }
+    val index = kept.indexOfLast { it in DECIMAL_SEPARATORS }
+    if (index < 0) return sign + kept
+    return sign + kept.take(index).filter { it.isDigit() } + "." + kept.drop(index + 1).filter { it.isDigit() }
+}
+
+/**
+ * Restricts raw field input to digits, one decimal separator and at most two fraction
+ * digits, so the user cannot type a value the parser rejects.
+ *
+ * The separator is normalized to `.` as it is typed, whichever one the keyboard sent, so
+ * the field shows the value the app will store.
  */
 fun sanitizeAmountInput(input: String): String {
-    val filtered = input.filter { it.isDigit() || it == '.' }
-    val dotIndex = filtered.indexOf('.')
-    return if (dotIndex >= 0) {
-        val whole = filtered.substring(0, dotIndex)
-        val fraction = filtered.substring(dotIndex + 1).filter { it.isDigit() }.take(2)
-        "$whole.$fraction"
-    } else {
-        filtered
-    }
+    val normalized = normalizeDecimalSeparator(input)
+    val dotIndex = normalized.indexOf('.')
+    if (dotIndex < 0) return normalized
+    val sign = if (normalized.startsWith("-")) "-" else ""
+    val whole = normalized.substring(0, dotIndex).filter { it.isDigit() }
+    val fraction = normalized.substring(dotIndex + 1).take(2)
+    return "$sign$whole.$fraction"
 }
 
 /**
@@ -113,6 +142,49 @@ fun centsToEditableAmount(amountCents: Long): String = BigDecimal.valueOf(amount
 
 /** First character of a name, kept whole so a surrogate pair is never split. */
 fun String.initialChar(): String = if (isEmpty()) "" else substring(0, offsetByCodePoints(0, 1))
+
+// ---------------------------------------------------------------------------
+// Release notes
+// ---------------------------------------------------------------------------
+
+private val HEADING = Regex("""^\s{0,3}#{1,6}\s+""")
+private val BULLET = Regex("""^\s{0,3}(?:[-*+]|\d+[.)])\s+""")
+private val HORIZONTAL_RULE = Regex("""^\s{0,3}(?:-{3,}|\*{3,}|_{3,})\s*$""")
+private val LINK = Regex("""\[([^\]]*)]\([^)]*\)""")
+private val CODE_SPAN = Regex("""`([^`]*)`""")
+private val BOLD = Regex("""\*\*([^*]+)\*\*|__([^_]+)__""")
+private val ITALIC = Regex("""\*([^*\n]+)\*|_([^_\n]+)_""")
+
+/**
+ * Renders a GitHub release body as the plain text the update dialog can show.
+ *
+ * The API returns Markdown, and the dialog is a `Text`: the first published notes carried
+ * four `##` headings, eight `**` pairs and ten backticks, all of which the user would have
+ * read as markup instead of as a message. Only the constructs release notes actually use
+ * are handled, and anything unrecognized is left alone rather than guessed at.
+ */
+fun releaseNotesText(markdown: String): String {
+    val text =
+        markdown
+            .lineSequence()
+            .map { line ->
+                val trimmed = line.trimEnd()
+                when {
+                    HORIZONTAL_RULE.matches(trimmed) -> ""
+                    else ->
+                        trimmed
+                            .replace(HEADING, "")
+                            .replace(BULLET, "• ")
+                            .replace(LINK) { it.groupValues[1] }
+                            .replace(CODE_SPAN) { it.groupValues[1] }
+                            .replace(BOLD) { match -> match.groupValues[1].ifEmpty { match.groupValues[2] } }
+                            .replace(ITALIC) { match -> match.groupValues[1].ifEmpty { match.groupValues[2] } }
+                }
+            }
+            .joinToString("\n")
+
+    return text.replace(Regex("""\n{3,}"""), "\n\n").trim()
+}
 
 // ---------------------------------------------------------------------------
 // Date picker <-> timestamp conversion

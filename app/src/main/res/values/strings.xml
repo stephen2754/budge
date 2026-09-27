@@ -131,6 +131,7 @@
     <string name="licenses_intro">Your records live in a local database on this device and are never uploaded. The one network request the app can make is the update check: a read-only request to the configured releases address, carrying no ledger data and no identifier. Export and import work on a local JSON file you choose.</string>
     <string name="licenses_third_party">Open-source components</string>
     <string name="licenses_full_text_note">The full licence text of each component is available at its project page.</string>
+    <string name="release_notes_0_1_0_alpha_3">Amounts typed on a comma keyboard are read correctly instead of being multiplied by a hundred, a backup carrying no records is refused rather than erasing the ledger, and the update dialog shows release notes as text instead of Markdown.</string>
     <string name="release_notes_0_1_0_alpha_2">The update check falls back to the GitHub release feed when the API refuses or cannot be read, says which failure happened instead of one sentence for all of them, and waits longer on a slow connection.</string>
     <string name="release_notes_0_1_0_alpha_1">First published build: manual entry with categories and notes, a day-grouped month view, year/month/day statistics, nine languages and JSON backup.</string>
     <string name="update_status_no_releases">The update source has published no releases yet</string>

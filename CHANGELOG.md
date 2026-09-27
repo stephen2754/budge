@@ -18,6 +18,39 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-alpha.3] — four ways the app could be quietly wrong
+
+An alpha with no new features: the results of reading the shipped code looking for places
+it could give a confident wrong answer, plus what that search turned up in the update row.
+
+### Fixed
+
+- **A comma decimal separator was thrown away.** The amount field kept digits and `.` and
+  dropped everything else, and six of the nine shipped locales — German, French, Spanish,
+  Italian, Portuguese, Russian — put `,` on the decimal key of their keyboard, so `12,50`
+  was saved as `1250.00`. Amounts now take whichever separator was typed and read the
+  **last** one as the decimal point, which is what makes `1,234.56` and `1.234,56` the
+  same number. A leading minus survives the field so the parser can still refuse a
+  negative amount instead of flipping its sign.
+- **A backup carrying no records erased the ledger and reported success.** `isEmpty`
+  existed on the parsed document but nothing consulted it, and a restore deletes every
+  table before it writes — so any file that merely named the three keys, including one
+  written by a later format, wiped the data and then said "Import successful". Such a
+  file is refused now. A restore also re-seeds the built-in categories when the file
+  carries none, so importing a budgets-only file can no longer leave the app unable to
+  record anything.
+- **The update dialog showed release notes as Markdown.** The API sends the body as
+  Markdown and the dialog is a `Text`: the first published notes carried four `##`
+  headings, eight `**` pairs and ten backticks, all of which the user would have read as
+  markup instead of as a message.
+- **A 403 was called a rate limit whether or not it was one.** GitHub answers 403 both
+  for the anonymous hourly quota and for a repository it will not serve. The app now
+  needs the response's own `x-ratelimit-remaining: 0` before it says "too many requests";
+  a plain refusal is reported as an HTTP error with its code.
+- **One unreadable tag failed the whole check.** `AppVersion.parse` threw on
+  `v9999999999.0.0` rather than returning null, so a single odd tag made the entire
+  response unreadable instead of being skipped.
+
 ## [0.1.0-alpha.2] — the update check, fixed
 
 An alpha, and a small one: the first fix to the update check, which could not be completed
@@ -69,5 +102,6 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-alpha.3]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.3
 [0.1.0-alpha.2]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.2
 [0.1.0-alpha.1]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.1

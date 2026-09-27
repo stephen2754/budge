@@ -46,7 +46,10 @@ private val gson = Gson()
  *
  * Null is the answer that matters. Gson turns `{}` or `{"foo":1}` into an empty record
  * set without complaint, and the caller wipes the database on the strength of this
- * verdict.
+ * verdict. A file that names the right keys but carries no records at all is refused for
+ * the same reason: restoring it would erase everything the user has and then report
+ * "Import successful". `{"transactions":[],"categories":[],"budgets":[],"schemaVersion":99}`
+ * used to be exactly that file.
  */
 fun decodeBackup(json: String): BackupData? {
     val root =
@@ -65,11 +68,14 @@ fun decodeBackup(json: String): BackupData? {
             return null
         } ?: return null
 
-    return BackupData(
-        transactions = document.transactions.orEmpty(),
-        categories = document.categories.orEmpty(),
-        budgets = document.budgets.orEmpty(),
-    )
+    val data =
+        BackupData(
+            transactions = document.transactions.orEmpty(),
+            categories = document.categories.orEmpty(),
+            budgets = document.budgets.orEmpty(),
+        )
+
+    return data.takeUnless { it.isEmpty }
 }
 
 /** Serializes a backup to the JSON written to the user's file. */

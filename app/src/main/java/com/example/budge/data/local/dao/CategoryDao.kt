@@ -12,9 +12,11 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Data access object for the `categories` table.
  *
- * Categories are split into built-in default rows (seeded on first launch) and user-defined
- * ones. Default categories are read-only: deletes are restricted to user-created rows so the
- * app always has a baseline set to fall back on.
+ * Categories are split into built-in default rows (seeded on first launch) and rows the
+ * user added, and that flag only records where a row came from: once seeded, a built-in
+ * category is an ordinary row that can be renamed, re-typed, re-coloured or deleted like
+ * any other. What keeps a baseline available is the caller of [deleteById], which refuses
+ * to remove a category that transactions still point at.
  */
 @Dao
 interface CategoryDao {

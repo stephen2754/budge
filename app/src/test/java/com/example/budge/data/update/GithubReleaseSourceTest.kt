@@ -1,6 +1,7 @@
 package com.example.budge.data.update
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -100,12 +101,23 @@ class GithubReleaseSourceTest {
         // 404 is worth separating: it is either "no such repository" or "still private",
         // and both are things the user can fix, unlike a wait.
         assertEquals(UpdateFailure.NOT_FOUND, failureForStatus(404))
-        // 403 and 429 are how GitHub says "too many anonymous requests from this
-        // address", which passes on its own and must not be reported as a broken source.
-        assertEquals(UpdateFailure.RATE_LIMITED, failureForStatus(403))
+        // 429 says "too many requests" by definition. A 403 does not: GitHub sends it
+        // both for the anonymous quota and for a repository it will not serve, so only
+        // the response's own header turns it into a rate limit.
         assertEquals(UpdateFailure.RATE_LIMITED, failureForStatus(429))
+        assertEquals(UpdateFailure.HTTP, failureForStatus(403))
+        assertEquals(UpdateFailure.RATE_LIMITED, failureForStatus(403, rateLimitExhausted = true))
         assertEquals(UpdateFailure.HTTP, failureForStatus(500))
         assertEquals(UpdateFailure.HTTP, failureForStatus(302))
+    }
+
+    @Test
+    fun `only the source's own header makes a 403 a rate limit`() {
+        // The header GitHub sends on the 403 that means the hourly allowance is gone.
+        assertTrue(rateLimitExhausted(403, "0"))
+        assertFalse(rateLimitExhausted(403, "59"))
+        assertFalse("a missing header is not a rate limit", rateLimitExhausted(403, null))
+        assertFalse("404 is never a rate limit", rateLimitExhausted(404, "0"))
     }
 
     @Test

@@ -19,7 +19,9 @@
   donut charts.
 - **Organise** categories — rename, re-colour, re-type or delete any of them, including
   the ones seeded on first launch.
-- **Back up** to a JSON file you choose, and restore from one.
+- **Back up** to a JSON file you choose, and restore from one. A file that carries no
+  records at all is refused rather than restored: it would erase the ledger and then
+  report success.
 
 No account, no sync, no analytics. The one network request the app can make is the
 update check you trigger yourself, and it is a single read-only GET that carries no
@@ -138,7 +140,8 @@ version of it.
 ## Conventions worth knowing
 
 - **Money** is integer cents. Amounts fit an unsigned 32-bit range and the balance is
-  signed 64-bit; `model/Amount.kt` is the single place that defines this.
+  signed 64-bit; `model/Amount.kt` is the single place that defines this. Typed amounts
+  take `.` or `,` as the decimal separator, so a comma keyboard enters cents correctly.
 - **Currency signs** are grouped by the currencies that share them
   (`Currencies.labels`). Amounts show the sign alone.
 - **Categories** are seeded once, on first launch, in the device language. After that

@@ -98,6 +98,13 @@ class BackupRepository
                     database.transactionDao().insertAll(restored)
                 }
 
+                // A file can carry budgets and nothing else. That is a legitimate
+                // document, but restoring it would leave the app with no categories at
+                // all, and the entry screen cannot record anything without one — while
+                // the seeded-once flag stops the startup path from ever filling the gap.
+                // Re-seeding here is what keeps a restore from bricking the ledger.
+                categoryRepository.seedDefaultsIfEmpty(locale)
+
                 ImportReport(
                     transactions = restored.size,
                     categories = data.categories.size,

@@ -43,6 +43,12 @@ sealed interface HttpResult {
     data class Answered(
         val code: Int,
         val body: String,
+        /**
+         * True when the response says the caller's quota is used up
+         * (`x-ratelimit-remaining: 0`). GitHub answers 403 both for that and for a
+         * repository it will not serve, so the header is what tells them apart.
+         */
+        val rateLimitExhausted: Boolean = false,
     ) : HttpResult
 
     data class Failed(
@@ -78,7 +84,7 @@ class UrlConnectionGet
             return try {
                 val code = connection.responseCode
                 val body = if (code in 200..299) connection.inputStream.bufferedReader().use { it.readText() } else ""
-                HttpResult.Answered(code, body)
+                HttpResult.Answered(code, body, rateLimitExhausted(code, connection.getHeaderField(RATE_LIMIT_REMAINING)))
             } catch (e: Exception) {
                 HttpResult.Failed(failureFor(e))
             } finally {
@@ -98,6 +104,8 @@ class UrlConnectionGet
 
             // GitHub asks every API client to identify itself.
             const val USER_AGENT = "Budge-Android"
+
+            const val RATE_LIMIT_REMAINING = "x-ratelimit-remaining"
         }
     }
 
@@ -111,17 +119,33 @@ internal fun failureFor(e: Exception): UpdateFailure =
     if (e is SocketTimeoutException) UpdateFailure.TIMEOUT else UpdateFailure.NETWORK
 
 /**
+ * Whether this response says the caller's quota is used up.
+ *
+ * GitHub sends `x-ratelimit-remaining: 0` on the 403 it answers when the anonymous hourly
+ * allowance — sixty requests, shared by everyone behind one address — is gone. Without
+ * the header, a 403 is just a refusal, and the app says so rather than claiming a cause
+ * it cannot see.
+ */
+internal fun rateLimitExhausted(code: Int, remaining: String?): Boolean =
+    code == 403 && remaining == "0"
+
+/**
  * The failure a response code stands for, or null when the response is usable.
  *
  * 404 is separated because it has a fixable cause the user can act on — the repository
- * does not exist, or it is still private — and 403/429 because GitHub uses them for the
- * anonymous rate limit, which the user can only wait out.
+ * does not exist, or it is still private — and rate limiting because waiting is the whole
+ * fix. A 429 says "too many requests" by definition; a 403 only counts as rate limiting
+ * when the response said so.
  */
-internal fun failureForStatus(code: Int): UpdateFailure? =
+internal fun failureForStatus(
+    code: Int,
+    rateLimitExhausted: Boolean = false,
+): UpdateFailure? =
     when {
         code in 200..299 -> null
         code == 404 -> UpdateFailure.NOT_FOUND
-        code == 403 || code == 429 -> UpdateFailure.RATE_LIMITED
+        code == 429 -> UpdateFailure.RATE_LIMITED
+        code == 403 && rateLimitExhausted -> UpdateFailure.RATE_LIMITED
         else -> UpdateFailure.HTTP
     }
 
@@ -166,7 +190,7 @@ class GithubReleaseSource
             when (val result = http.get(url)) {
                 is HttpResult.Failed -> ReleaseFetch.Failure(result.failure)
                 is HttpResult.Answered -> {
-                    val failure = failureForStatus(result.code)
+                    val failure = failureForStatus(result.code, result.rateLimitExhausted)
                     when {
                         failure != null -> ReleaseFetch.Failure(failure, result.code)
                         else ->

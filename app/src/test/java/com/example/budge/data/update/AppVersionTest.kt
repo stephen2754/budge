@@ -66,6 +66,16 @@ class AppVersionTest {
     }
 
     @Test
+    fun `refuses a version whose numbers do not fit an int`() {
+        // The pattern's digits are unbounded. Throwing here would take the whole update
+        // check down and report the response as unreadable; skipping one tag is the
+        // honest outcome, since parse() promises null for what it cannot read.
+        assertNull(AppVersion.parse("v9999999999.0.0"))
+        assertNull(AppVersion.parse("1.9999999999.0"))
+        assertNull(AppVersion.parse("1.0.9999999999-alpha.1"))
+    }
+
+    @Test
     fun `a stable build sees only stable releases`() {
         assertTrue(ReleaseChannel.STABLE.accepts(ReleaseChannel.STABLE))
         assertFalse(ReleaseChannel.STABLE.accepts(ReleaseChannel.BETA))

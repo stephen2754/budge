@@ -3,8 +3,10 @@ package com.example.budge.ui
 import com.example.budge.data.prefs.Currencies
 import com.example.budge.model.Amount
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
 import java.time.LocalDate
@@ -60,6 +62,63 @@ class FormatsTest {
     }
 
     @Test
+    fun `reads a comma as the decimal separator`() {
+        // German, French, Spanish, Italian, Portuguese and Russian keyboards emit a
+        // comma from their decimal key. Dropping it — which the field used to do — saved
+        // 12,50 as 1250.00, a hundredfold error in the one field that must never be
+        // wrong.
+        assertEquals(1250L, parseAmountToCents("12,50"))
+        assertEquals(1250L, parseAmountToCents("12,5"))
+        assertEquals("12.50", sanitizeAmountInput("12,50"))
+        assertEquals("12.5", sanitizeAmountInput("12,5"))
+    }
+
+    @Test
+    fun `reads either grouping convention`() {
+        // Both are the same number: the last separator is the decimal one.
+        assertEquals(123456L, parseAmountToCents("1,234.56"))
+        assertEquals(123456L, parseAmountToCents("1.234,56"))
+        assertEquals("1234.56", sanitizeAmountInput("1,234.56"))
+        assertEquals("1234.56", sanitizeAmountInput("1.234,56"))
+    }
+
+    @Test
+    fun `the field never holds more than one separator or two decimals`() {
+        assertEquals("12.34", sanitizeAmountInput("12.345"))
+        assertEquals("12.3", sanitizeAmountInput("1.2.3"))
+        assertEquals("12", sanitizeAmountInput("1e2"))
+        assertEquals("", sanitizeAmountInput("abc"))
+    }
+
+    @Test
+    fun `shows release notes as text rather than markup`() {
+        val notes =
+            """
+            An alpha that fixes the update check. **Install this over the old one.**
+
+            ## What changed
+
+            - The check no longer depends on one endpoint.
+            - Notes are read from `releases.atom` as well.
+
+            See [CHANGELOG.md](https://example.invalid/CHANGELOG.md) for the rest.
+
+            ---
+            """.trimIndent()
+
+        val text = releaseNotesText(notes)
+
+        assertFalse("markdown headings must not reach the dialog", text.contains("##"))
+        assertFalse(text.contains("**"))
+        assertFalse(text.contains('`'))
+        assertFalse(text.contains("]("))
+        assertFalse(text.contains("---"))
+        assertTrue(text.contains("Install this over the old one."))
+        assertTrue(text.contains("• The check no longer depends on one endpoint."))
+        assertTrue(text.contains("See CHANGELOG.md for the rest."))
+    }
+
+    @Test
     fun `accepts the largest 32-bit amount and refuses anything above it`() {
         // The ceiling is what stops a mistyped figure ever reaching the database.
         assertEquals(Amount.MAX_CENTS, parseAmountToCents("42949672.95"))
@@ -90,10 +149,15 @@ class FormatsTest {
     @Test
     fun `sanitizes typing to one decimal point and two places`() {
         assertEquals("12.34", sanitizeAmountInput("12.345"))
-        assertEquals("1.23", sanitizeAmountInput("1.2.3"))
+        // The last separator is the decimal one, which is what makes `1.234,56` read as
+        // 1234.56 rather than as 1.23. Two separators cannot be typed into the field —
+        // the fraction stops at two digits — so this only shapes pasted text.
+        assertEquals("12.3", sanitizeAmountInput("1.2.3"))
         assertEquals("12", sanitizeAmountInput("a1b2"))
         assertEquals("1.", sanitizeAmountInput("1."))
         assertEquals("", sanitizeAmountInput("abc"))
+        // A minus survives the field so the parser can refuse it.
+        assertEquals("-5", sanitizeAmountInput("-5"))
     }
 
     @Test

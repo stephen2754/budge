@@ -90,10 +90,17 @@ data class AppVersion(
                     "beta" -> ReleaseChannel.BETA
                     else -> ReleaseChannel.STABLE
                 }
+            // The digits are unbounded in the pattern, so `v9999999999.0.0` has to be
+            // refused here rather than thrown: parse() promises null for anything it
+            // cannot read, and a throw would take the whole update check down with it
+            // and report the response as unreadable instead of skipping one tag.
+            val majorNumber = major.toIntOrNull() ?: return null
+            val minorNumber = minor.toIntOrNull() ?: return null
+            val patchNumber = patch.toIntOrNull() ?: return null
             return AppVersion(
-                major = major.toInt(),
-                minor = minor.toInt(),
-                patch = patch.toInt(),
+                major = majorNumber,
+                minor = minorNumber,
+                patch = patchNumber,
                 channel = channel,
                 channelNumber = number.toIntOrNull() ?: 0,
             )

@@ -37,7 +37,7 @@ class ReleaseFetchFallbackTest {
             val http =
                 FakeHttp(
                     mapOf(
-                        apiUrl to HttpResult.Answered(403, ""),
+                        apiUrl to HttpResult.Answered(403, "", rateLimitExhausted = true),
                         feedUrl to HttpResult.Answered(200, FEED_BODY),
                     ),
                 )
@@ -89,7 +89,7 @@ class ReleaseFetchFallbackTest {
             val http =
                 FakeHttp(
                     mapOf(
-                        apiUrl to HttpResult.Answered(403, ""),
+                        apiUrl to HttpResult.Answered(403, "", rateLimitExhausted = true),
                         feedUrl to HttpResult.Failed(UpdateFailure.NETWORK),
                     ),
                 )
@@ -100,12 +100,30 @@ class ReleaseFetchFallbackTest {
         }
 
     @Test
+    fun `a 403 that does not name a quota is reported as a plain refusal`() = runBlocking {
+        // GitHub answers 403 for a repository it will not serve as well as for the
+        // anonymous quota, and only the response's header tells them apart. The app
+        // says what it saw rather than guessing at a cause it cannot check.
+        val http =
+            FakeHttp(
+                mapOf(
+                    apiUrl to HttpResult.Answered(403, ""),
+                    feedUrl to HttpResult.Failed(UpdateFailure.NETWORK),
+                ),
+            )
+
+        val fetched = GithubReleaseSource(http).releases(UpdateConfig.GITHUB_REPOSITORY)
+
+        assertEquals(ReleaseFetch.Failure(UpdateFailure.HTTP, 403), fetched)
+    }
+
+    @Test
     fun `an empty feed does not turn a failed check into 'no releases'`() =
         runBlocking {
             val http =
                 FakeHttp(
                     mapOf(
-                        apiUrl to HttpResult.Answered(403, ""),
+                        apiUrl to HttpResult.Answered(403, "", rateLimitExhausted = true),
                         feedUrl to HttpResult.Answered(200, EMPTY_FEED),
                     ),
                 )
