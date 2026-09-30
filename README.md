@@ -21,9 +21,9 @@
   donut charts. A line under the date offers the way back to today when you have navigated
   away from it.
 - **Organise** categories — rename, re-colour, re-type or delete any of them, including
-  the ones seeded on first launch. On the home list, swiping a row left deletes it (with a
-  confirm step and a buzz when the swipe has gone far enough) and swiping it right turns to
-  Statistics.
+  the ones seeded on first launch. On the home list, swiping a row left deletes it: the
+  row buzzes once the swipe has gone far enough and asks you to confirm, and a shorter
+  swipe just settles back.
 - **Back up** to a JSON file you choose, and restore from one. A file that carries no
   records at all is refused rather than restored: it would erase the ledger and then
   report success.

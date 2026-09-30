@@ -227,7 +227,7 @@ A single module (`app`) keeps everything simple; the packages mirror the layers 
 
 | Screen | Layout Highlights |
 | --- | --- |
-| Home | TopAppBar (current month), monthly summary card (expense / income / balance, the balance coloured by its sign), day-grouped transaction list, FAB add, swipe left to delete, swipe right to Statistics |
+| Home | TopAppBar (current month), monthly summary card (expense / income / balance, the balance coloured by its sign), day-grouped transaction list, FAB add, swipe left to delete (with a haptic at the threshold) |
 | Transaction entry | Type FilterChips (expense/income), amount field with currency prefix, content-sized category chips (`FlowRow`), separate **Date** and **Time** buttons (date restricted to today & past, future times clamped), note field, save |
 | Statistics | Period selector (Year / Month / Day, centered text) over a single date anchor, so switching period keeps the same date; a "jump to today" line under the date whenever the anchor is somewhere else; summary card, budget progress (if set), expense & income donut charts with per-category lists |
 | Category management | List + add/edit dialog (name, type, color picker) |
@@ -242,13 +242,20 @@ A single module (`app`) keeps everything simple; the packages mirror the layers 
   whether the month is a surplus or a debt, and a reader should not have to parse a minus
   sign to find out.
 - **Swipe-to-dismiss deletes transactions, but only a deliberate swipe.** The row buzzes
-  the moment a left swipe passes 96.dp — the haptic is what says the gesture has gone far
+  the moment a left swipe passes 96dp — the haptic is what says the gesture has gone far
   enough — and releasing there asks for confirmation; releasing before it snaps back with
-  nothing happening. The dialog is the confirmation, so the box itself never dismisses.
-- **Swiping a row to the right turns the page.** The row only ever dismisses to the left,
-  and the dismiss box claims horizontal drags, so a rightward swipe is detected on the row
-  and asks the pager to move to Statistics — the same move the bottom bar makes, rather
-  than a scroll the row cannot hand over.
+  nothing happening. The dialog is the confirmation, so the box itself never dismisses. The
+  buzz is driven by the dismiss state's own settle target, which flips exactly when the
+  threshold is crossed and back if the finger returns; it is not a second gesture detector.
+- **A row does not swipe to the next page, and must not grow one.** `SwipeToDismissBox`
+  owns horizontal drags for the whole row, so a rightward swipe on a row does nothing. It
+  was given a detector of its own once, which *looked* right and broke the left swipe: a
+  horizontal drag detector consumes the touch slop before the box below it ever sees the
+  gesture. Turning the page from a row would mean dropping the box and writing the row's
+  own drag — including its threshold, its animation and its settling — which is a rewrite
+  of the gesture that already works, on the part of the screen that is easiest to get
+  wrong. The pager still turns from the empty space around the rows and from the bottom
+  bar.
 - **"Jump to today" appears only when there is something to go back from.** It moves the
   anchor to today's whole date while leaving the period alone, so the year view still shows
   a year, and switching to month or day afterwards is already on today's month and day.

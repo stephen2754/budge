@@ -18,6 +18,30 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-alpha.8] — the swipe that stopped working
+
+### Fixed
+
+- **Swipe-to-delete worked again.** 0.1.0-alpha.7 put a horizontal drag detector on each
+  row so that a rightward swipe could be told apart from a leftward one. A drag detector
+  consumes the touch slop as soon as it is exceeded — whichever direction the finger went —
+  and the dismiss box underneath the row therefore never saw the gesture at all: the row
+  would not move, and nothing could be deleted. The detector is gone and the box owns the
+  drag again, exactly as it did in 0.1.0-alpha.6, with the 96dp threshold and the
+  confirmation dialog unchanged. The buzz that says the swipe has gone far enough is now
+  read from the dismiss state's own settle target, which changes at the threshold and
+  changes back if the finger returns — a value to observe rather than a gesture to
+  intercept.
+
+### Removed
+
+- **A rightward swipe on a transaction row no longer turns the page.** It never did, and
+  making it work the way the empty space around the rows works — the page following the
+  finger — means dropping the dismiss box and writing the row's own drag, threshold,
+  animation and settling. That is a rewrite of the gesture that already works, on the part
+  of the screen where a mistake costs the delete function, so it is off rather than half
+  done. The page still turns from the space around the rows and from the bottom bar.
+
 ## [0.1.0-alpha.7] — a balance you can read, and swipes that say what they mean
 
 ### Added
@@ -228,6 +252,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-alpha.8]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.8
 [0.1.0-alpha.7]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.7
 [0.1.0-alpha.6]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.6
 [0.1.0-alpha.5]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.5

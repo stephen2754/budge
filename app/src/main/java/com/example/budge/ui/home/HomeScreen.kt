@@ -3,7 +3,6 @@ package com.example.budge.ui.home
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,12 +38,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.CustomAccessibilityAction
@@ -90,14 +90,6 @@ import java.time.ZoneId
 private val deleteSwipeDistance = 96.dp
 
 /**
- * How far a row has to travel to the right before the page turns.
- *
- * Rightward travel on a row is handed to the pager — the row itself only ever dismisses to
- * the left — so this is the distance that turns "a nudge" into "go to Statistics".
- */
-private val pageSwipeDistance = 72.dp
-
-/**
  * Main home screen for a given month.
  *
  * Renders a summary card (expense/income/balance) followed by the month's
@@ -110,7 +102,6 @@ private val pageSwipeDistance = 72.dp
 fun HomeScreen(
     onAddTransaction: () -> Unit,
     onEditTransaction: (Long) -> Unit,
-    onSwipeToStats: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -263,7 +254,6 @@ fun HomeScreen(
                                 transaction = transaction,
                                 onClick = { onEditTransaction(transaction.id) },
                                 onDelete = { viewModel.deleteTransaction(transaction.id) },
-                                onSwipeRight = onSwipeToStats,
                                 currencySymbol = uiState.currencySymbol,
                             )
                         }
@@ -331,14 +321,12 @@ private fun TransactionItem(
     transaction: Transaction,
     onClick: () -> Unit,
     onDelete: () -> Unit,
-    onSwipeRight: () -> Unit,
     currencySymbol: String,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     val deleteLabel = stringResource(R.string.delete_transaction)
     val haptics = LocalHapticFeedback.current
     val deleteDistance = with(LocalDensity.current) { deleteSwipeDistance.toPx() }
-    val pageDistance = with(LocalDensity.current) { pageSwipeDistance.toPx() }
 
     val dismissState =
         rememberSwipeToDismissBoxState(
@@ -354,6 +342,18 @@ private fun TransactionItem(
             },
             positionalThreshold = { totalDistance -> minOf(deleteDistance, totalDistance) },
         )
+
+    // The buzz says "far enough to delete": it fires the moment the drag passes the
+    // threshold above — the point the state settles to changes there, and changes back if
+    // the finger comes back — rather than on release, which would be too late to aim by.
+    LaunchedEffect(dismissState) {
+        snapshotFlow { dismissState.targetValue }
+            .collect { value ->
+                if (value == SwipeToDismissBoxValue.EndToStart) {
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                }
+            }
+    }
 
     if (showDeleteDialog) {
         AlertDialog(
@@ -402,42 +402,15 @@ private fun TransactionItem(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 4.dp)
                     .clickable(onClick = onClick)
-                    // One detector for both directions, because the row only owns one of
-                    // them. Rightward travel belongs to the pager and is consumed here, or
-                    // the dismiss box would swallow it and the page would never turn;
-                    // leftward travel is left alone so the swipe-to-delete still works, and
-                    // is watched only to know when the gesture has gone far enough to mean
-                    // deletion — at which point it buzzes, so the distance is felt.
-                    .pointerInput(onSwipeRight) {
-                        var travelled = 0f
-                        var armed = false
-                        detectHorizontalDragGestures(
-                            onDragStart = {
-                                travelled = 0f
-                                armed = false
-                            },
-                            onDragCancel = { armed = false },
-                            onDragEnd = {
-                                if (travelled >= pageDistance) onSwipeRight()
-                                travelled = 0f
-                                armed = false
-                            },
-                            onHorizontalDrag = { change, amount ->
-                                travelled += amount
-                                val leftward = -travelled
-                                if (leftward < deleteDistance) {
-                                    armed = false
-                                } else if (!armed) {
-                                    armed = true
-                                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                                }
-                                if (travelled > 0f) change.consume()
-                            },
-                        )
-                    }
-                    // Deleting a row is a swipe, and a swipe is not something every user
-                    // can perform: the gesture is not in the accessibility tree at all.
-                    // The same deletion is offered as an action instead.
+                    // No gesture modifier here on purpose. The dismiss box below owns
+                    // horizontal drags, and a second detector on the row — which is what
+                    // this used to have — consumes the touch slop before the box sees it,
+                    // so the swipe stops working entirely. The box's own progress is
+                    // watched instead, which interferes with nothing.
+                    //
+                    // Deleting a row is also not something every user can perform: the
+                    // gesture is not in the accessibility tree at all, so the same deletion
+                    // is offered as an action.
                     .semantics {
                         customActions =
                             listOf(

@@ -112,7 +112,6 @@ fun BudgeNavGraph() {
             BottomNavItem(Screen.Settings, Icons.Default.Settings, stringResource(R.string.nav_settings)),
         )
     val initialPage = bottomNavItems.indexOfFirst { it.screen == Screen.Home }.coerceAtLeast(0)
-    val statsIndex = bottomNavItems.indexOfFirst { it.screen == Screen.Stats }.coerceAtLeast(0)
 
     var overlay by remember { mutableStateOf<Overlay?>(null) }
     var editTransactionId by remember { mutableStateOf<Long?>(null) }
@@ -139,11 +138,7 @@ fun BudgeNavGraph() {
             }
     }
 
-    /**
-     * Moves to a tab, whether the request came from the nav bar or from a rightward swipe
-     * on a transaction row. The row cannot hand its own gesture to the pager — the dismiss
-     * box underneath it claims horizontal drags — so it asks for the same move instead.
-     */
+    /** Moves to a tab: what the bottom bar does, and what it is the only caller of. */
     fun goTo(index: Int) {
         if (index !in bottomNavItems.indices) return
         // The highlight is set on tap and the page is animated to. The duration is shorter
@@ -217,7 +212,6 @@ fun BudgeNavGraph() {
                         HomeScreen(
                             onAddTransaction = { openNewEntry() },
                             onEditTransaction = { id -> openEditEntry(id) },
-                            onSwipeToStats = { goTo(statsIndex) },
                         )
                     }
 
