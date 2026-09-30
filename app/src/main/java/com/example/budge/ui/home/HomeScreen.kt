@@ -3,6 +3,7 @@ package com.example.budge.ui.home
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,9 +43,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -74,6 +81,23 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 /**
+ * How far a row has to travel sideways before the gesture means something.
+ *
+ * Deleting asks for a deliberate swipe: the dismiss box's own default is half the row's
+ * width, and a shorter, fixed distance that the user can feel through the haptic below is
+ * easier to aim at than a proportion of a screen that changes size.
+ */
+private val deleteSwipeDistance = 96.dp
+
+/**
+ * How far a row has to travel to the right before the page turns.
+ *
+ * Rightward travel on a row is handed to the pager — the row itself only ever dismisses to
+ * the left — so this is the distance that turns "a nudge" into "go to Statistics".
+ */
+private val pageSwipeDistance = 72.dp
+
+/**
  * Main home screen for a given month.
  *
  * Renders a summary card (expense/income/balance) followed by the month's
@@ -86,6 +110,7 @@ import java.time.ZoneId
 fun HomeScreen(
     onAddTransaction: () -> Unit,
     onEditTransaction: (Long) -> Unit,
+    onSwipeToStats: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -157,9 +182,27 @@ fun HomeScreen(
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    val balance = formatMoney(uiState.totalIncome - uiState.totalExpense, uiState.currencySymbol)
+                    val balanceCents = uiState.totalIncome - uiState.totalExpense
+                    val balance = formatMoney(balanceCents, uiState.currencySymbol)
+                    val balanceText = stringResource(R.string.home_balance, balance)
+                    // The same two colours the figures above use: money in is green, money
+                    // out is the theme's error colour. Break-even is neither, so it keeps
+                    // the page's own colour rather than claiming to be one of them.
+                    val balanceColor =
+                        when {
+                            balanceCents > 0L -> incomeColor()
+                            balanceCents < 0L -> MaterialTheme.colorScheme.error
+                            else -> Color.Unspecified
+                        }
                     Text(
-                        text = stringResource(R.string.home_balance, balance),
+                        text =
+                            buildAnnotatedString {
+                                append(balanceText)
+                                val start = balanceText.lastIndexOf(balance)
+                                if (start >= 0 && balanceColor != Color.Unspecified) {
+                                    addStyle(SpanStyle(color = balanceColor), start, start + balance.length)
+                                }
+                            },
                         style = amountTextStyle(balance),
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
@@ -220,6 +263,7 @@ fun HomeScreen(
                                 transaction = transaction,
                                 onClick = { onEditTransaction(transaction.id) },
                                 onDelete = { viewModel.deleteTransaction(transaction.id) },
+                                onSwipeRight = onSwipeToStats,
                                 currencySymbol = uiState.currencySymbol,
                             )
                         }
@@ -287,23 +331,28 @@ private fun TransactionItem(
     transaction: Transaction,
     onClick: () -> Unit,
     onDelete: () -> Unit,
+    onSwipeRight: () -> Unit,
     currencySymbol: String,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     val deleteLabel = stringResource(R.string.delete_transaction)
+    val haptics = LocalHapticFeedback.current
+    val deleteDistance = with(LocalDensity.current) { deleteSwipeDistance.toPx() }
+    val pageDistance = with(LocalDensity.current) { pageSwipeDistance.toPx() }
 
     val dismissState =
         rememberSwipeToDismissBoxState(
             confirmValueChange = { value ->
-                // Intercept the swipe instead of dismissing the row: snap it back
-                // and ask the user to confirm before actually deleting.
+                // Intercept the swipe instead of dismissing the row: snap it back and ask
+                // the user to confirm before anything is deleted. This only runs once the
+                // swipe has passed the threshold below; a shorter one settles back with
+                // nothing happening at all.
                 if (value == SwipeToDismissBoxValue.EndToStart) {
                     showDeleteDialog = true
-                    false
-                } else {
-                    false
                 }
+                false
             },
+            positionalThreshold = { totalDistance -> minOf(deleteDistance, totalDistance) },
         )
 
     if (showDeleteDialog) {
@@ -353,6 +402,39 @@ private fun TransactionItem(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 4.dp)
                     .clickable(onClick = onClick)
+                    // One detector for both directions, because the row only owns one of
+                    // them. Rightward travel belongs to the pager and is consumed here, or
+                    // the dismiss box would swallow it and the page would never turn;
+                    // leftward travel is left alone so the swipe-to-delete still works, and
+                    // is watched only to know when the gesture has gone far enough to mean
+                    // deletion — at which point it buzzes, so the distance is felt.
+                    .pointerInput(onSwipeRight) {
+                        var travelled = 0f
+                        var armed = false
+                        detectHorizontalDragGestures(
+                            onDragStart = {
+                                travelled = 0f
+                                armed = false
+                            },
+                            onDragCancel = { armed = false },
+                            onDragEnd = {
+                                if (travelled >= pageDistance) onSwipeRight()
+                                travelled = 0f
+                                armed = false
+                            },
+                            onHorizontalDrag = { change, amount ->
+                                travelled += amount
+                                val leftward = -travelled
+                                if (leftward < deleteDistance) {
+                                    armed = false
+                                } else if (!armed) {
+                                    armed = true
+                                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                }
+                                if (travelled > 0f) change.consume()
+                            },
+                        )
+                    }
                     // Deleting a row is a swipe, and a swipe is not something every user
                     // can perform: the gesture is not in the accessibility tree at all.
                     // The same deletion is offered as an action instead.

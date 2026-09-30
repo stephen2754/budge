@@ -49,6 +49,7 @@
     <string name="stats_period_year">Ano</string>
     <string name="stats_period_month">Mês</string>
     <string name="stats_period_day">Dia</string>
+    <string name="stats_jump_to_today">Ir para hoje</string>
     <string name="stats_summary_yearly">Resumo anual</string>
     <string name="stats_summary_monthly">Resumo mensal</string>
     <string name="stats_summary_daily">Resumo diário</string>

@@ -18,6 +18,32 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-alpha.7] — a balance you can read, and swipes that say what they mean
+
+### Added
+
+- **A way back to today on the statistics screen.** When the anchor is not today, a line
+  under the date says so and takes it there. It moves the anchor to today's whole date and
+  leaves the period alone: the year view goes on showing a year, and switching to the month
+  or day view afterwards is already on today's month and day — which is the point of
+  anchoring all three periods on one date.
+- **Swiping a transaction row to the right turns to Statistics.** The row only ever
+  dismissed to the left and the dismiss box claims horizontal drags, so the gesture did
+  nothing at all. It now asks the pager for the same move the bottom bar makes.
+
+### Changed
+
+- **The home balance says which side it is on.** Money in is the green the income figure
+  uses, money out is the theme's error red, and break-even keeps the page's own colour.
+  Until now a surplus and a debt were the same colour and the only signal was a minus sign
+  to be found in the middle of the figure.
+- **Deleting a transaction takes a deliberate swipe.** A left swipe now has to pass 96dp —
+  further than the row's own half-width default — and the row **buzzes** at the moment it
+  does, so the threshold is felt rather than guessed. Releasing past it asks for
+  confirmation; releasing before it settles back with nothing happening at all. The
+  confirmation dialog remains the way a deletion happens, so the row still never dismisses
+  itself.
+
 ## [0.1.0-alpha.6] — the categories that went missing, and a shorter picker
 
 An alpha with a regression fix and a change to the currency picker.
@@ -202,6 +228,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-alpha.7]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.7
 [0.1.0-alpha.6]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.6
 [0.1.0-alpha.5]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.5
 [0.1.0-alpha.4]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.4

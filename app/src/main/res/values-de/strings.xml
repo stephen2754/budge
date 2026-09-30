@@ -49,6 +49,7 @@
     <string name="stats_period_year">Jahr</string>
     <string name="stats_period_month">Monat</string>
     <string name="stats_period_day">Tag</string>
+    <string name="stats_jump_to_today">Zu heute springen</string>
     <string name="stats_summary_yearly">Jahresübersicht</string>
     <string name="stats_summary_monthly">Monatsübersicht</string>
     <string name="stats_summary_daily">Tagesübersicht</string>

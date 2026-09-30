@@ -49,6 +49,7 @@
     <string name="stats_period_year">Anno</string>
     <string name="stats_period_month">Mese</string>
     <string name="stats_period_day">Giorno</string>
+    <string name="stats_jump_to_today">Vai a oggi</string>
     <string name="stats_summary_yearly">Riepilogo annuale</string>
     <string name="stats_summary_monthly">Riepilogo mensile</string>
     <string name="stats_summary_daily">Riepilogo giornaliero</string>

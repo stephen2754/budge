@@ -112,6 +112,7 @@ fun BudgeNavGraph() {
             BottomNavItem(Screen.Settings, Icons.Default.Settings, stringResource(R.string.nav_settings)),
         )
     val initialPage = bottomNavItems.indexOfFirst { it.screen == Screen.Home }.coerceAtLeast(0)
+    val statsIndex = bottomNavItems.indexOfFirst { it.screen == Screen.Stats }.coerceAtLeast(0)
 
     var overlay by remember { mutableStateOf<Overlay?>(null) }
     var editTransactionId by remember { mutableStateOf<Long?>(null) }
@@ -136,6 +137,38 @@ fun BudgeNavGraph() {
                     else -> Unit // Still travelling; ignore intermediate pages.
                 }
             }
+    }
+
+    /**
+     * Moves to a tab, whether the request came from the nav bar or from a rightward swipe
+     * on a transaction row. The row cannot hand its own gesture to the pager — the dismiss
+     * box underneath it claims horizontal drags — so it asks for the same move instead.
+     */
+    fun goTo(index: Int) {
+        if (index !in bottomNavItems.indices) return
+        // The highlight is set on tap and the page is animated to. The duration is shorter
+        // when skipping multiple pages (e.g. Stats -> Settings) so the swipe feels snappy
+        // rather than dragged out.
+        val distance = abs(pagerState.currentPage - index)
+        val duration = if (distance > 1) 200 else 300
+        selectedTab = index
+        navTarget = index
+        coroutineScope.launch {
+            try {
+                pagerState.animateScrollToPage(
+                    page = index,
+                    animationSpec =
+                        tween(
+                            durationMillis = duration,
+                            easing = FastOutSlowInEasing,
+                        ),
+                )
+            } finally {
+                // Only the latest request may clear the guard. A second tap cancels this
+                // animation and clears it itself, so this must not release it early.
+                if (navTarget == index) navTarget = null
+            }
+        }
     }
 
     fun openNewEntry() {
@@ -184,6 +217,7 @@ fun BudgeNavGraph() {
                         HomeScreen(
                             onAddTransaction = { openNewEntry() },
                             onEditTransaction = { id -> openEditEntry(id) },
+                            onSwipeToStats = { goTo(statsIndex) },
                         )
                     }
 
@@ -231,31 +265,7 @@ fun BudgeNavGraph() {
                     selected = selectedTab == index && overlay == null,
                     onClick = {
                         if (overlay != null) dismissOverlay()
-                        // Programmatic navigation: the highlight is set on tap
-                        // and the page is animated to. The duration is shorter
-                        // when skipping multiple pages (e.g. Stats -> Settings)
-                        // so the swipe feels snappy rather than dragged out.
-                        val distance = abs(pagerState.currentPage - index)
-                        val duration = if (distance > 1) 200 else 300
-                        selectedTab = index
-                        navTarget = index
-                        coroutineScope.launch {
-                            try {
-                                pagerState.animateScrollToPage(
-                                    page = index,
-                                    animationSpec =
-                                        tween(
-                                            durationMillis = duration,
-                                            easing = FastOutSlowInEasing,
-                                        ),
-                                )
-                            } finally {
-                                // Only the latest tap may clear the guard. A second tap
-                                // cancels this animation and clears it itself, so this
-                                // must not release it early.
-                                if (navTarget == index) navTarget = null
-                            }
-                        }
+                        goTo(index)
                     },
                 )
             }

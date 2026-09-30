@@ -47,6 +47,7 @@
     <string name="stats_period_year">年</string>
     <string name="stats_period_month">月</string>
     <string name="stats_period_day">日</string>
+    <string name="stats_jump_to_today">今日に移動</string>
     <string name="stats_summary_yearly">年間集計</string>
     <string name="stats_summary_monthly">月間集計</string>
     <string name="stats_summary_daily">日別集計</string>

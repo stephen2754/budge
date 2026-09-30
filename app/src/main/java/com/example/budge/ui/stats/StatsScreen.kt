@@ -33,6 +33,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
@@ -49,6 +53,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.Lifecycle
+import java.time.LocalDate
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.example.budge.R
 import com.example.budge.model.CategorySummary
 import com.example.budge.model.TransactionType
@@ -71,6 +78,13 @@ import com.example.budge.ui.theme.pageWindowInsets
 fun StatsScreen(viewModel: StatsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // Whether the anchor is on today is a comparison against the clock, not against a value
+    // captured when the view model was built: it is re-read whenever the screen comes back
+    // to the foreground, so the hint below appears again the next day and does not sit there
+    // after the anchor has been moved to today.
+    var today by remember { mutableStateOf(LocalDate.now()) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { today = LocalDate.now() }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -85,17 +99,34 @@ fun StatsScreen(viewModel: StatsViewModel = hiltViewModel()) {
                                 contentDescription = stringResource(R.string.cd_previous_period),
                             )
                         }
-                        Text(
-                            text =
-                                when (uiState.period) {
-                                    StatsPeriod.YEARLY -> formatYear(uiState.currentDate)
-                                    StatsPeriod.DAILY -> formatDayMonthYear(uiState.currentDate)
-                                    StatsPeriod.MONTHLY -> formatMonthYear(uiState.currentMonth)
-                                },
-                            style = MaterialTheme.typography.titleLarge,
+                        Column(
                             modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center,
-                        )
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text(
+                                text =
+                                    when (uiState.period) {
+                                        StatsPeriod.YEARLY -> formatYear(uiState.currentDate)
+                                        StatsPeriod.DAILY -> formatDayMonthYear(uiState.currentDate)
+                                        StatsPeriod.MONTHLY -> formatMonthYear(uiState.currentMonth)
+                                    },
+                                style = MaterialTheme.typography.titleLarge,
+                                textAlign = TextAlign.Center,
+                            )
+                            // Only when the anchor is somewhere else: a way back to today
+                            // that says nothing when there is nothing to go back from.
+                            if (uiState.currentDate != today) {
+                                Text(
+                                    text = stringResource(R.string.stats_jump_to_today),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier =
+                                        Modifier
+                                            .clickable { viewModel.jumpToToday() }
+                                            .padding(horizontal = 8.dp, vertical = 2.dp),
+                                )
+                            }
+                        }
                         IconButton(onClick = { viewModel.nextPeriod() }) {
                             Icon(
                                 Icons.AutoMirrored.Filled.ArrowForward,

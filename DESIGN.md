@@ -227,9 +227,9 @@ A single module (`app`) keeps everything simple; the packages mirror the layers 
 
 | Screen | Layout Highlights |
 | --- | --- |
-| Home | TopAppBar (current month), monthly summary card (expense / income / balance), day-grouped transaction list, FAB add, swipe-to-delete |
+| Home | TopAppBar (current month), monthly summary card (expense / income / balance, the balance coloured by its sign), day-grouped transaction list, FAB add, swipe left to delete, swipe right to Statistics |
 | Transaction entry | Type FilterChips (expense/income), amount field with currency prefix, content-sized category chips (`FlowRow`), separate **Date** and **Time** buttons (date restricted to today & past, future times clamped), note field, save |
-| Statistics | Period selector (Year / Month / Day, centered text) over a single date anchor, so switching period keeps the same date; summary card, budget progress (if set), expense & income donut charts with per-category lists |
+| Statistics | Period selector (Year / Month / Day, centered text) over a single date anchor, so switching period keeps the same date; a "jump to today" line under the date whenever the anchor is somewhere else; summary card, budget progress (if set), expense & income donut charts with per-category lists |
 | Category management | List + add/edit dialog (name, type, color picker) |
 | Settings | Sections for Currency, Appearance (theme + language), Categories (the entry point into category management), Data (export / import / clear all), About (version + channel → release history, licences, update check) |
 
@@ -237,7 +237,21 @@ A single module (`app`) keeps everything simple; the packages mirror the layers 
 
 - Amount input accepts digits and one decimal point, limited to two decimal places.
 - Save/delete/import/export outcomes are surfaced via Snackbars.
-- Swipe-to-dismiss deletes transactions (with a confirmation dialog).
+- **The balance wears its sign.** Money in is the green the income figure uses, money out
+  is the theme's error red, and break-even keeps the page's own colour: the balance decides
+  whether the month is a surplus or a debt, and a reader should not have to parse a minus
+  sign to find out.
+- **Swipe-to-dismiss deletes transactions, but only a deliberate swipe.** The row buzzes
+  the moment a left swipe passes 96.dp — the haptic is what says the gesture has gone far
+  enough — and releasing there asks for confirmation; releasing before it snaps back with
+  nothing happening. The dialog is the confirmation, so the box itself never dismisses.
+- **Swiping a row to the right turns the page.** The row only ever dismisses to the left,
+  and the dismiss box claims horizontal drags, so a rightward swipe is detected on the row
+  and asks the pager to move to Statistics — the same move the bottom bar makes, rather
+  than a scroll the row cannot hand over.
+- **"Jump to today" appears only when there is something to go back from.** It moves the
+  anchor to today's whole date while leaving the period alone, so the year view still shows
+  a year, and switching to month or day afterwards is already on today's month and day.
 - Editing an existing transaction reuses the entry screen pre-filled with its values.
 
 ---

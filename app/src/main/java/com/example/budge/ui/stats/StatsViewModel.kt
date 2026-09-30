@@ -200,6 +200,18 @@ class StatsViewModel
          * Switches the visible period. Nothing has to be re-synced here: every period
          * is a view onto the same [StatsUiState.currentDate] cursor.
          */
+        /**
+         * Brings the anchor to today while keeping the period.
+         *
+         * Every period reads this one date, so the year view goes on showing a year and
+         * the month and day views can be switched to afterwards and already be on today's
+         * month and day — the anchor carries the whole date, not just the part the current
+         * view draws.
+         */
+        fun jumpToToday() {
+            _currentDate.value = LocalDate.now()
+        }
+
         fun setPeriod(period: StatsPeriod) {
             _period.value = period
         }

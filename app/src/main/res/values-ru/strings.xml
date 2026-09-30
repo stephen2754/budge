@@ -53,6 +53,7 @@
     <string name="stats_period_year">Год</string>
     <string name="stats_period_month">Месяц</string>
     <string name="stats_period_day">День</string>
+    <string name="stats_jump_to_today">Перейти к сегодняшнему дню</string>
     <string name="stats_summary_yearly">Итоги за год</string>
     <string name="stats_summary_monthly">Итоги за месяц</string>
     <string name="stats_summary_daily">Итоги за день</string>

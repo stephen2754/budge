@@ -15,10 +15,15 @@
 
 - **Record** an expense or income in a few taps: type, amount, category, date, time, note.
 - **Review** the month as a day-grouped list with daily subtotals and a running balance.
+  The balance is green when the month is in surplus and red when it is in debt, matching the
+  income and expense figures above it.
 - **Analyse** any year, month or day: totals, balance, and a per-category breakdown with
-  donut charts.
+  donut charts. A line under the date offers the way back to today when you have navigated
+  away from it.
 - **Organise** categories — rename, re-colour, re-type or delete any of them, including
-  the ones seeded on first launch.
+  the ones seeded on first launch. On the home list, swiping a row left deletes it (with a
+  confirm step and a buzz when the swipe has gone far enough) and swiping it right turns to
+  Statistics.
 - **Back up** to a JSON file you choose, and restore from one. A file that carries no
   records at all is refused rather than restored: it would erase the ledger and then
   report success.
