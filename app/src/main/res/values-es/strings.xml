@@ -33,6 +33,16 @@
     <string name="entry_save_failed">No se pudo guardar el movimiento</string>
 
     <!-- Stats -->
+    <!-- Both of these carry a count, so the language's own plural rules apply: a
+         locale that needs one/few/many forms gets them instead of "1 items". -->
+    <plurals name="stats_donut_description">
+        <item quantity="one">Gráfico circular de %1$d categoría</item>
+        <item quantity="other">Gráfico circular de %1$d categorías</item>
+    </plurals>
+    <plurals name="settings_import_reassigned">
+        <item quantity="one">Importación completada, pero %1$d movimiento sin categoría coincidente se movió a una categoría predeterminada</item>
+        <item quantity="other">Importación completada, pero %1$d movimientos sin categoría coincidente se movieron a una categoría predeterminada</item>
+    </plurals>
     <string name="stats_budget">Presupuesto</string>
     <string name="stats_remaining">%1$s restantes</string>
     <string name="stats_budget_progress">%1$s / %2$s</string>
@@ -42,7 +52,6 @@
     <string name="stats_summary_yearly">Resumen anual</string>
     <string name="stats_summary_monthly">Resumen mensual</string>
     <string name="stats_summary_daily">Resumen diario</string>
-    <string name="stats_donut_description">Gráfico circular de %1$d categorías</string>
 
     <!-- Category -->
     <string name="category_title">Categorías</string>
@@ -83,7 +92,6 @@
     <string name="settings_import_success">Importación correcta</string>
     <string name="settings_import_failed">Error al importar</string>
     <string name="settings_import_invalid">Archivo de copia no válido</string>
-    <string name="settings_import_reassigned">Importación completada, pero %1$d movimientos sin categoría coincidente se movieron a una categoría predeterminada</string>
     <string name="settings_clear_all_failed">No se pudieron borrar los registros</string>
     <string name="settings_about">Acerca de</string>
     <string name="settings_version">Versión</string>

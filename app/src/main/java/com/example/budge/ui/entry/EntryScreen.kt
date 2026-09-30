@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -68,6 +69,7 @@ import com.example.budge.ui.datePickerMillisFor
 import com.example.budge.ui.formatClockTime
 import com.example.budge.ui.formatShortDate
 import com.example.budge.ui.localDateFromPickerMillis
+import com.example.budge.ui.uses24HourClock
 import com.example.budge.ui.theme.pageWindowInsets
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -148,6 +150,13 @@ fun EntryScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
+                    // The page is drawn edge to edge and deliberately reserves no bottom
+                    // inset — the navigation bar owns that one — but nothing reserved room
+                    // for the keyboard either, so with the note field focused the save
+                    // action sat behind it with no way to scroll it into view. The IME
+                    // inset is the area the keyboard actually covers, which already
+                    // includes the bar, so using it here does not reserve the bar twice.
+                    .imePadding()
                     .padding(top = paddingValues.calculateTopPadding())
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
@@ -325,7 +334,7 @@ fun EntryScreen(
             rememberTimePickerState(
                 initialHour = currentTime.hour,
                 initialMinute = currentTime.minute,
-                is24Hour = true,
+                is24Hour = uses24HourClock(),
             )
         val futureTimeMessage = stringResource(R.string.entry_future_time)
         AlertDialog(

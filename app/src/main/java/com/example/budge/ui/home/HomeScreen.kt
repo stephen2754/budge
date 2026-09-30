@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,6 +42,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -50,12 +54,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.budge.R
 import com.example.budge.model.Transaction
 import com.example.budge.model.TransactionType
 import com.example.budge.ui.SummaryFigure
 import com.example.budge.ui.amountTextStyle
+import com.example.budge.ui.categoryInitialColor
 import com.example.budge.ui.formatDayHeader
 import com.example.budge.ui.formatMoney
 import com.example.budge.ui.formatMonthYear
@@ -82,6 +89,11 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // The month the list is keyed on is captured when the view model is created, so a
+    // session left open across midnight on the first of a month kept showing the previous
+    // one. Re-reading it on resume is what closes that gap.
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refreshMonth() }
 
     Scaffold(
         topBar = {
@@ -194,6 +206,10 @@ fun HomeScreen(
                         Modifier
                             .fillMaxSize()
                             .weight(1f),
+                    // Keeps the last row — and the amount on its right, which is where the
+                    // button sits — clear of the floating action button. Without it a tap
+                    // on the newest transaction opened the add form instead of editing it.
+                    contentPadding = PaddingValues(bottom = 96.dp),
                 ) {
                     groupedTransactions.forEach { (date, transactions) ->
                         item {
@@ -274,6 +290,7 @@ private fun TransactionItem(
     currencySymbol: String,
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
+    val deleteLabel = stringResource(R.string.delete_transaction)
 
     val dismissState =
         rememberSwipeToDismissBoxState(
@@ -336,6 +353,18 @@ private fun TransactionItem(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 4.dp)
                     .clickable(onClick = onClick)
+                    // Deleting a row is a swipe, and a swipe is not something every user
+                    // can perform: the gesture is not in the accessibility tree at all.
+                    // The same deletion is offered as an action instead.
+                    .semantics {
+                        customActions =
+                            listOf(
+                                CustomAccessibilityAction(deleteLabel) {
+                                    showDeleteDialog = true
+                                    true
+                                },
+                            )
+                    }
                     .animateContentSize(),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         ) {
@@ -356,7 +385,7 @@ private fun TransactionItem(
                 ) {
                     Text(
                         text = transaction.categoryName.initialChar(),
-                        color = Color.White,
+                        color = Color(categoryInitialColor(transaction.categoryColor)),
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }

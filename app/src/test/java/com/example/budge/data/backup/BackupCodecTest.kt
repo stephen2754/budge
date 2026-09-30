@@ -57,13 +57,17 @@ class BackupCodecTest {
         val json = encodeBackup(BackupData(transactions = transactions, categories = categories, budgets = budgets))
         val keys = JsonParser.parseString(json).asJsonObject.keySet()
 
-        assertEquals(setOf("transactions", "categories", "budgets"), keys)
+        // `format` is part of the contract too: it is what tells a later build's file
+        // apart from one this build wrote, and a file that declares a higher format is
+        // refused rather than read as an empty backup.
+        assertEquals(setOf("format", "transactions", "categories", "budgets"), keys)
     }
 
     @Test
     fun `refuses a backup that carries no records at all`() {
         // An empty ledger exports to exactly this, but so does a document that merely
-        // names the keys — the format has no version marker to tell them apart. A
+        // names the keys — an older export carries no marker to tell them apart, and a
+        // restore of either wipes every table before it writes. A
         // restore wipes every table before it writes, so accepting one of these turned
         // "import this file" into "erase my ledger" and then said it succeeded. Clearing
         // the records is a separate, deliberate action in Settings.
@@ -106,6 +110,39 @@ class BackupCodecTest {
     @Test
     fun `a document that only mentions the keys is not a backup`() {
         assertNull(decodeBackup("""{"transactions":[],"schemaVersion":99,"unknown":[1,2]}"""))
+    }
+
+    @Test
+    fun `writes a format marker and reads it back`() {
+        val json = encodeBackup(BackupData(transactions = transactions, categories = categories))
+
+        assertTrue("the file has to say which shape it is", json.contains(""""format":1"""))
+
+        val decoded = decodeBackup(json)
+        assertNotNull(decoded)
+        assertEquals(transactions.size, decoded!!.transactions.size)
+    }
+
+    @Test
+    fun `refuses a backup written by a later format`() {
+        // Its record keys may have moved. Reading it as this format would find the keys it
+        // knows empty, and an import wipes every table before it writes — so the honest
+        // answer is to refuse the file and keep the ledger.
+        val later =
+            """{"format":2,"transactions":[{"id":1,"type":0,"amount":5,"categoryId":2,"timestamp":1,"createdAt":1,"updatedAt":1}]}"""
+
+        assertNull(decodeBackup(later))
+    }
+
+    @Test
+    fun `accepts a file written before the marker existed`() {
+        val legacy =
+            """{"transactions":[{"id":1,"type":0,"amount":5,"categoryId":2,"timestamp":1,"createdAt":1,"updatedAt":1}]}"""
+
+        val decoded = decodeBackup(legacy)
+
+        assertNotNull(decoded)
+        assertEquals(1, decoded!!.transactions.size)
     }
 
     @Test

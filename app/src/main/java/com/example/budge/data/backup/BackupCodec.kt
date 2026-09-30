@@ -19,8 +19,13 @@ import com.google.gson.annotations.SerializedName
  * wrote `{"a":…,"b":…}` and read every backup back as empty. An import wipes the
  * database before restoring, so that turned a restore into data loss reported as
  * success.
+ *
+ * `format` says which shape the file is. It is what lets a build refuse a backup written
+ * by a later one instead of reading the keys it knows, finding them empty, and wiping the
+ * ledger on the strength of that reading.
  */
 private data class BackupDocument(
+    @SerializedName("format") val format: Int? = null,
     @SerializedName("transactions") val transactions: List<TransactionEntity>? = null,
     @SerializedName("categories") val categories: List<CategoryEntity>? = null,
     @SerializedName("budgets") val budgets: List<BudgetEntity>? = null,
@@ -38,6 +43,17 @@ data class BackupData(
 
 /** Top-level keys a file must carry at least one of to be accepted as a backup. */
 val BACKUP_KEYS = setOf("transactions", "categories", "budgets")
+
+/**
+ * The format this build writes, and the highest it can read.
+ *
+ * Files written before the marker existed carry none and are read as this format, which is
+ * what they are. A file that declares a higher one is refused rather than read: the keys it
+ * moved to would come back as empty lists, and an import wipes every table before it
+ * writes, so reading it as "this backup holds nothing here" silently loses whatever the
+ * newer build recorded. Refusing it keeps the ledger and says so.
+ */
+private const val BACKUP_FORMAT = 1
 
 private val gson = Gson()
 
@@ -68,6 +84,8 @@ fun decodeBackup(json: String): BackupData? {
             return null
         } ?: return null
 
+    if (document.format?.let { it > BACKUP_FORMAT } == true) return null
+
     val data =
         BackupData(
             transactions = document.transactions.orEmpty(),
@@ -80,4 +98,4 @@ fun decodeBackup(json: String): BackupData? {
 
 /** Serializes a backup to the JSON written to the user's file. */
 fun encodeBackup(data: BackupData): String =
-    gson.toJson(BackupDocument(data.transactions, data.categories, data.budgets))
+    gson.toJson(BackupDocument(BACKUP_FORMAT, data.transactions, data.categories, data.budgets))

@@ -81,6 +81,19 @@ class HomeViewModel
                 initialValue = HomeUiState(),
             )
 
+        /**
+         * Re-reads the month the list is showing.
+         *
+         * The month is captured when this view model is created and every query below is
+         * keyed on it, so a session left open — or backgrounded — across midnight on the
+         * first of a month went on showing the previous month until the process was
+         * restarted. The screen calls this whenever it comes back to the foreground.
+         */
+        fun refreshMonth() {
+            val today = YearMonth.now()
+            if (_currentMonth.value != today) _currentMonth.value = today
+        }
+
         fun deleteTransaction(id: Long) {
             // Runs on Room's dispatcher via the suspend DAO; the Flow-backed
             // uiState automatically re-emits the updated transaction list.

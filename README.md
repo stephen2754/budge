@@ -152,7 +152,13 @@ version of it.
 - **Locales.** `resourceConfigurations` in `app/build.gradle.kts` lists the nine
   languages; a `values-xx/` folder that is not listed there will be dropped from the
   APK. The nine files otherwise hold the same keys, with one deliberate exception: the
-  release-notes summary exists only in `values/` (English) and `values-zh/`.
+  release-notes summary exists only in `values/` (English) and `values-zh/`. A test
+  (`LocaleResourcesTest`) holds that parity, checks that a translation keeps the same
+  format arguments, and checks that counted text is a `<plurals>` so a language that
+  inflects gets its own forms.
+- **Dates follow the locale.** Day headers, month titles and clock times come from the
+  arrangement each locale uses (`ui/LocalizedPatterns.kt`), and the time picker follows the
+  device's 12/24-hour setting, rather than from a fixed pattern shared by every language.
 - **R8 keeps.** Anything Gson reflects over needs `@SerializedName` *and* a keep rule;
   `data/backup` and `data/update` are the two such packages. Check
   `app/build/outputs/mapping/release/mapping.txt` after touching either.

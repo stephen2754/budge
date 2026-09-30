@@ -33,6 +33,16 @@
     <string name="entry_save_failed">Não foi possível salvar o lançamento</string>
 
     <!-- Stats -->
+    <!-- Both of these carry a count, so the language's own plural rules apply: a
+         locale that needs one/few/many forms gets them instead of "1 items". -->
+    <plurals name="stats_donut_description">
+        <item quantity="one">Gráfico de rosca de %1$d categoria</item>
+        <item quantity="other">Gráfico de rosca de %1$d categorias</item>
+    </plurals>
+    <plurals name="settings_import_reassigned">
+        <item quantity="one">Importação concluída, mas %1$d lançamento sem categoria correspondente foi movido para uma categoria padrão</item>
+        <item quantity="other">Importação concluída, mas %1$d lançamentos sem categoria correspondente foram movidos para uma categoria padrão</item>
+    </plurals>
     <string name="stats_budget">Orçamento</string>
     <string name="stats_remaining">%1$s restantes</string>
     <string name="stats_budget_progress">%1$s / %2$s</string>
@@ -42,7 +52,6 @@
     <string name="stats_summary_yearly">Resumo anual</string>
     <string name="stats_summary_monthly">Resumo mensal</string>
     <string name="stats_summary_daily">Resumo diário</string>
-    <string name="stats_donut_description">Gráfico de rosca de %1$d categorias</string>
 
     <!-- Category -->
     <string name="category_title">Categorias</string>
@@ -83,7 +92,6 @@
     <string name="settings_import_success">Importação concluída</string>
     <string name="settings_import_failed">Falha na importação</string>
     <string name="settings_import_invalid">Arquivo de backup inválido</string>
-    <string name="settings_import_reassigned">Importação concluída, mas %1$d lançamentos sem categoria correspondente foram movidos para uma categoria padrão</string>
     <string name="settings_clear_all_failed">Não foi possível limpar os registros</string>
     <string name="settings_about">Sobre</string>
     <string name="settings_version">Versão</string>

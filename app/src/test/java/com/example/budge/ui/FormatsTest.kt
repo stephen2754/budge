@@ -2,6 +2,7 @@ package com.example.budge.ui
 
 import com.example.budge.data.prefs.Currencies
 import com.example.budge.model.Amount
+import com.example.budge.ui.category.categoryColors
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -88,6 +89,22 @@ class FormatsTest {
         assertEquals("12.3", sanitizeAmountInput("1.2.3"))
         assertEquals("12", sanitizeAmountInput("1e2"))
         assertEquals("", sanitizeAmountInput("abc"))
+    }
+
+    @Test
+    fun `every category swatch gets a readable initial`() {
+        // The letter used to be white on every swatch, which on the offered palette runs
+        // from 1.16:1 (the yellow — invisible) to 3.56:1, and seven of the ten colours miss
+        // even the 3:1 that large text asks for. Whatever the choice rule is, it has to
+        // reach WCAG AA for normal text on every colour the picker offers.
+        categoryColors.forEach { swatch ->
+            val ink = categoryInitialColor(swatch)
+            val ratio = contrastRatio(swatch, ink)
+            assertTrue(
+                "initial on #${swatch.toString(16)} reaches only $ratio:1",
+                ratio >= 4.5,
+            )
+        }
     }
 
     @Test

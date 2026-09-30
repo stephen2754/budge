@@ -33,6 +33,20 @@
     <string name="entry_save_failed">Не удалось сохранить операцию</string>
 
     <!-- Stats -->
+    <!-- Both of these carry a count, so the language's own plural rules apply: a
+         locale that needs one/few/many forms gets them instead of "1 items". -->
+    <plurals name="stats_donut_description">
+        <item quantity="one">Кольцевая диаграмма, %1$d категория</item>
+        <item quantity="few">Кольцевая диаграмма, %1$d категории</item>
+        <item quantity="many">Кольцевая диаграмма, %1$d категорий</item>
+        <item quantity="other">Кольцевая диаграмма, %1$d категорий</item>
+    </plurals>
+    <plurals name="settings_import_reassigned">
+        <item quantity="one">Импорт выполнен, но %1$d операция без подходящей категории была отнесена к категории по умолчанию</item>
+        <item quantity="few">Импорт выполнен, но %1$d операции без подходящей категории были отнесены к категории по умолчанию</item>
+        <item quantity="many">Импорт выполнен, но %1$d операций без подходящей категории были отнесены к категории по умолчанию</item>
+        <item quantity="other">Импорт выполнен, но %1$d операций без подходящей категории были отнесены к категории по умолчанию</item>
+    </plurals>
     <string name="stats_budget">Бюджет</string>
     <string name="stats_remaining">Осталось %1$s</string>
     <string name="stats_budget_progress">%1$s / %2$s</string>
@@ -42,7 +56,6 @@
     <string name="stats_summary_yearly">Итоги за год</string>
     <string name="stats_summary_monthly">Итоги за месяц</string>
     <string name="stats_summary_daily">Итоги за день</string>
-    <string name="stats_donut_description">Кольцевая диаграмма, категорий: %1$d</string>
 
     <!-- Category -->
     <string name="category_title">Категории</string>
@@ -83,7 +96,6 @@
     <string name="settings_import_success">Импорт выполнен</string>
     <string name="settings_import_failed">Не удалось выполнить импорт</string>
     <string name="settings_import_invalid">Недопустимый файл резервной копии</string>
-    <string name="settings_import_reassigned">Импорт выполнен, но %1$d операций без подходящей категории были отнесены к категории по умолчанию</string>
     <string name="settings_clear_all_failed">Не удалось удалить записи</string>
     <string name="settings_about">О программе</string>
     <string name="settings_version">Версия</string>

@@ -33,6 +33,16 @@
     <string name="entry_save_failed">Impossible d’enregistrer la transaction</string>
 
     <!-- Stats -->
+    <!-- Both of these carry a count, so the language's own plural rules apply: a
+         locale that needs one/few/many forms gets them instead of "1 items". -->
+    <plurals name="stats_donut_description">
+        <item quantity="one">Diagramme circulaire de %1$d catégorie</item>
+        <item quantity="other">Diagramme circulaire de %1$d catégories</item>
+    </plurals>
+    <plurals name="settings_import_reassigned">
+        <item quantity="one">Importation effectuée, mais %1$d transaction sans catégorie correspondante a été déplacée vers une catégorie par défaut</item>
+        <item quantity="other">Importation effectuée, mais %1$d transactions sans catégorie correspondante ont été déplacées vers une catégorie par défaut</item>
+    </plurals>
     <string name="stats_budget">Budget</string>
     <string name="stats_remaining">%1$s restants</string>
     <string name="stats_budget_progress">%1$s / %2$s</string>
@@ -42,7 +52,6 @@
     <string name="stats_summary_yearly">Récapitulatif annuel</string>
     <string name="stats_summary_monthly">Récapitulatif mensuel</string>
     <string name="stats_summary_daily">Récapitulatif du jour</string>
-    <string name="stats_donut_description">Diagramme circulaire de %1$d catégories</string>
 
     <!-- Category -->
     <string name="category_title">Catégories</string>
@@ -83,7 +92,6 @@
     <string name="settings_import_success">Importation réussie</string>
     <string name="settings_import_failed">Échec de l’importation</string>
     <string name="settings_import_invalid">Fichier de sauvegarde invalide</string>
-    <string name="settings_import_reassigned">Importation effectuée, mais %1$d transactions sans catégorie correspondante ont été déplacées vers une catégorie par défaut</string>
     <string name="settings_clear_all_failed">Impossible d’effacer les enregistrements</string>
     <string name="settings_about">À propos</string>
     <string name="settings_version">Version</string>

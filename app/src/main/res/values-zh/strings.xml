@@ -32,6 +32,14 @@
     <string name="entry_save_failed">保存交易失败</string>
 
     <!-- Stats -->
+    <!-- Both of these carry a count, so the language's own plural rules apply: a
+         locale that needs one/few/many forms gets them instead of "1 items". -->
+    <plurals name="stats_donut_description">
+        <item quantity="other">包含 %1$d 个分类的环形图</item>
+    </plurals>
+    <plurals name="settings_import_reassigned">
+        <item quantity="other">导入完成，但有 %1$d 笔交易的分类不存在，已归入默认分类</item>
+    </plurals>
     <string name="stats_budget">预算</string>
     <string name="stats_remaining">%1$s 剩余</string>
     <string name="stats_budget_progress">%1$s / %2$s</string>
@@ -41,7 +49,6 @@
     <string name="stats_summary_yearly">年度汇总</string>
     <string name="stats_summary_monthly">月度汇总</string>
     <string name="stats_summary_daily">日汇总</string>
-    <string name="stats_donut_description">包含 %1$d 个分类的环形图</string>
 
     <!-- Category -->
     <string name="category_title">分类管理</string>
@@ -82,7 +89,6 @@
     <string name="settings_import_success">导入成功</string>
     <string name="settings_import_failed">导入失败</string>
     <string name="settings_import_invalid">备份文件无效</string>
-    <string name="settings_import_reassigned">导入完成，但有 %1$d 笔交易的分类不存在，已归入默认分类</string>
     <string name="settings_clear_all_failed">清除记录失败</string>
     <string name="settings_about">关于</string>
     <string name="settings_version">版本</string>
@@ -130,6 +136,7 @@
     <string name="licenses_intro">账目数据保存在本机数据库中，不会上传。应用唯一的联网行为是检查更新：它只向配置好的版本发布地址发起一次只读请求，不包含任何账目数据，也不包含任何标识信息。导出与导入使用你自己选择的本地 JSON 文件。</string>
     <string name="licenses_third_party">开源组件</string>
     <string name="licenses_full_text_note">各组件的完整许可文本见其项目主页。</string>
+    <string name="release_notes_0_1_0_alpha_5">日常使用修复：最新一笔不再被新增按钮遮挡；键盘不再挡住保存键；分类被全部删除后记账页仍可用；日期与时间按你的语言显示；带数量的文案使用正确的复数形式；设置文件损坏不再导致无法启动。</string>
     <string name="release_notes_0_1_0_alpha_4">统计的按分类明细改为按每笔交易自身记录时的收支方向拆分：给分类改类型不再把钱挪到另一边，环形图与上方汇总也不再对不上。</string>
     <string name="release_notes_0_1_0_alpha_3">逗号小数点键盘输入的金额不再被放大一百倍；不含任何记录的备份会被拒绝，而不是清空账本；更新对话框把发布说明按纯文本显示，不再出现 Markdown 标记。</string>
     <string name="release_notes_0_1_0_alpha_2">更新检查在 GitHub API 被拒绝或读不到时改用发布订阅源；失败原因按实际情况分别说明，不再共用一句话；并为较慢的网络延长了等待时间。</string>

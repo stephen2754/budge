@@ -33,6 +33,16 @@
     <string name="entry_save_failed">Die Buchung konnte nicht gespeichert werden</string>
 
     <!-- Stats -->
+    <!-- Both of these carry a count, so the language's own plural rules apply: a
+         locale that needs one/few/many forms gets them instead of "1 items". -->
+    <plurals name="stats_donut_description">
+        <item quantity="one">Ringdiagramm mit %1$d Kategorie</item>
+        <item quantity="other">Ringdiagramm mit %1$d Kategorien</item>
+    </plurals>
+    <plurals name="settings_import_reassigned">
+        <item quantity="one">Import erfolgreich, aber %1$d Buchung ohne passende Kategorie wurde einer Standardkategorie zugeordnet</item>
+        <item quantity="other">Import erfolgreich, aber %1$d Buchungen ohne passende Kategorie wurden einer Standardkategorie zugeordnet</item>
+    </plurals>
     <string name="stats_budget">Budget</string>
     <string name="stats_remaining">%1$s verbleibend</string>
     <string name="stats_budget_progress">%1$s / %2$s</string>
@@ -42,7 +52,6 @@
     <string name="stats_summary_yearly">Jahresübersicht</string>
     <string name="stats_summary_monthly">Monatsübersicht</string>
     <string name="stats_summary_daily">Tagesübersicht</string>
-    <string name="stats_donut_description">Ringdiagramm mit %1$d Kategorien</string>
 
     <!-- Category -->
     <string name="category_title">Kategorien</string>
@@ -83,7 +92,6 @@
     <string name="settings_import_success">Import erfolgreich</string>
     <string name="settings_import_failed">Import fehlgeschlagen</string>
     <string name="settings_import_invalid">Ungültige Sicherungsdatei</string>
-    <string name="settings_import_reassigned">Import erfolgreich, aber %1$d Buchungen ohne passende Kategorie wurden einer Standardkategorie zugeordnet</string>
     <string name="settings_clear_all_failed">Die Buchungen konnten nicht gelöscht werden</string>
     <string name="settings_about">Über</string>
     <string name="settings_version">Version</string>

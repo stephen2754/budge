@@ -18,6 +18,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import kotlin.math.pow
 import java.util.Locale
 
 /**
@@ -144,6 +145,51 @@ fun centsToEditableAmount(amountCents: Long): String = BigDecimal.valueOf(amount
 fun String.initialChar(): String = if (isEmpty()) "" else substring(0, offsetByCodePoints(0, 1))
 
 // ---------------------------------------------------------------------------
+// Category swatches
+// ---------------------------------------------------------------------------
+
+/**
+ * WCAG relative luminance of an ARGB colour: 0.0 for black, 1.0 for white.
+ *
+ * Written out rather than taken from Compose's `Color.luminance()` so the rule below can
+ * be checked by a plain JVM test, like everything else in this file.
+ */
+internal fun relativeLuminance(argb: Long): Double {
+    fun channel(value: Long): Double {
+        val c = value / 255.0
+        return if (c <= 0.03928) c / 12.92 else ((c + 0.055) / 1.055).pow(2.4)
+    }
+    val r = channel((argb shr 16) and 0xFF)
+    val g = channel((argb shr 8) and 0xFF)
+    val b = channel(argb and 0xFF)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+/** WCAG contrast ratio between two ARGB colours: 1.0 when identical, 21.0 for black on white. */
+internal fun contrastRatio(first: Long, second: Long): Double {
+    val a = relativeLuminance(first)
+    val b = relativeLuminance(second)
+    val lighter = maxOf(a, b)
+    val darker = minOf(a, b)
+    return (lighter + 0.05) / (darker + 0.05)
+}
+
+/**
+ * The colour to draw a category's initial in, on top of that category's own colour.
+ *
+ * The letter used to be white on every swatch, which on the offered palette ranges from
+ * 1.16:1 (the yellow — effectively invisible) to 3.56:1: seven of the ten colours miss
+ * even the 3:1 that large text asks for. Choosing whichever of white and black reads
+ * better puts all ten between 5.9:1 and 18.1:1, and keeps holding for a colour added
+ * later.
+ */
+fun categoryInitialColor(background: Long): Long =
+    if (contrastRatio(background, WHITE) >= contrastRatio(background, BLACK)) WHITE else BLACK
+
+internal const val WHITE = 0xFFFFFFFFL
+internal const val BLACK = 0xFF000000L
+
+// ---------------------------------------------------------------------------
 // Release notes
 // ---------------------------------------------------------------------------
 
@@ -262,13 +308,13 @@ fun formatMonthYear(yearMonth: YearMonth): String =
     if (cjkStyle(LocalAppLocale.current)) {
         "${yearMonth.year}年${yearMonth.monthValue}月"
     } else {
-        yearMonth.format(pattern("MMMM yyyy"))
+        yearMonth.format(pattern(localizedPattern("yMMMM", fallback = "MMMM yyyy")))
     }
 
 /** Formats a day-list header: "8月11日 周二" / "Aug 11, Tue". */
 @Composable
 fun formatDayHeader(date: LocalDate): String =
-    date.format(pattern(if (cjkStyle(LocalAppLocale.current)) "M月d日 EEE" else "MMM d, EEE"))
+    date.format(pattern(if (cjkStyle(LocalAppLocale.current)) "M月d日 EEE" else localizedPattern("EEEMMMd", fallback = "MMM d, EEE")))
 
 /**
  * Formats the date button on the entry screen.
@@ -282,11 +328,11 @@ fun formatShortDate(timestamp: Long): String {
     return date.format(localizedDate(FormatStyle.MEDIUM))
 }
 
-/** Formats a 24-hour wall-clock time such as "09:05". */
+/** Formats a wall-clock time the way the locale writes it: "09:05" or "9:05 AM". */
 @Composable
 fun formatClockTime(timestamp: Long): String {
     val time = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalTime()
-    return time.format(pattern("HH:mm"))
+    return time.format(pattern(localizedPattern("jm", fallback = "HH:mm")))
 }
 
 /** Formats the yearly stats title: "2026年" / "2026". */
@@ -304,7 +350,7 @@ fun formatDayMonthYear(date: LocalDate): String =
     if (cjkStyle(LocalAppLocale.current)) {
         "${date.year}年${date.monthValue}月${date.dayOfMonth}日"
     } else {
-        // `MMMM` is the format (not standalone) style, which is what Russian and
-        // other inflected languages need in a phrase like "11 августа 2026".
-        date.format(pattern("d MMMM yyyy"))
+        // The locale decides the order, so this reads "11 août 2026" in French and
+        // "August 11, 2026" in English rather than one of them in the other's shape.
+        date.format(pattern(localizedPattern("yMMMMd", fallback = "d MMMM yyyy")))
     }

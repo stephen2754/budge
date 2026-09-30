@@ -17,7 +17,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.example.budge.data.prefs.Prefs
 import com.example.budge.data.prefs.appLocaleFor
-import com.example.budge.di.dataStore
+import com.example.budge.di.settingsDataStore
 import com.example.budge.ui.LocalAppLocale
 import com.example.budge.ui.navigation.BudgeNavGraph
 import com.example.budge.ui.theme.BudgeTheme
@@ -106,7 +106,7 @@ class MainActivity : ComponentActivity() {
         val language =
             try {
                 runBlocking {
-                    context.applicationContext.dataStore.data
+                    settingsDataStore(context.applicationContext).data
                         .first()[Prefs.languageKey] ?: Prefs.FOLLOW_SYSTEM
                 }
             } catch (_: Exception) {

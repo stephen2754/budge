@@ -32,6 +32,16 @@
     <string name="entry_save_failed">Could not save the transaction</string>
 
     <!-- Stats -->
+    <!-- Both of these carry a count, so the language's own plural rules apply: a
+         locale that needs one/few/many forms gets them instead of "1 items". -->
+    <plurals name="stats_donut_description">
+        <item quantity="one">Donut chart of %1$d category</item>
+        <item quantity="other">Donut chart of %1$d categories</item>
+    </plurals>
+    <plurals name="settings_import_reassigned">
+        <item quantity="one">Imported, but %1$d transaction had no matching category and was moved to a default one</item>
+        <item quantity="other">Imported, but %1$d transactions had no matching category and were moved to a default one</item>
+    </plurals>
     <string name="stats_budget">Budget</string>
     <string name="stats_remaining">%1$s remaining</string>
     <string name="stats_budget_progress">%1$s / %2$s</string>
@@ -41,7 +51,6 @@
     <string name="stats_summary_yearly">Yearly Summary</string>
     <string name="stats_summary_monthly">Monthly Summary</string>
     <string name="stats_summary_daily">Daily Summary</string>
-    <string name="stats_donut_description">Donut chart of %1$d categories</string>
 
     <!-- Category -->
     <string name="category_title">Categories</string>
@@ -82,7 +91,6 @@
     <string name="settings_import_success">Import successful</string>
     <string name="settings_import_failed">Import failed</string>
     <string name="settings_import_invalid">Invalid backup file</string>
-    <string name="settings_import_reassigned">Imported, but %1$d transactions had no matching category and were moved to a default one</string>
     <string name="settings_clear_all_failed">Could not clear the records</string>
     <string name="settings_about">About</string>
     <string name="settings_version">Version</string>
@@ -131,6 +139,7 @@
     <string name="licenses_intro">Your records live in a local database on this device and are never uploaded. The one network request the app can make is the update check: a read-only request to the configured releases address, carrying no ledger data and no identifier. Export and import work on a local JSON file you choose.</string>
     <string name="licenses_third_party">Open-source components</string>
     <string name="licenses_full_text_note">The full licence text of each component is available at its project page.</string>
+    <string name="release_notes_0_1_0_alpha_5">Daily use fixes: the newest entry is no longer hidden behind the add button, the keyboard no longer covers the save action, the form works again when every category has been deleted, dates and clock times follow your language, counted text uses proper plural forms, and a damaged settings file no longer stops the app from starting.</string>
     <string name="release_notes_0_1_0_alpha_4">The statistics breakdown now splits each category by the direction its transactions were recorded with, so re-typing a category no longer moves money to the other side of the screen or makes the donut disagree with the totals above it.</string>
     <string name="release_notes_0_1_0_alpha_3">Amounts typed on a comma keyboard are read correctly instead of being multiplied by a hundred, a backup carrying no records is refused rather than erasing the ledger, and the update dialog shows release notes as text instead of Markdown.</string>
     <string name="release_notes_0_1_0_alpha_2">The update check falls back to the GitHub release feed when the API refuses or cannot be read, says which failure happened instead of one sentence for all of them, and waits longer on a slow connection.</string>

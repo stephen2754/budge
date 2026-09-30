@@ -33,6 +33,16 @@
     <string name="entry_save_failed">Impossibile salvare il movimento</string>
 
     <!-- Stats -->
+    <!-- Both of these carry a count, so the language's own plural rules apply: a
+         locale that needs one/few/many forms gets them instead of "1 items". -->
+    <plurals name="stats_donut_description">
+        <item quantity="one">Grafico a ciambella di %1$d categoria</item>
+        <item quantity="other">Grafico a ciambella di %1$d categorie</item>
+    </plurals>
+    <plurals name="settings_import_reassigned">
+        <item quantity="one">Importazione completata, ma %1$d movimento senza categoria corrispondente è stato spostato in una categoria predefinita</item>
+        <item quantity="other">Importazione completata, ma %1$d movimenti senza categoria corrispondente sono stati spostati in una categoria predefinita</item>
+    </plurals>
     <string name="stats_budget">Budget</string>
     <string name="stats_remaining">%1$s rimanenti</string>
     <string name="stats_budget_progress">%1$s / %2$s</string>
@@ -42,7 +52,6 @@
     <string name="stats_summary_yearly">Riepilogo annuale</string>
     <string name="stats_summary_monthly">Riepilogo mensile</string>
     <string name="stats_summary_daily">Riepilogo giornaliero</string>
-    <string name="stats_donut_description">Grafico a ciambella di %1$d categorie</string>
 
     <!-- Category -->
     <string name="category_title">Categorie</string>
@@ -83,7 +92,6 @@
     <string name="settings_import_success">Importazione completata</string>
     <string name="settings_import_failed">Importazione non riuscita</string>
     <string name="settings_import_invalid">File di backup non valido</string>
-    <string name="settings_import_reassigned">Importazione completata, ma %1$d movimenti senza categoria corrispondente sono stati spostati in una categoria predefinita</string>
     <string name="settings_clear_all_failed">Impossibile eliminare i movimenti</string>
     <string name="settings_about">Informazioni</string>
     <string name="settings_version">Versione</string>

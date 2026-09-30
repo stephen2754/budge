@@ -61,11 +61,12 @@ import com.example.budge.R
 import com.example.budge.model.Category
 import com.example.budge.model.TransactionType
 import com.example.budge.ui.initialChar
+import com.example.budge.ui.categoryInitialColor
 import com.example.budge.ui.theme.pageWindowInsets
 
 // Fixed palette offered when creating/editing a category; users pick one of
 // these instead of entering a custom color.
-private val categoryColors =
+internal val categoryColors =
     listOf(
         0xFFE57373L,
         0xFF81C784L,
@@ -213,7 +214,7 @@ private fun CategoryItem(
             ) {
                 Text(
                     text = category.name.initialChar(),
-                    color = Color.White,
+                    color = Color(categoryInitialColor(category.color)),
                     style = MaterialTheme.typography.titleMedium,
                 )
             }

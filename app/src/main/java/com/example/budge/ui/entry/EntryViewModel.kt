@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.budge.R
 import com.example.budge.data.prefs.Prefs
+import com.example.budge.data.prefs.deviceLocale
 import com.example.budge.data.repository.CategoryRepository
 import com.example.budge.data.repository.TransactionRepository
 import com.example.budge.model.Category
@@ -17,6 +18,7 @@ import com.example.budge.ui.parseAmountToCents
 import com.example.budge.ui.sanitizeAmountInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +26,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+/** How long an empty category table is given to fill itself in before it is repaired. */
+private const val SEED_GRACE_MILLIS = 750L
 
 /**
  * Form state for the add/edit screen. [categories] resolves to the expense or
@@ -72,6 +77,9 @@ class EntryViewModel
         // the original audit timestamp instead of overwriting it with "now".
         private var loadedCreatedAt: Long? = null
 
+        /** Whether the collectors below have been started for this instance. */
+        private var collectorsStarted = false
+
         fun init(transactionId: Long) {
             // Reset the form; if editing (id > 0) populate it from the stored
             // transaction, and always load the category lists and currency.
@@ -81,8 +89,16 @@ class EntryViewModel
             if (transactionId > 0) {
                 loadTransaction(transactionId)
             }
-            loadAllCategories()
-            loadCurrency()
+            // The screen calls init() from a LaunchedEffect, which re-runs every time the
+            // form is composed — including during the exit animation, when the target id
+            // has already flipped back to "adding". Starting one category collector and one
+            // preference collector per call left an activity-scoped view model holding a
+            // new pair for every add and edit, each one re-querying on every write.
+            if (!collectorsStarted) {
+                collectorsStarted = true
+                loadAllCategories()
+                loadCurrency()
+            }
         }
 
         private fun loadCurrency() {
@@ -98,27 +114,38 @@ class EntryViewModel
         }
 
         private fun loadAllCategories() {
-            // The category list can be empty on first launch while the DB is
-            // being seeded, so keep collecting until it is non-empty or after
-            // 10 attempts. Also auto-selects the first category as a default.
+            // Collects for the life of the view model and auto-selects the first category
+            // of the chosen type.
+            //
+            // An empty table has two causes. On first launch it is the seed still landing,
+            // which fills itself in. Otherwise the user has deleted every category — only
+            // one that transactions still point at is protected — and the form can no
+            // longer save anything at all, because a transaction must carry a category.
+            // After a grace period for the first case, a default of the type being recorded
+            // is put back, which the collector then picks up like any other row.
             viewModelScope.launch {
-                var attempts = 0
+                var repaired = false
                 categoryRepository.getAll().collect { allCategories ->
-                    if (allCategories.isNotEmpty() || attempts > 10) {
-                        val expense = allCategories.filter { it.type == TransactionType.EXPENSE }
-                        val income = allCategories.filter { it.type == TransactionType.INCOME }
-                        _uiState.update {
-                            it.copy(
-                                expenseCategories = expense,
-                                incomeCategories = income,
-                            )
+                    if (allCategories.isEmpty()) {
+                        if (!repaired) {
+                            repaired = true
+                            delay(SEED_GRACE_MILLIS)
+                            categoryRepository.ensureCategoryOfType(_uiState.value.type, deviceLocale())
                         }
-                        val currentList = if (_uiState.value.type == TransactionType.EXPENSE) expense else income
-                        if (_uiState.value.selectedCategoryId == 0L && currentList.isNotEmpty()) {
-                            _uiState.update { it.copy(selectedCategoryId = currentList.first().id) }
-                        }
+                        return@collect
                     }
-                    attempts++
+                    val expense = allCategories.filter { it.type == TransactionType.EXPENSE }
+                    val income = allCategories.filter { it.type == TransactionType.INCOME }
+                    _uiState.update {
+                        it.copy(
+                            expenseCategories = expense,
+                            incomeCategories = income,
+                        )
+                    }
+                    val currentList = if (_uiState.value.type == TransactionType.EXPENSE) expense else income
+                    if (_uiState.value.selectedCategoryId == 0L && currentList.isNotEmpty()) {
+                        _uiState.update { it.copy(selectedCategoryId = currentList.first().id) }
+                    }
                 }
             }
         }
@@ -160,6 +187,14 @@ class EntryViewModel
                             newCategories.firstOrNull()?.id ?: 0L
                         },
                 )
+            }
+            // The other direction can be empty on its own: the collector above only
+            // repairs a table that has no categories at all, and switching to a type whose
+            // rows were all deleted would leave the form with nothing to select.
+            if (_uiState.value.categories.isEmpty()) {
+                viewModelScope.launch {
+                    categoryRepository.ensureCategoryOfType(type, deviceLocale())
+                }
             }
         }
 

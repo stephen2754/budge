@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.StringRes
+import androidx.annotation.PluralsRes
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -208,7 +209,7 @@ class SettingsViewModel
                 val message =
                     when {
                         report == null -> string(R.string.settings_import_failed)
-                        report.reassigned > 0 -> string(R.string.settings_import_reassigned, report.reassigned)
+                        report.reassigned > 0 -> plural(R.plurals.settings_import_reassigned, report.reassigned)
                         else -> string(R.string.settings_import_success)
                     }
                 _uiState.update { it.copy(message = message) }
@@ -248,4 +249,9 @@ class SettingsViewModel
             @StringRes id: Int,
             vararg args: Any,
         ): String = getApplication<Application>().getString(id, *args)
+
+        private fun plural(
+            @PluralsRes id: Int,
+            count: Int,
+        ): String = getApplication<Application>().resources.getQuantityString(id, count, count)
     }

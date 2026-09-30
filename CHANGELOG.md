@@ -18,6 +18,61 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-alpha.5] — the things a day of use runs into
+
+An alpha of small fixes rather than features: what the audit turned up in the parts of the
+app a person actually touches, plus two ways the app could be brought down by a file.
+
+### Fixed
+
+- **The newest entry was hidden behind the add button.** The home list had no bottom
+  padding, so at the end of the scroll the last row — and the amount on its right, which is
+  where the button sits — was drawn underneath it, and a tap there opened the add form
+  instead of editing that transaction.
+- **The keyboard covered the save action.** The entry form draws edge to edge and reserved
+  no room for the keyboard, so with the note field focused the save action sat behind it
+  with nothing to scroll. The form now takes the IME inset (which already contains the
+  navigation-bar area, so the bar is not reserved twice).
+- **Deleting every category left the form unable to save.** A category is only protected
+  while transactions point at it, so the table can be emptied — and the form then had
+  nothing to select and refused to save, with no way out but reinstalling. An empty table
+  now gets a default of the type being recorded after a grace period, which is also what
+  the other direction needs when it is empty on its own.
+- **The form collected a new pair of background readers on every open.** `init()` re-runs
+  whenever the form is composed, including during its exit animation, and each call started
+  two never-ending collectors on an activity-scoped view model: a session of thirty entries
+  left sixty of them re-querying on every write.
+- **Home kept showing the previous month.** The month was captured when the view model was
+  created, so a session left open or backgrounded across the first of a month showed the
+  old one until the process restarted. It is re-read whenever the screen comes back to the
+  foreground.
+- **Deleting a transaction was only possible by swiping.** A swipe is not in the
+  accessibility tree, so there was no way to delete a row without performing the gesture.
+  The same deletion is now offered as an accessibility action.
+- **Category initials were unreadable on most swatches, invisible on the yellow.** White on
+  the offered palette ranges from 1.16:1 to 3.56:1 and misses even the 3:1 that large text
+  asks for on seven of the ten colours. The letter now takes whichever of black and white
+  reads better, which puts every colour between 5.9:1 and 18.1:1; a test holds that.
+- **Dates and clock times were in English order everywhere.** Day headers, month titles and
+  the statistics date used fixed patterns, so French read "août 11, mar." where French
+  writes "mar. 11 août", and the time picker was pinned to a 24-hour clock regardless of the
+  device. Both now come from the locale.
+- **Counted text had no plural forms.** "1 transactions", "1 catégories" and the wrong
+  Russian case for a single match are gone; the two strings that carry a count are plurals
+  in all nine languages, Russian with its one/few/many forms.
+- **A damaged settings file made the app unopenable.** DataStore reports corruption by
+  throwing, the preferences are read on the startup path, and the file stays damaged — so
+  every launch died the same way with no way back in short of clearing the app's data. The
+  store now replaces a corrupt file with empty preferences.
+- **A backup written by a later format could erase the ledger.** The document now carries a
+  format marker, and a file declaring a higher one is refused instead of being read as an
+  empty backup and restored over everything.
+
+### Tests
+
+- 128 unit tests, including a new one that compares the nine translation files against each
+  other: same keys, same format arguments, and plurals with the forms each language needs.
+
 ## [0.1.0-alpha.4] — the breakdown adds up now
 
 An alpha with one fix, and it is a fix to a figure rather than to a feature.
@@ -121,6 +176,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-alpha.5]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.5
 [0.1.0-alpha.4]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.4
 [0.1.0-alpha.3]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.3
 [0.1.0-alpha.2]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.2
