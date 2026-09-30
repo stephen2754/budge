@@ -1,6 +1,7 @@
 package com.example.budge.data.prefs
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Locale
@@ -57,48 +58,37 @@ class PrefsTest {
     }
 
     @Test
-    fun `every offered sign names the currencies it stands for`() {
-        // A missing label would render an empty line in the picker, and the point of the
-        // labels is that a shared sign is not silently attributed to one country.
+    fun `every offered choice is a sign, not a currency code`() {
+        // The picker lists signs and nothing else. A three-letter ISO code here would be a
+        // label that leaked back into a place that should show a symbol, and "R$" is the
+        // one two-character sign on offer.
         for (token in Currencies.choices) {
-            val label = Currencies.labels[token]
-            assertTrue("$token has no label", !label.isNullOrBlank())
+            assertTrue("a blank choice would render an empty row", token.isNotBlank())
+            assertTrue("$token is too long to be a sign", token.length <= 2)
+            assertFalse("$token is an ISO code, not a sign", Regex("^[A-Z]{3}$").matches(token))
         }
-        assertEquals(Currencies.choices.size, Currencies.labels.size)
     }
 
     @Test
-    fun `a shared sign lists every common currency that uses it`() {
-        val dollar = Currencies.labels.getValue(Currencies.DOLLAR)
-        for (code in listOf("USD", "CAD", "AUD", "NZD", "HKD", "SGD", "TWD")) {
-            assertTrue("$$ should cover $code", dollar.contains(code))
-        }
-
-        val pound = Currencies.labels.getValue(Currencies.POUND)
-        for (code in listOf("GBP", "EGP", "LBP", "SYP", "SSP", "SDG")) {
-            assertTrue("£ should cover $code", pound.contains(code))
-        }
-
-        assertTrue(Currencies.labels.getValue(Currencies.YEN_SIGN).contains("CNY"))
-        assertTrue(Currencies.labels.getValue(Currencies.YEN_SIGN).contains("JPY"))
-    }
-
-    @Test
-    fun `a sign no other currency uses stays a single code`() {
-        // The euro sign is the euro's alone, and ₽ was designed for the Russian ruble
-        // (Belarus writes "Br"), so neither entry is a list.
-        assertEquals("EUR", Currencies.labels.getValue(Currencies.EURO))
-        assertEquals("RUB", Currencies.labels.getValue(Currencies.RUBLE))
-    }
-
-    @Test
-    fun `every offered currency is a distinct sign`() {
+    fun `the offered signs are distinct and stay a short list`() {
         assertEquals(Currencies.choices.size, Currencies.choices.toSet().size)
         assertTrue(Currencies.choices.contains(Currencies.RUBLE))
         assertTrue(Currencies.choices.contains(Currencies.YEN_SIGN))
-        // One choice list, five signs, and no token that is longer than a sign.
-        assertEquals(5, Currencies.choices.size)
-        assertTrue(Currencies.choices.all { it.length == 1 })
+        assertTrue(Currencies.choices.contains(Currencies.RUPEE))
+        // Short on purpose: this is a list of signs, and every extra row is another choice
+        // for a reader who only wants the one their ledger is kept in.
+        assertTrue("the picker is getting long: ${Currencies.choices.size} rows", Currencies.choices.size <= 12)
+    }
+
+    @Test
+    fun `every default the app can pick is on offer`() {
+        // BudgeApplication replaces a stored symbol that is not in `choices` with the
+        // locale default, so a default missing from the list would be silently re-picked
+        // on every launch instead of kept.
+        for (tag in listOf("zh", "ja", "ru", "fr", "de", "es", "it", "pt", "en", "th", "hi")) {
+            val token = defaultCurrencyFor(Locale.forLanguageTag(tag))
+            assertTrue("$tag defaults to $token, which is not offered", Currencies.choices.contains(token))
+        }
     }
 
     // -----------------------------------------------------------------------

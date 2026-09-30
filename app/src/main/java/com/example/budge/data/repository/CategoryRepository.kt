@@ -26,6 +26,13 @@ class CategoryRepository
                 entities.map { it.toDomain() }
             }
 
+        /**
+         * One-shot variant for callers that have just reset their own state and cannot
+         * wait for a change to arrive on [getAll]: a Room flow emits when it is collected
+         * and then only on writes, so a screen that re-reads nothing shows nothing.
+         */
+        suspend fun getAllOnce(): List<Category> = categoryDao.getAllOnce().map { it.toDomain() }
+
         fun getByType(type: TransactionType): Flow<List<Category>> =
             categoryDao.getByType(type.value).map { entities ->
                 entities.map { it.toDomain() }

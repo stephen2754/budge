@@ -18,6 +18,32 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-alpha.6] — the categories that went missing, and a shorter picker
+
+An alpha with a regression fix and a change to the currency picker.
+
+### Fixed
+
+- **The entry form could open with no category buttons at all.** 0.1.0-alpha.5 made the
+  form stop starting a new pair of background readers every time it opened, which was the
+  point — but the form also resets its state on every open, and a Room flow only emits when
+  it is first collected and then when the table is *written*. So the open that started the
+  readers showed the categories, and later opens showed none: nothing had changed in the
+  database to make the flow speak again, and everything appeared normal as soon as
+  something did (which is why it looked intermittent). Each open now reads the categories
+  and the currency symbol once as well, and the readers keep them current while the form is
+  up. The same reset had been hiding the chosen currency symbol behind `$` on every open
+  after the first.
+
+### Changed
+
+- **The currency picker offers signs and nothing else.** It used to print the currencies
+  sharing each sign beside it ("USD / CAD / AUD / NZD / HKD / SGD / TWD"), which read as
+  though the row were choosing a currency rather than a sign — and most of these signs are
+  shared by currencies the list could never name completely. The list is now nine signs:
+  `$`, `€`, `¥`, `£`, `₽`, `₹`, `₩`, `₺` and `R$`. A stored sign that is no longer on offer
+  is repaired to the locale default, exactly as before.
+
 ## [0.1.0-alpha.5] — the things a day of use runs into
 
 An alpha of small fixes rather than features: what the audit turned up in the parts of the
@@ -176,6 +202,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-alpha.6]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.6
 [0.1.0-alpha.5]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.5
 [0.1.0-alpha.4]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.4
 [0.1.0-alpha.3]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.3

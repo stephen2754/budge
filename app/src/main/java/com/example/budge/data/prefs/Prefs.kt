@@ -84,43 +84,40 @@ fun appLocaleFor(language: String?): Locale =
 object Currencies {
     const val DOLLAR = "$"
     const val EURO = "€"
-    const val RUBLE = "₽"
-    const val POUND = "£"
 
     /**
      * The `¥` sign. The yuan and the yen both use it.
      *
-     * Amounts show the sign on its own (`¥1,234.56`). Which of the two currencies is
-     * meant is spelled out once, in the picker's "CNY / JPY" label.
+     * Amounts show the sign on its own (`¥1,234.56`), and which of the two currencies is
+     * meant is left to the reader: a sign is not a currency, and the app does not know
+     * which one the ledger is kept in.
      */
     const val YEN_SIGN = "¥"
 
-    /** Every choice offered in Settings, in display order. */
-    val choices = listOf(DOLLAR, EURO, RUBLE, POUND, YEN_SIGN)
+    const val POUND = "£"
+    const val RUBLE = "₽"
+    const val RUPEE = "₹"
+    const val WON = "₩"
+    const val LIRA = "₺"
+
+    /** Brazil writes its currency this way: a letter and the sign, never the sign alone. */
+    const val REAL = "R$"
 
     /**
-     * The currencies each sign stands for, shown beside it in the picker.
+     * Every choice offered in Settings, in display order — the signs a reader is most
+     * likely to be looking for first.
      *
-     * Where a sign is shared, all of its common users are listed, so someone holding
-     * Egyptian pounds recognises the `£` row. The lists stop short of being exhaustive:
+     * The picker shows these tokens and nothing beside them. It used to name the
+     * currencies sharing each sign ("USD / CAD / AUD / ..."), which read as though the
+     * row were choosing a currency rather than a sign: most of these signs are shared,
+     * the lists were never complete, and a figure on screen shows the sign alone anyway.
      *
-     * - `$` covers the majors that write the sign bare. Brazil (`R$`) and Mexico
-     *   (`Mex$`) add a prefix, so they do not really share it, and the peso family the
-     *   brief excluded is left out.
-     * - `£` covers the sovereign currencies written `£`. The six sterling-pegged
-     *   territory pounds (Falkland, Gibraltar, Guernsey, Jersey, Man, Saint Helena)
-     *   are not currencies a reader is likely to hold.
-     * - `€` and `₽` stay single. No other currency uses the euro sign, and the ruble
-     *   sign is Russia's alone; Belarus writes `Br`.
+     * The set stops at signs that are both distinct and common. The sterling-pegged
+     * territory pounds, the peso and dollar families that only prefix a `$`, and the
+     * currencies whose sign is a word (`kr`, `zł`, `R`, `CHF`) are not offered.
      */
-    val labels =
-        mapOf(
-            DOLLAR to "USD / CAD / AUD / NZD / HKD / SGD / TWD",
-            EURO to "EUR",
-            RUBLE to "RUB",
-            POUND to "GBP / EGP / LBP / SYP / SSP / SDG",
-            YEN_SIGN to "CNY / JPY",
-        )
+    val choices =
+        listOf(DOLLAR, EURO, YEN_SIGN, POUND, RUBLE, RUPEE, WON, LIRA, REAL)
 }
 
 /**

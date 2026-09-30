@@ -142,8 +142,9 @@ version of it.
 - **Money** is integer cents. Amounts fit an unsigned 32-bit range and the balance is
   signed 64-bit; `model/Amount.kt` is the single place that defines this. Typed amounts
   take `.` or `,` as the decimal separator, so a comma keyboard enters cents correctly.
-- **Currency signs** are grouped by the currencies that share them
-  (`Currencies.labels`). Amounts show the sign alone.
+- **Currency signs** are what Settings offers — nine of them (`Currencies.choices`),
+  signs only, with no currency names beside them. A sign is not a currency and most are
+  shared, so the app shows the sign and lets it mean what the reader reads it as.
 - **Categories** are seeded once, on first launch, in the device language. After that
   they are ordinary rows: nothing renames or protects them.
 - **Insets.** The app draws edge to edge. The `NavigationBar` owns the bottom system

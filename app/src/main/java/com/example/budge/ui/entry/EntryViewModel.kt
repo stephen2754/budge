@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.budge.R
 import com.example.budge.data.prefs.Prefs
+import com.example.budge.data.prefs.Currencies
 import com.example.budge.data.prefs.deviceLocale
 import com.example.budge.data.repository.CategoryRepository
 import com.example.budge.data.repository.TransactionRepository
@@ -22,6 +23,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -89,6 +91,16 @@ class EntryViewModel
             if (transactionId > 0) {
                 loadTransaction(transactionId)
             }
+
+            // The reset above empties the form, and the collectors started below run once
+            // and then only emit when the database or the preferences are *written*. A
+            // second open of the form would therefore show no categories at all until
+            // something happened to write to the database — the first open worked, later
+            // ones did not. Reading both once per open is what makes every open work; the
+            // collectors are what keep them current while the form is up.
+            viewModelScope.launch { applyCategories(categoryRepository.getAllOnce()) }
+            viewModelScope.launch { applyCurrencySymbol(dataStore.data.first()[Prefs.currencySymbolKey]) }
+
             // The screen calls init() from a LaunchedEffect, which re-runs every time the
             // form is composed — including during the exit animation, when the target id
             // has already flipped back to "adding". Starting one category collector and one
@@ -101,15 +113,37 @@ class EntryViewModel
             }
         }
 
+        /**
+         * Puts [allCategories] into the form, selecting the first of the current type when
+         * nothing is selected yet. Shared by the one-shot read on open and by the collector.
+         */
+        private fun applyCategories(allCategories: List<Category>) {
+            if (allCategories.isEmpty()) return
+            val expense = allCategories.filter { it.type == TransactionType.EXPENSE }
+            val income = allCategories.filter { it.type == TransactionType.INCOME }
+            _uiState.update {
+                it.copy(
+                    expenseCategories = expense,
+                    incomeCategories = income,
+                )
+            }
+            val currentList = if (_uiState.value.type == TransactionType.EXPENSE) expense else income
+            if (_uiState.value.selectedCategoryId == 0L && currentList.isNotEmpty()) {
+                _uiState.update { it.copy(selectedCategoryId = currentList.first().id) }
+            }
+        }
+
+        private fun applyCurrencySymbol(symbol: String?) {
+            _uiState.update { it.copy(currencySymbol = symbol ?: Currencies.DOLLAR) }
+        }
+
         private fun loadCurrency() {
             // Read the currency symbol preference from DataStore once it is
             // available and merge it into the form state.
             viewModelScope.launch {
                 dataStore.data
-                    .map { it[Prefs.currencySymbolKey] ?: "$" }
-                    .collect { symbol ->
-                        _uiState.update { it.copy(currencySymbol = symbol) }
-                    }
+                    .map { it[Prefs.currencySymbolKey] }
+                    .collect { symbol -> applyCurrencySymbol(symbol) }
             }
         }
 
@@ -134,18 +168,7 @@ class EntryViewModel
                         }
                         return@collect
                     }
-                    val expense = allCategories.filter { it.type == TransactionType.EXPENSE }
-                    val income = allCategories.filter { it.type == TransactionType.INCOME }
-                    _uiState.update {
-                        it.copy(
-                            expenseCategories = expense,
-                            incomeCategories = income,
-                        )
-                    }
-                    val currentList = if (_uiState.value.type == TransactionType.EXPENSE) expense else income
-                    if (_uiState.value.selectedCategoryId == 0L && currentList.isNotEmpty()) {
-                        _uiState.update { it.copy(selectedCategoryId = currentList.first().id) }
-                    }
+                    applyCategories(allCategories)
                 }
             }
         }

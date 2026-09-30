@@ -40,7 +40,7 @@
 ### 1.2 Currency Handling
 
 - Amounts are stored internally as **Long integer cents** (e.g., `12.34` → `1234L`).
-- A user-configurable currency token is stored in DataStore (`currency_symbol`). Settings offers five signs, each labelled with the **common** currencies that share it (`Currencies.labels`): `$` → `USD / CAD / AUD / NZD / HKD / SGD / TWD`, `£` → `GBP / EGP / LBP / SYP / SSP / SDG`, `¥` → `CNY / JPY`. `€` and `₽` stay single — no other currency uses the euro sign, and the ruble sign is the Russian ruble's own (Belarus writes `Br`). The cut is deliberate: currencies that merely *contain* a `$` (`R$`, `Mex$`) do not share the sign, and the sterling-pegged territory pounds are left off. An amount shows the sign alone (`¥1,234.56`); naming the currency is the picker's job, not each figure's.
+- A user-configurable currency token is stored in DataStore (`currency_symbol`). Settings offers **nine signs and nothing else** (`Currencies.choices`): `$`, `€`, `¥`, `£`, `₽`, `₹`, `₩`, `₺` and `R$`. The picker used to print the currencies sharing each sign beside it ("USD / CAD / AUD / …"), which read as though the row were choosing a currency rather than a sign: most of these signs are shared, no such list can be complete, and an amount shows the sign alone in any case (`¥1,234.56`). The set stops at signs that are both distinct and common — the sterling-pegged territory pounds, the peso and dollar families that only prefix a `$`, and the currencies whose sign is a word (`kr`, `zł`, `R`, `CHF`) are not offered, and the list is deliberately short because every extra row is another choice for a reader who only wants their own. A sign a stored value no longer decodes to is repaired to the locale default at startup (§12).
 - On **first launch** the token is derived from the **system language**; the stored value is never overwritten afterwards:
 
   | System language | First-launch token |
@@ -360,7 +360,7 @@ See `proguard-rules.pro`. Key rules keep Room, Hilt, Gson, and Coroutines classe
 
 | Type | Coverage | Tools | Status |
 | --- | --- | --- | --- |
-| Unit tests | Money parsing/formatting and precision (including both decimal separators), currency rules, category colour contrast, date-picker conversion, backup wire format, format marker and validation, category seeding/localization, the nine translation files against each other, month-range conversion, stats period anchoring, money widths, version parsing/ordering, the release-channel rules, and the update check against a captured live payload | JUnit 4 (`app/src/test`) | **Implemented** — 128 tests, run with `./gradlew :app:testDebugUnitTest` |
+| Unit tests | Money parsing/formatting and precision (including both decimal separators), currency rules, category colour contrast, date-picker conversion, backup wire format, format marker and validation, category seeding/localization, the nine translation files against each other, month-range conversion, stats period anchoring, money widths, version parsing/ordering, the release-channel rules, and the update check against a captured live payload | JUnit 4 (`app/src/test`) | **Implemented** — 127 tests, run with `./gradlew :app:testDebugUnitTest` |
 | Data layer | DAO CRUD, statistics queries, migration validation | In-memory Room / Robolectric | Planned |
 | UI tests | Entry flow, list rendering, theme/language switching | Compose UI Test | Planned (dependencies declared) |
 | Integration | Full flow: entry → list → stats refresh | Compose UI Test + in-memory Room | Planned |

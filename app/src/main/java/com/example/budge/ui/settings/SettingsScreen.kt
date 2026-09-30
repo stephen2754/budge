@@ -296,11 +296,12 @@ fun SettingsScreen(
             onDismissRequest = { showCurrencyDialog = false },
             title = { Text(stringResource(R.string.settings_currency_symbol)) },
             text = {
-                Column {
+                // Nine rows, so the list scrolls rather than growing past the dialog on a
+                // short screen or at a large font scale.
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     Currencies.choices.forEach { token ->
-                        // Naming the currency is the picker's job only: an amount
-                        // in the app shows the sign alone. See Currencies.labels.
-                        val codes = Currencies.labels[token].orEmpty()
+                        // The sign alone, deliberately: see Currencies.choices for why the
+                        // currency names are not listed here.
                         val selected = uiState.currencySymbol == token
                         Row(
                             modifier =
@@ -318,28 +319,15 @@ fun SettingsScreen(
                         ) {
                             Text(
                                 text = token,
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleLarge,
                                 color =
                                     if (selected) {
                                         MaterialTheme.colorScheme.primary
                                     } else {
                                         MaterialTheme.colorScheme.onSurface
                                     },
-                                modifier = Modifier.width(40.dp),
                             )
-                            // The code list wraps instead of being clipped: "$" covers five
-                            // currencies, so this line is the longest thing in the dialog.
-                            Text(
-                                text = codes,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color =
-                                    if (selected) {
-                                        MaterialTheme.colorScheme.primary
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    },
-                                modifier = Modifier.weight(1f),
-                            )
+                            Spacer(modifier = Modifier.weight(1f))
                             if (selected) {
                                 Text(
                                     text = "✓",
