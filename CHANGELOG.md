@@ -18,6 +18,26 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-alpha.9] — three things that did not line up
+
+### Fixed
+
+- **A quick flick could delete without a buzz.** The confirmation dialog was shown when the
+  gesture *settled* towards the delete position, and a fast flick is settled there by its
+  speed even when the row has travelled a few millimetres — so the dialog appeared although
+  the row had never gone far enough for the haptic to fire. The dialog is now decided the
+  same way the haptic is, by the distance the row actually travelled, and a flick too short
+  to cross it settles back like any other short swipe. Both are measured from the same
+  offset, in magnitude rather than sign, so they cannot disagree in the other direction
+  either — buzzing where nothing happens.
+- **The statistics date moved when the jump-to-today line appeared.** The line was drawn
+  inside the app bar, which is a fixed height: a second line in it pushed the title up.
+  It is drawn below the bar now, directly under the date, and the date stays where it is.
+- **The language list had no order.** It began with Chinese because the app is developed in
+  Chinese, and the rest followed no rule. The nine are ordered by language code now —
+  `de, en, es, fr, it, ja, pt, ru, zh` — which reads alphabetically for the Latin names and
+  puts the other two scripts where their code falls.
+
 ## [0.1.0-alpha.8] — the swipe that stopped working
 
 ### Fixed
@@ -252,6 +272,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-alpha.9]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.9
 [0.1.0-alpha.8]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.8
 [0.1.0-alpha.7]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.7
 [0.1.0-alpha.6]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.6

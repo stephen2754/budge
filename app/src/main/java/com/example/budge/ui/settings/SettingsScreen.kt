@@ -116,18 +116,24 @@ private fun openReleasePage(
  * Language choices, each named in its own language so the list is legible whichever
  * language the app is currently in. Only "follow the system" is translated, because
  * it names no language of its own.
+ *
+ * Ordered by language code — de, en, es, fr, it, ja, pt, ru, zh — which is the order the
+ * names read in as well: the Latin ones fall alphabetically, and the two written in other
+ * scripts land where their code puts them instead of being sorted to one end or, as
+ * before, put first because that is where the app happens to be developed. The list used
+ * to start with Chinese, which is not an order at all.
  */
 private val languageEndonyms =
     listOf(
-        Prefs.CHINESE to "中文",
-        Prefs.ENGLISH to "English",
-        Prefs.FRENCH to "Français",
         Prefs.GERMAN to "Deutsch",
+        Prefs.ENGLISH to "English",
         Prefs.SPANISH to "Español",
-        Prefs.RUSSIAN to "Русский",
-        Prefs.JAPANESE to "日本語",
+        Prefs.FRENCH to "Français",
         Prefs.ITALIAN to "Italiano",
+        Prefs.JAPANESE to "日本語",
         Prefs.PORTUGUESE to "Português",
+        Prefs.RUSSIAN to "Русский",
+        Prefs.CHINESE to "中文",
     )
 
 /** The endonym of the selected language, or the translated "follow system" label. */

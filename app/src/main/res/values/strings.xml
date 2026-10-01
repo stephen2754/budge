@@ -140,6 +140,7 @@
     <string name="licenses_intro">Your records live in a local database on this device and are never uploaded. The one network request the app can make is the update check: a read-only request to the configured releases address, carrying no ledger data and no identifier. Export and import work on a local JSON file you choose.</string>
     <string name="licenses_third_party">Open-source components</string>
     <string name="licenses_full_text_note">The full licence text of each component is available at its project page.</string>
+    <string name="release_notes_0_1_0_alpha_9">A quick flick no longer deletes without a buzz, the statistics date stops moving when the jump-to-today line appears, and the language list is ordered by language code instead of starting with Chinese.</string>
     <string name="release_notes_0_1_0_alpha_8">Fixes the swipe-to-delete that stopped working, keeps the buzz when a swipe has gone far enough, and removes the rightward swipe on a row — it could not feel the same as swiping the page.</string>
     <string name="release_notes_0_1_0_alpha_7">The balance is green in surplus and red in debt, a delete swipe now has to be deliberate and buzzes when it is, swiping a row right turns to Statistics, and the statistics date offers a way back to today.</string>
     <string name="release_notes_0_1_0_alpha_6">Fixes the category buttons that could disappear from the entry form, and the currency picker now offers nine signs on their own with no currency names beside them.</string>

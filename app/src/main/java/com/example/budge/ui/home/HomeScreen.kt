@@ -31,6 +31,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -79,6 +80,7 @@ import com.example.budge.ui.theme.pageWindowInsets
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import kotlin.math.abs
 
 /**
  * How far a row has to travel sideways before the gesture means something.
@@ -328,29 +330,51 @@ private fun TransactionItem(
     val haptics = LocalHapticFeedback.current
     val deleteDistance = with(LocalDensity.current) { deleteSwipeDistance.toPx() }
 
+    // The callback below has to read the state it is passed to, which it cannot do through
+    // the property being initialized. A plain array is the holder: snapshot state written
+    // during composition would recompose forever.
+    val stateHolder = remember { arrayOfNulls<SwipeToDismissBoxState>(1) }
+
     val dismissState =
         rememberSwipeToDismissBoxState(
             confirmValueChange = { value ->
                 // Intercept the swipe instead of dismissing the row: snap it back and ask
-                // the user to confirm before anything is deleted. This only runs once the
-                // swipe has passed the threshold below; a shorter one settles back with
-                // nothing happening at all.
+                // the user to confirm before anything is deleted.
+                //
+                // What decides is the distance the row actually travelled, not the claim a
+                // flung gesture makes about it. A quick flick is settled past the threshold
+                // by its speed alone, and taking that as a delete made the confirmation
+                // appear with no buzz behind it — the reader had been told nothing about
+                // having gone far enough. A flick that never travelled the distance now
+                // settles back like any other short swipe.
                 if (value == SwipeToDismissBoxValue.EndToStart) {
-                    showDeleteDialog = true
+                    val travelled = stateHolder[0]?.let { state -> runCatching { abs(state.requireOffset()) }.getOrDefault(0f) }
+                    if ((travelled ?: 0f) >= deleteDistance) {
+                        showDeleteDialog = true
+                    }
                 }
                 false
             },
             positionalThreshold = { totalDistance -> minOf(deleteDistance, totalDistance) },
         )
+    stateHolder[0] = dismissState
 
-    // The buzz says "far enough to delete": it fires the moment the drag passes the
-    // threshold above — the point the state settles to changes there, and changes back if
-    // the finger comes back — rather than on release, which would be too late to aim by.
+    // The buzz says "far enough to delete", and it is measured the same way the decision
+    // below is: the distance the row has actually travelled. Watching what the gesture is
+    // about to settle to instead would buzz for a flick that never got there — a quick
+    // flick is settled past the threshold by its speed alone — and then delete nothing,
+    // which is the same disagreement in the other direction. The magnitude is used rather
+    // than a signed offset so the two cannot drift apart over which way is negative.
     LaunchedEffect(dismissState) {
-        snapshotFlow { dismissState.targetValue }
-            .collect { value ->
-                if (value == SwipeToDismissBoxValue.EndToStart) {
+        var armed = false
+        snapshotFlow { runCatching { abs(dismissState.requireOffset()) }.getOrDefault(0f) }
+            .collect { travelled ->
+                val crossed = travelled >= deleteDistance
+                if (crossed && !armed) {
+                    armed = true
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                } else if (!crossed) {
+                    armed = false
                 }
             }
     }

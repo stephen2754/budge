@@ -30,7 +30,7 @@
 ### 1.1 Internationalization (i18n)
 
 - The app ships **nine languages**: Simplified Chinese, English, French, German, Spanish, Russian, Japanese, Italian and Portuguese.
-- The language is **user-configurable** in Settings: **Follow System** plus those nine, each listed under its own name (defaults to Follow System). Following the system means the device language is used when the app has it, and English otherwise — including when the locale cannot be read at all.
+- The language is **user-configurable** in Settings: **Follow System** plus those nine, each listed under its own name and ordered by language code — `de, en, es, fr, it, ja, pt, ru, zh` — which is an order a reader can predict: the Latin names come out alphabetical and the two written in other scripts sit where their code puts them, instead of the app's own language being first (defaults to Follow System). Following the system means the device language is used when the app has it, and English otherwise — including when the locale cannot be read at all.
 - The choice is stored in DataStore (`language` key). It is applied in `MainActivity.attachBaseContext` so the Activity's resources are localized while `LocalContext` remains the Activity (required by Hilt's `hiltViewModel`). A `LocalAppLocale` CompositionLocal drives the date/time formatting helpers.
 - All UI strings live in resource files: `values/strings.xml` (English, the default) plus one `values-<language>/strings.xml` per translation, 113 keys each (117 in English and Chinese, which also carry the release-note summaries) and two plurals. `LocaleResourcesTest` holds that in step: same keys in every locale, same format specifiers in the same order, and every plural defined with the forms its language needs (Russian's `one`/`few`/`many` included, so a count of one no longer reads "1 операций").
 - **Anything that carries a count is a `<plurals>`**, never a `%1$d` inside a plain string, so a language that inflects gets its own forms.
@@ -229,7 +229,7 @@ A single module (`app`) keeps everything simple; the packages mirror the layers 
 | --- | --- |
 | Home | TopAppBar (current month), monthly summary card (expense / income / balance, the balance coloured by its sign), day-grouped transaction list, FAB add, swipe left to delete (with a haptic at the threshold) |
 | Transaction entry | Type FilterChips (expense/income), amount field with currency prefix, content-sized category chips (`FlowRow`), separate **Date** and **Time** buttons (date restricted to today & past, future times clamped), note field, save |
-| Statistics | Period selector (Year / Month / Day, centered text) over a single date anchor, so switching period keeps the same date; a "jump to today" line under the date whenever the anchor is somewhere else; summary card, budget progress (if set), expense & income donut charts with per-category lists |
+| Statistics | Period selector (Year / Month / Day, centered text) over a single date anchor, so switching period keeps the same date; a "jump to today" line directly under the app bar whenever the anchor is somewhere else; summary card, budget progress (if set), expense & income donut charts with per-category lists |
 | Category management | List + add/edit dialog (name, type, color picker) |
 | Settings | Sections for Currency, Appearance (theme + language), Categories (the entry point into category management), Data (export / import / clear all), About (version + channel → release history, licences, update check) |
 
@@ -245,8 +245,12 @@ A single module (`app`) keeps everything simple; the packages mirror the layers 
   the moment a left swipe passes 96dp — the haptic is what says the gesture has gone far
   enough — and releasing there asks for confirmation; releasing before it snaps back with
   nothing happening. The dialog is the confirmation, so the box itself never dismisses. The
-  buzz is driven by the dismiss state's own settle target, which flips exactly when the
-  threshold is crossed and back if the finger returns; it is not a second gesture detector.
+  buzz is measured the same way the decision is — the distance the row has actually
+  travelled — so the two cannot disagree in either direction: watching what the gesture is
+  about to settle to buzzed for a quick flick that the settle carried past the threshold on
+  speed alone and then deleted nothing, and taking the settle alone as the decision showed
+  the dialog with no buzz behind it. The magnitude of the offset is used rather than a
+  signed one so the two cannot drift apart over which way is negative.
 - **A row does not swipe to the next page, and must not grow one.** `SwipeToDismissBox`
   owns horizontal drags for the whole row, so a rightward swipe on a row does nothing. It
   was given a detector of its own once, which *looked* right and broke the left swipe: a
@@ -258,7 +262,10 @@ A single module (`app`) keeps everything simple; the packages mirror the layers 
   bar.
 - **"Jump to today" appears only when there is something to go back from.** It moves the
   anchor to today's whole date while leaving the period alone, so the year view still shows
-  a year, and switching to month or day afterwards is already on today's month and day.
+  a year, and switching to month or day afterwards is already on today's month and day. It
+  is drawn **below** the app bar rather than inside it: the bar is a fixed height, so a
+  second line within it pushed the date upwards the moment the hint appeared. Under the bar
+  it sits directly beneath the date and the date never moves.
 - Editing an existing transaction reuses the entry screen pre-filled with its values.
 
 ---

@@ -99,34 +99,17 @@ fun StatsScreen(viewModel: StatsViewModel = hiltViewModel()) {
                                 contentDescription = stringResource(R.string.cd_previous_period),
                             )
                         }
-                        Column(
+                        Text(
+                            text =
+                                when (uiState.period) {
+                                    StatsPeriod.YEARLY -> formatYear(uiState.currentDate)
+                                    StatsPeriod.DAILY -> formatDayMonthYear(uiState.currentDate)
+                                    StatsPeriod.MONTHLY -> formatMonthYear(uiState.currentMonth)
+                                },
+                            style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier.weight(1f),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text(
-                                text =
-                                    when (uiState.period) {
-                                        StatsPeriod.YEARLY -> formatYear(uiState.currentDate)
-                                        StatsPeriod.DAILY -> formatDayMonthYear(uiState.currentDate)
-                                        StatsPeriod.MONTHLY -> formatMonthYear(uiState.currentMonth)
-                                    },
-                                style = MaterialTheme.typography.titleLarge,
-                                textAlign = TextAlign.Center,
-                            )
-                            // Only when the anchor is somewhere else: a way back to today
-                            // that says nothing when there is nothing to go back from.
-                            if (uiState.currentDate != today) {
-                                Text(
-                                    text = stringResource(R.string.stats_jump_to_today),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier =
-                                        Modifier
-                                            .clickable { viewModel.jumpToToday() }
-                                            .padding(horizontal = 8.dp, vertical = 2.dp),
-                                )
-                            }
-                        }
+                            textAlign = TextAlign.Center,
+                        )
                         IconButton(onClick = { viewModel.nextPeriod() }) {
                             Icon(
                                 Icons.AutoMirrored.Filled.ArrowForward,
@@ -149,6 +132,25 @@ fun StatsScreen(viewModel: StatsViewModel = hiltViewModel()) {
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
         ) {
+            // The way back to today lives here rather than in the app bar, which is a fixed
+            // height: a second line inside it pushed the date itself upwards the moment the
+            // hint appeared. Below the bar it sits directly under the date and the date does
+            // not move at all. It is drawn only when the anchor is somewhere else, so it
+            // says nothing when there is nothing to go back from.
+            if (uiState.currentDate != today) {
+                Text(
+                    text = stringResource(R.string.stats_jump_to_today),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.jumpToToday() }
+                            .padding(vertical = 4.dp),
+                )
+            }
+
             // Centered period selector: each chip takes equal width so the
             // active period always sits in the middle of the row.
             Row(
