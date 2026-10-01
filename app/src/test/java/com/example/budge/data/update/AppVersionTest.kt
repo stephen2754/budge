@@ -44,6 +44,9 @@ class AppVersionTest {
         // beta user be moved onto the stable build by ordinary comparison.
         assertTrue(AppVersion.parse("1.0.0-alpha.1")!! < AppVersion.parse("1.0.0-beta.1")!!)
         assertTrue(AppVersion.parse("1.0.0-beta.9")!! < AppVersion.parse("1.0.0")!!)
+        // The concrete step this project took: if alpha.9 did not sort below beta.1, an
+        // alpha build would never be offered the beta that supersedes it.
+        assertTrue(AppVersion.parse("0.1.0-alpha.9")!! < AppVersion.parse("0.1.0-beta.1")!!)
         assertTrue(AppVersion.parse("1.0.0-beta.1")!! < AppVersion.parse("1.0.0-beta.2")!!)
     }
 
