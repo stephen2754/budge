@@ -131,6 +131,8 @@
     <string name="update_status_unreadable">Não foi possível ler a resposta da origem de atualizações, então não dá para saber se esta versão está atualizada</string>
     <string name="update_status_unconfigured">Nenhuma origem de atualizações configurada (endereço provisório)</string>
     <string name="update_download">Baixar</string>
+    <string name="update_history">Histórico de atualizações</string>
+    <string name="update_join_beta">Participar do beta</string>
     <string name="close">Fechar</string>
     <string name="changelog_title">Histórico de versões</string>
     <string name="changelog_empty">Ainda não há versões publicadas para este canal</string>

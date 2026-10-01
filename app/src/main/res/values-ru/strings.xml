@@ -135,6 +135,8 @@
     <string name="update_status_unreadable">Не удалось прочитать ответ источника обновлений, поэтому неизвестно, последняя ли это версия</string>
     <string name="update_status_unconfigured">Источник обновлений ещё не настроен (адрес-заглушка)</string>
     <string name="update_download">Скачать</string>
+    <string name="update_history">История обновлений</string>
+    <string name="update_join_beta">Присоединиться к бета-версии</string>
     <string name="close">Закрыть</string>
     <string name="changelog_title">История версий</string>
     <string name="changelog_empty">Для этого канала ещё нет опубликованных версий</string>

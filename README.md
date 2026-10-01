@@ -126,6 +126,12 @@ what makes the rule meaningful. Publishing a release is three steps:
 [CHANGELOG.md](CHANGELOG.md) holds the full detail; the in-app history is the one-line
 version of it.
 
+Tapping the version row says what the installed build is and what it changed; the releases
+before it are one button away, filtered the same way the update check filters what it will
+offer. A **stable** build that is behind a beta is offered a way onto the test line from the
+update window, and that offer is re-decided on every check — it is never shown to a build
+that is already on a test channel, and never points at an alpha.
+
 ## Data and privacy
 
 - Records live in a local Room database; preferences in DataStore. Neither is uploaded.

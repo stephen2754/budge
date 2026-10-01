@@ -47,6 +47,8 @@ import com.example.budge.R
 import com.example.budge.data.prefs.Currencies
 import com.example.budge.data.prefs.Prefs
 import com.example.budge.data.update.OpenSourceComponent
+import com.example.budge.data.update.AppVersion
+import com.example.budge.data.update.ReleaseNotes
 import com.example.budge.data.update.ReleaseChannel
 import com.example.budge.data.update.UpdateFailure
 import com.example.budge.data.update.UpdateStatus
@@ -71,6 +73,36 @@ private fun channelNote(channel: ReleaseChannel): Int =
         ReleaseChannel.BETA -> R.string.channel_beta_note
         ReleaseChannel.STABLE -> R.string.channel_stable_note
     }
+
+/**
+ * One release in a changelog window: what it is, and what it changed.
+ *
+ * [currentVersion] marks the installed build, which only makes sense in a list of several —
+ * the version window is already about the installed build and passes null.
+ */
+@Composable
+private fun ReleaseEntry(
+    release: ReleaseNotes,
+    currentVersion: AppVersion?,
+) {
+    Text(
+        text = "${release.version}  ·  ${stringResource(channelLabel(release.version.channel))}",
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+    )
+    if (release.version == currentVersion) {
+        Text(
+            text = stringResource(R.string.changelog_current),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    Spacer(modifier = Modifier.height(6.dp))
+    Text(
+        text = stringResource(release.notesRes),
+        style = MaterialTheme.typography.bodyMedium,
+    )
+}
 
 /** The one line under "Check for updates" describing the last check. */
 @Composable
@@ -161,10 +193,12 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val updateStatus by updateViewModel.status.collectAsStateWithLifecycle()
+    val betaOffer by updateViewModel.betaOffer.collectAsStateWithLifecycle()
     var showCurrencyDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showClearAllDialog by remember { mutableStateOf(false) }
     var showChangelog by remember { mutableStateOf(false) }
+    var showUpdateHistory by remember { mutableStateOf(false) }
     var showLicenses by remember { mutableStateOf(false) }
     var showUpdateResult by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -422,44 +456,59 @@ fun SettingsScreen(
             onDismissRequest = { showChangelog = false },
             title = { Text(stringResource(R.string.changelog_title)) },
             text = {
-                val history = updateViewModel.history
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    // What the installed channel means, so a test build says so plainly
-                    // before the list of changes.
+                    // What the installed channel means, so a test build says so plainly,
+                    // followed by what *this* build changed. The earlier releases are one
+                    // button away rather than listed here, so the window cannot grow into a
+                    // scroll of everything ever published when the reader wanted one answer.
                     Text(
                         text = stringResource(channelNote(updateViewModel.channel)),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.height(12.dp))
-                    if (history.isEmpty()) {
+                    val current = updateViewModel.currentRelease
+                    if (current == null) {
+                        // A build whose own record was never added to the shipped list: say
+                        // so rather than showing another release's notes as if they were its.
                         Text(stringResource(R.string.changelog_empty))
                     } else {
-                        history.forEachIndexed { index, release ->
-                            if (index > 0) HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
-                            Text(
-                                text = "${release.version}  ·  ${stringResource(channelLabel(release.version.channel))}",
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                            if (release.version == updateViewModel.currentVersion) {
-                                Text(
-                                    text = stringResource(R.string.changelog_current),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = stringResource(release.notesRes),
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        }
+                        ReleaseEntry(current, currentVersion = null)
                     }
                 }
             },
             confirmButton = {
                 TextButton(onClick = { showChangelog = false }) { Text(stringResource(R.string.close)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showUpdateHistory = true }) { Text(stringResource(R.string.update_history)) }
+            },
+        )
+    }
+
+    // The releases this channel is allowed to see, newest first — the same rule the update
+    // check uses, so the two can never disagree about what exists. One level down from the
+    // version window rather than inside it: what a reader wants from "what am I running" and
+    // from "what came before" are different, and only the second one grows without limit.
+    if (showUpdateHistory) {
+        val history = updateViewModel.history
+        AlertDialog(
+            onDismissRequest = { showUpdateHistory = false },
+            title = { Text(stringResource(R.string.update_history)) },
+            text = {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    if (history.isEmpty()) {
+                        Text(stringResource(R.string.changelog_empty))
+                    } else {
+                        history.forEachIndexed { index, release ->
+                            if (index > 0) HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+                            ReleaseEntry(release, currentVersion = updateViewModel.currentVersion)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showUpdateHistory = false }) { Text(stringResource(R.string.close)) }
             },
         )
     }
@@ -543,8 +592,28 @@ fun SettingsScreen(
                 }
             },
             dismissButton = {
-                if (status is UpdateStatus.Available) {
-                    TextButton(onClick = { showUpdateResult = false }) { Text(stringResource(R.string.close)) }
+                // Bottom left, level with the buttons opposite: the way onto the test
+                // programme, offered only by a stable build and only while a beta is actually
+                // ahead of it — decided by the check that just ran, not remembered from an
+                // earlier one. A failed check offers nothing, because nothing was learned.
+                val offer = betaOffer
+                val showClose = status is UpdateStatus.Available
+                if (offer != null || showClose) {
+                    Row {
+                        if (offer != null) {
+                            TextButton(
+                                onClick = {
+                                    openReleasePage(context, offer.pageUrl)
+                                    showUpdateResult = false
+                                },
+                            ) {
+                                Text(stringResource(R.string.update_join_beta))
+                            }
+                        }
+                        if (showClose) {
+                            TextButton(onClick = { showUpdateResult = false }) { Text(stringResource(R.string.close)) }
+                        }
+                    }
                 }
             },
         )

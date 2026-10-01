@@ -18,6 +18,33 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-beta.3] — what this build is, and how to leave it
+
+### Added
+
+- **An "update history" button in the version window**, bottom left and level with the close
+  button. The window now says what the *installed* build is — what its channel promises and
+  what it changed — and the earlier releases are one press away instead of a list that grows
+  without limit in the place a reader goes to ask a single question. The second window holds
+  everything this channel may see, filtered by exactly the rule the update check uses: an
+  alpha build sees alpha, beta and stable; a beta build sees beta and stable; a stable build
+  sees stable only. Nothing about the numbers is guessed, so the history and the check can
+  never disagree about what exists.
+- **A "join the beta" button for stable builds**, bottom left of the update window and level
+  with the buttons opposite. It is offered only by a *stable* build, only while a **beta** is
+  strictly newer than the running release, and never an alpha — the promise is the newest
+  beta, not the development channel. The condition is re-decided on every check rather than
+  remembered, so the button disappears as soon as the stable release catches up with the
+  betas, and a failed check offers nothing at all, because a failed check found out nothing.
+  Pressing it opens that beta's release page, like every other download here.
+
+### Fixed
+
+- **The compiled release list was missing two releases** (0.1.0-beta.1 and 0.1.0-alpha.9),
+  which is why a beta build opening the version window saw a single entry. A unit test
+  already held the shipped list against the installed version; the gap was in the entries
+  themselves.
+
 ## [0.1.0-beta.2] — the ways it could still fall over
 
 Two audits — one on the crash surface, one on where the work goes — turned up more than the
@@ -378,6 +405,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-beta.3]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.3
 [0.1.0-beta.2]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.2
 [0.1.0-beta.1]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.1
 [0.1.0-alpha.9]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.9

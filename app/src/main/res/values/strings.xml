@@ -131,6 +131,8 @@
     <string name="update_status_unreadable">The answer from the update source could not be read, so whether this build is up to date is unknown</string>
     <string name="update_status_unconfigured">No update source is configured yet (placeholder address)</string>
     <string name="update_download">Download</string>
+    <string name="update_history">Update history</string>
+    <string name="update_join_beta">Join the beta</string>
     <string name="close">Close</string>
     <string name="changelog_title">Release history</string>
     <string name="changelog_empty">No release has been published for this channel yet</string>
@@ -141,6 +143,7 @@
     <string name="licenses_intro">Your records live in a local database on this device and are never uploaded. The one network request the app can make is the update check: a read-only request to the configured releases address, carrying no ledger data and no identifier. Export and import work on a local JSON file you choose.</string>
     <string name="licenses_third_party">Open-source components</string>
     <string name="licenses_full_text_note">The full licence text of each component is available at its project page.</string>
+    <string name="release_notes_0_1_0_beta_3">The version row now says what this build changed, with an update history a button away; a stable build that is behind a beta is offered a way onto the test line from the update window.</string>
     <string name="release_notes_0_1_0_beta_2">A damaged or older database can no longer lock you out, the entry form keeps what you typed through a rotation or theme change, the first frame stops showing a balance of zero, dark mode no longer opens with a white flash, and an oversized import can no longer exhaust the memory available.</string>
     <string name="release_notes_0_1_0_beta_1">First beta: preference reads and writes can no longer take the app down, a failed delete says so instead of crashing, an export is taken in one piece, and the hot queries were checked against the database indexes.</string>
     <string name="release_notes_0_1_0_alpha_9">A quick flick no longer deletes without a buzz, the statistics date stops moving when the jump-to-today line appears, and the language list is ordered by language code instead of starting with Chinese.</string>

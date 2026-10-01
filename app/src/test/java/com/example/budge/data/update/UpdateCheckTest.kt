@@ -88,6 +88,50 @@ class UpdateCheckTest {
     }
 
     @Test
+    fun `a stable build can be offered the newest beta worth joining`() {
+        val offer =
+            selectBetaOffer(
+                AppVersion.parse("1.0.0")!!,
+                listOf(remote("1.1.0-beta.1"), remote("1.2.0-beta.1"), remote("1.1.0-beta.4")),
+            )
+
+        assertEquals(AppVersion.parse("1.2.0-beta.1"), offer?.version)
+    }
+
+    @Test
+    fun `joining the beta never means an alpha`() {
+        val offer = selectBetaOffer(AppVersion.parse("1.0.0")!!, listOf(remote("2.0.0-alpha.1")))
+
+        assertNull("an alpha is the development channel, not the test programme", offer)
+    }
+
+    @Test
+    fun `a stable build ahead of every beta is offered nothing to join`() {
+        val offer =
+            selectBetaOffer(
+                AppVersion.parse("1.3.0")!!,
+                listOf(remote("1.2.0-beta.3"), remote("1.2.0-beta.9")),
+            )
+
+        assertNull(offer)
+    }
+
+    @Test
+    fun `a build already on a test channel is offered nothing to join`() {
+        val betas = listOf(remote("1.1.0-beta.1"))
+
+        assertNull(selectBetaOffer(AppVersion.parse("1.0.0-beta.1")!!, betas))
+        assertNull(selectBetaOffer(AppVersion.parse("1.0.0-alpha.1")!!, betas))
+    }
+
+    @Test
+    fun `a stable release is never the beta to join`() {
+        val offer = selectBetaOffer(AppVersion.parse("1.0.0")!!, listOf(remote("1.1.0")))
+
+        assertNull(offer)
+    }
+
+    @Test
     fun `a build ahead of the release source is not offered a downgrade`() {
         val current = AppVersion.parse("3.0.0")!!
 

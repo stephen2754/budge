@@ -129,6 +129,8 @@
     <string name="update_status_unreadable">更新元の応答を読み取れませんでした。最新かどうかを確認できません</string>
     <string name="update_status_unconfigured">更新元が未設定です（仮のアドレス）</string>
     <string name="update_download">ダウンロード</string>
+    <string name="update_history">更新履歴</string>
+    <string name="update_join_beta">ベータ版に参加</string>
     <string name="close">閉じる</string>
     <string name="changelog_title">更新履歴</string>
     <string name="changelog_empty">このチャンネルにはまだ公開されたバージョンがありません</string>

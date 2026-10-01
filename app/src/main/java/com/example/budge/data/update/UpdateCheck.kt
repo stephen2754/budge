@@ -142,3 +142,28 @@ fun selectUpdate(
     releases
         .filter { current.channel.accepts(it.version.channel) && it.version > current }
         .maxByOrNull { it.version }
+
+/**
+ * The newest beta a stable build could move onto, or null when there is none.
+ *
+ * This is the one place a stable build is pointed at something its own channel would not
+ * hand it: joining the test programme is the reader's decision, and without it a stable
+ * build has no route to a beta at all. Betas only — an alpha is not a test programme but the
+ * development channel, and the offer promises "the newest beta".
+ *
+ * "Newer than the running build" is the same comparison the check itself makes: a stable
+ * release that is already ahead of every beta is offered nothing, and there is nothing to
+ * join.
+ */
+fun selectBetaOffer(
+    current: AppVersion,
+    releases: List<RemoteRelease>,
+): RemoteRelease? {
+    // The precondition is part of the rule rather than a caller's business: a beta or alpha
+    // build is already on a test channel, and the window it would appear in is the stable
+    // build's.
+    if (current.channel != ReleaseChannel.STABLE) return null
+    return releases
+        .filter { it.version.channel == ReleaseChannel.BETA && it.version > current }
+        .maxByOrNull { it.version }
+}

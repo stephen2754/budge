@@ -131,6 +131,8 @@
     <string name="update_status_unreadable">La réponse de la source des mises à jour est illisible : on ne peut donc pas savoir si cette version est à jour</string>
     <string name="update_status_unconfigured">Aucune source de mise à jour n’est configurée (adresse provisoire)</string>
     <string name="update_download">Télécharger</string>
+    <string name="update_history">Historique des mises à jour</string>
+    <string name="update_join_beta">Rejoindre la bêta</string>
     <string name="close">Fermer</string>
     <string name="changelog_title">Historique des versions</string>
     <string name="changelog_empty">Aucune version publiée pour ce canal</string>

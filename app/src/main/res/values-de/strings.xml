@@ -131,6 +131,8 @@
     <string name="update_status_unreadable">Die Antwort der Update-Quelle ist nicht lesbar – ob diese Version aktuell ist, lässt sich nicht feststellen</string>
     <string name="update_status_unconfigured">Es ist noch keine Update-Quelle eingerichtet (Platzhalteradresse)</string>
     <string name="update_download">Herunterladen</string>
+    <string name="update_history">Versionsverlauf</string>
+    <string name="update_join_beta">Der Beta beitreten</string>
     <string name="close">Schließen</string>
     <string name="changelog_title">Versionsverlauf</string>
     <string name="changelog_empty">Für diesen Kanal ist noch keine Version veröffentlicht</string>

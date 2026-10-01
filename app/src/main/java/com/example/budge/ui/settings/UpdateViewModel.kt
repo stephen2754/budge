@@ -8,6 +8,8 @@ import com.example.budge.data.update.ReleaseChannel
 import com.example.budge.data.update.ReleaseFetch
 import com.example.budge.data.update.ReleaseNotes
 import com.example.budge.data.update.ReleaseSource
+import com.example.budge.data.update.RemoteRelease
+import com.example.budge.data.update.selectBetaOffer
 import com.example.budge.data.update.UpdateConfig
 import com.example.budge.data.update.UpdateStatus
 import com.example.budge.data.update.releaseHistoryFor
@@ -47,6 +49,27 @@ class UpdateViewModel
         /** Release history this channel is allowed to see, newest first. */
         val history: List<ReleaseNotes> = releaseHistoryFor(channel)
 
+        /**
+         * This build's own record in that history, for the version dialog.
+         *
+         * The dialog says what *this* build is; the list of earlier releases is one button
+         * away, so the two never have to be read as the same thing.
+         */
+        val currentRelease: ReleaseNotes? = history.firstOrNull { it.version == currentVersion }
+
+        private val _betaOffer = MutableStateFlow<RemoteRelease?>(null)
+
+        /**
+         * The newest beta this build could join, as of the last check.
+         *
+         * Only a stable build is ever offered one — a beta or an alpha is already on a test
+         * channel — and it is re-decided on every check rather than remembered, so the button
+         * disappears as soon as the stable release catches up with the betas. A failed check
+         * leaves it empty: nothing was learned on that check, and a button promising the
+         * newest beta would be guessing.
+         */
+        val betaOffer: StateFlow<RemoteRelease?> = _betaOffer.asStateFlow()
+
         private val _status = MutableStateFlow<UpdateStatus>(UpdateStatus.Idle)
         val status: StateFlow<UpdateStatus> = _status.asStateFlow()
 
@@ -64,6 +87,7 @@ class UpdateViewModel
             }
             viewModelScope.launch {
                 _status.value = UpdateStatus.Checking
+                _betaOffer.value = null
                 _status.value =
                     when (val fetched = releaseSource.releases(UpdateConfig.GITHUB_REPOSITORY)) {
                         is ReleaseFetch.Failure -> UpdateStatus.Unreachable(fetched.failure, fetched.statusCode)
@@ -71,6 +95,9 @@ class UpdateViewModel
                             // Nothing published at all is not the same as "nothing newer".
                             fetched.releases.isEmpty() -> UpdateStatus.NoReleases
                             else -> {
+                                // Null for a beta or alpha build, and for a stable build
+                                // that is already ahead of every beta.
+                                _betaOffer.value = selectBetaOffer(currentVersion, fetched.releases)
                                 val newer = selectUpdate(currentVersion, fetched.releases)
                                 if (newer == null) {
                                     UpdateStatus.UpToDate(currentVersion)
