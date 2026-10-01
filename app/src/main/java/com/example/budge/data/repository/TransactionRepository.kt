@@ -29,9 +29,10 @@ class TransactionRepository
             startTime: Long,
             endTime: Long,
         ): Flow<List<Transaction>> =
-            transactionDao.getByDateRange(startTime, endTime).map { entities ->
-                entities.map { it.toDomain() }
-            }
+            transactionDao
+                .getByDateRange(startTime, endTime)
+                .map { entities -> entities.map { it.toDomain() } }
+                .fallingBackTo(emptyList())
 
         /**
          * Emits a [MonthlySummary] for [yearMonth]. The month is converted to
@@ -60,7 +61,7 @@ class TransactionRepository
                     totalExpense = Amount.coerceToAmount(total?.totalExpense ?: 0L),
                     totalIncome = Amount.coerceToAmount(total?.totalIncome ?: 0L),
                 )
-            }
+            }.fallingBackTo(MonthlySummary(totalExpense = 0L, totalIncome = 0L))
 
         fun getCategorySummaries(yearMonth: YearMonth): Flow<List<CategorySummary>> {
             val (startTime, endTime) = yearMonthToRange(yearMonth)
@@ -87,6 +88,7 @@ class TransactionRepository
                     )
                 }
             }
+                .fallingBackTo(emptyList())
 
         suspend fun getById(id: Long): Transaction? = transactionDao.getById(id)?.toDomain()
 

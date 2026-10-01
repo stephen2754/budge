@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
 import com.example.budge.data.prefs.Prefs
 import com.example.budge.data.prefs.appLocaleFor
 import com.example.budge.di.settingsDataStore
@@ -59,9 +60,11 @@ class MainActivity : ComponentActivity() {
         // page background instead of content.
         enableEdgeToEdge()
         setContent {
+            // Seeded from the read attachBaseContext already made, so a user who chose
+            // dark on a light device does not get a light frame while the flow catches up.
             val theme by dataStore.safeData()
                 .map { it[Prefs.themeKey] ?: Prefs.FOLLOW_SYSTEM }
-                .collectAsState(initial = Prefs.FOLLOW_SYSTEM)
+                .collectAsState(initial = appliedTheme)
 
             // Start from the language actually applied in attachBaseContext so the
             // initial value never differs from the applied locale (avoids a
@@ -104,16 +107,19 @@ class MainActivity : ComponentActivity() {
      * `android:localeConfig`) would remove it entirely.
      */
     private fun updateBaseContextLocale(context: Context): Context {
-        val language =
+        // One read answers both questions the window has to settle before Compose can draw:
+        // which language the resources load in, and which theme the first frame uses.
+        val preferences =
             try {
                 runBlocking {
-                    settingsDataStore(context.applicationContext).safeData()
-                        .first()[Prefs.languageKey] ?: Prefs.FOLLOW_SYSTEM
+                    settingsDataStore(context.applicationContext).safeData().first()
                 }
             } catch (_: Exception) {
-                Prefs.FOLLOW_SYSTEM
+                emptyPreferences()
             }
+        val language = preferences[Prefs.languageKey] ?: Prefs.FOLLOW_SYSTEM
         appliedLanguage = language
+        appliedTheme = preferences[Prefs.themeKey] ?: Prefs.FOLLOW_SYSTEM
         val locale = appLocaleFor(language)
         return try {
             val config = Configuration(context.resources.configuration)
@@ -130,5 +136,10 @@ class MainActivity : ComponentActivity() {
         // attachBaseContext read and the onCreate recomposition check.
         @Volatile
         private var appliedLanguage: String = Prefs.FOLLOW_SYSTEM
+
+        // The theme the same read found, for the first composition to start from rather
+        // than from the default.
+        @Volatile
+        private var appliedTheme: String = Prefs.FOLLOW_SYSTEM
     }
 }

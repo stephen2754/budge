@@ -28,6 +28,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -57,6 +59,24 @@ private enum class Overlay {
     ENTRY,
     CATEGORIES,
 }
+
+/** The id the entry form uses for "a new transaction" rather than an existing one. */
+private const val NEW_ENTRY = -1L
+
+/**
+ * Saves which overlay is open across a configuration change.
+ *
+ * The overlay used to live in a plain `remember`, so a change the Activity does not handle
+ * itself — the system switching to dark mode at sunset under the default "follow system"
+ * theme, a display-size or font-scale change, a system locale change — closed the form and
+ * dropped the transaction being edited, discarding anything typed into it. The smaller
+ * state here is the enum's name; "no overlay" is the empty string.
+ */
+private val OverlaySaver =
+    Saver<Overlay?, String>(
+        save = { it?.name ?: "" },
+        restore = { name -> if (name.isEmpty()) null else Overlay.valueOf(name) },
+    )
 
 /**
  * Slides a full-screen overlay up from the bottom.
@@ -113,8 +133,10 @@ fun BudgeNavGraph() {
         )
     val initialPage = bottomNavItems.indexOfFirst { it.screen == Screen.Home }.coerceAtLeast(0)
 
-    var overlay by remember { mutableStateOf<Overlay?>(null) }
-    var editTransactionId by remember { mutableStateOf<Long?>(null) }
+    var overlay by rememberSaveable(stateSaver = OverlaySaver) { mutableStateOf<Overlay?>(null) }
+    // -1 means "a new entry", which is the same sentinel the form itself uses; keeping the
+    // id in saveable state is what lets a recreation reopen the transaction it was editing.
+    var editTransactionId by rememberSaveable { mutableStateOf(-1L) }
     var selectedTab by remember { mutableIntStateOf(initialPage) }
 
     // The page a tap is animating towards, or null when the pager is being dragged.
@@ -168,7 +190,7 @@ fun BudgeNavGraph() {
 
     fun openNewEntry() {
         overlay = Overlay.ENTRY
-        editTransactionId = null
+        editTransactionId = NEW_ENTRY
     }
 
     fun openEditEntry(transactionId: Long) {
@@ -178,12 +200,12 @@ fun BudgeNavGraph() {
 
     fun openCategories() {
         overlay = Overlay.CATEGORIES
-        editTransactionId = null
+        editTransactionId = NEW_ENTRY
     }
 
     fun dismissOverlay() {
         overlay = null
-        editTransactionId = null
+        editTransactionId = NEW_ENTRY
     }
 
     // System back closes an open overlay instead of backing out of the app.
@@ -228,7 +250,7 @@ fun BudgeNavGraph() {
             // bottom-nav highlight is hidden so the user is focused on the overlay.
             OverlayHost(visible = overlay == Overlay.ENTRY, modifier = Modifier.matchParentSize()) {
                 EntryScreen(
-                    transactionId = editTransactionId ?: -1L,
+                    transactionId = editTransactionId,
                     onNavigateBack = { dismissOverlay() },
                 )
             }

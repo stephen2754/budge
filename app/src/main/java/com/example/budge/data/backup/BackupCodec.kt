@@ -3,6 +3,8 @@ package com.example.budge.data.backup
 import com.example.budge.data.local.entity.BudgetEntity
 import com.example.budge.data.local.entity.CategoryEntity
 import com.example.budge.data.local.entity.TransactionEntity
+import com.example.budge.model.Amount
+import com.example.budge.model.TransactionType
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
@@ -77,9 +79,13 @@ fun decodeBackup(json: String): BackupData? {
     if (!root.isJsonObject) return null
     if (root.asJsonObject.keySet().none { it in BACKUP_KEYS }) return null
 
+    // The tree parsed above is handed to Gson rather than the string: parsing the same
+    // document twice cost a second tokenisation and kept a whole JsonElement tree alive
+    // across it, which on a large ledger is the difference between one copy of the file in
+    // memory and three.
     val document =
         try {
-            gson.fromJson(json, BackupDocument::class.java)
+            gson.fromJson(root, BackupDocument::class.java)
         } catch (_: Exception) {
             return null
         } ?: return null
@@ -93,8 +99,43 @@ fun decodeBackup(json: String): BackupData? {
             budgets = document.budgets.orEmpty(),
         )
 
-    return data.takeUnless { it.isEmpty }
+    return data.takeUnless { it.isEmpty }?.sanitized()
 }
+
+/**
+ * The records a file may hold, with their values brought back into the ranges the app
+ * defines.
+ *
+ * A backup can come from anywhere the file picker can reach, and restoring it wipes the
+ * ledger first, so what it says is believed. Two values have to be checked or the ledger
+ * ends up disagreeing with itself:
+ *
+ * - **Direction.** The app defines two, expense (0) and income (1). A row stored with
+ *   anything else means an expense — `TransactionType.fromValue`'s rule, which this uses
+ *   SQL totals count only 0 and 1, so the row appears in the list and is missing from the
+ *   figure above it. Coercing the stored value makes the two agree.
+ * - **Amount.** The entry form refuses anything outside 1..[Amount.MAX_CENTS], and the
+ *   repository clamps what SQL sums to that range; a file could put an out-of-range value
+ *   straight into a row, and a day's subtotal — which adds rows up in a Long and is not
+ *   clamped — could then wrap into a small, plausible-looking number.
+ *
+ * Values are brought into range rather than dropped. A record with a strange amount is
+ * still a record the user meant to keep, and discarding rows silently is the failure this
+ * whole file is written to avoid.
+ */
+fun BackupData.sanitized(): BackupData =
+    copy(
+        transactions =
+            transactions.map { transaction ->
+                transaction.copy(
+                    // Through the app's own mapping, not a range clamp: an unknown
+                    // direction has one meaning here — the same one the list and the totals
+                    // already give it — and a second rule would be free to drift from it.
+                    type = TransactionType.fromValue(transaction.type).value,
+                    amount = transaction.amount.coerceIn(0L, Amount.MAX_CENTS),
+                )
+            },
+    )
 
 /** Serializes a backup to the JSON written to the user's file. */
 fun encodeBackup(data: BackupData): String =

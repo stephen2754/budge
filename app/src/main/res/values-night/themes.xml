@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The window theme in dark mode. Same role as values/themes.xml — what is on screen
+     before Compose draws — but with the dark Material parent, so a device in dark mode does
+     not open with a white flash between the system splash and the first Compose frame.
+     Material Design 3 theming (including dynamic color) is still applied at runtime by
+     BudgeTheme; this only covers the window behind it. -->
+<resources>
+    <style name="Theme.Budge" parent="android:Theme.Material.NoActionBar" />
+</resources>

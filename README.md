@@ -171,6 +171,18 @@ version of it.
   so the UI follows the store rather than the tap. The one exception is deliberate: the
   first-launch seeding skips on a read failure instead of treating it as an empty store,
   because that path would otherwise overwrite the user's currency choice.
+- **A database read that fails is answered, not thrown.** Every read the screens collect
+  ends in `fallingBackTo(...)` (`data/repository/ReadFallback.kt`), because a Room flow
+  reports a failure by throwing, and a throw inside `viewModelScope` or composition is a
+  crash the reader cannot get past. Writes still report their own failures where they
+  happen, and a *corrupt database file* is not repaired — that would mean deleting a ledger
+  the user may not have backed up, so a backup export is the recovery route.
+- **Anything read from outside the app is bounded.** The imported backup file and the
+  update response both go through `readAtMost` (`data/BoundedRead.kt`): reading a foreign
+  input whole makes the app's memory whatever that input happens to be, and an
+  `OutOfMemoryError` is an `Error`, so it escapes every `catch (Exception)` on the path.
+  An import's values are also brought back into range (`BackupData.sanitized()`), so a
+  file cannot leave the ledger disagreeing with itself.
 - **R8 keeps.** Anything Gson reflects over needs `@SerializedName` *and* a keep rule;
   `data/backup` and `data/update` are the two such packages. Check
   `app/build/outputs/mapping/release/mapping.txt` after touching either.

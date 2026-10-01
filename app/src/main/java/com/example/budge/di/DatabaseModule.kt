@@ -37,6 +37,15 @@ object DatabaseModule {
                 MIGRATION_1_2,
                 MIGRATION_2_3,
                 MIGRATION_1_3,
+                // Downgrades. Room refuses to open a file whose version it has no path back
+                // from, so installing an older build over a newer one used to crash the app
+                // on every launch, with clearing app data — and so deleting the ledger — as
+                // the only way back in. That is a step a user can really take: the app's own
+                // update screen opens the releases page, where every older APK is still
+                // downloadable.
+                MIGRATION_3_2,
+                MIGRATION_2_1,
+                MIGRATION_3_1,
             ).build()
 
     // The DAOs are short-lived and tied to the database instance, so they are
@@ -66,4 +75,25 @@ object DatabaseModule {
         object : Migration(1, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {}
         }
+
+    private val MIGRATION_3_2 = noOpMigration(3, 2)
+
+    private val MIGRATION_2_1 = noOpMigration(2, 1)
+
+    private val MIGRATION_3_1 = noOpMigration(3, 1)
+
+    /**
+     * A migration between two of the three identical versions.
+     *
+     * Versions 1, 2 and 3 declare the same tables, columns, indexes and foreign keys — the
+     * exported schemas carry one identity hash between them — so there is nothing to move
+     * in either direction. These exist so that the *version number* can go down as well as
+     * up without Room throwing.
+     */
+    private fun noOpMigration(
+        from: Int,
+        to: Int,
+    ) = object : Migration(from, to) {
+        override fun migrate(db: SupportSQLiteDatabase) {}
+    }
 }

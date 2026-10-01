@@ -17,6 +17,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -26,12 +27,17 @@ import javax.inject.Inject
 
 /**
  * Immutable state describing everything the home screen renders: the selected
- * month, that month's transactions, the aggregated expense/income totals, the
- * user's currency symbol, and whether data is still loading.
+ * month, that month's transactions, the aggregated expense/income totals and the
+ * user's currency symbol.
+ *
+ * [transactions] is null until the first query answers, which is a different thing from an
+ * empty list: nothing has been read yet, so the totals are not zero — they are unknown. The
+ * screen draws a placeholder for the first frame or two rather than a balance of zero in a
+ * currency the reader may not have chosen.
  */
 data class HomeUiState(
     val currentMonth: YearMonth = YearMonth.now(),
-    val transactions: List<Transaction> = emptyList(),
+    val transactions: List<Transaction>? = null,
     val totalExpense: Long = 0L,
     val totalIncome: Long = 0L,
     val currencySymbol: String = "$",
@@ -58,7 +64,12 @@ class HomeViewModel
         val uiState: StateFlow<HomeUiState> =
             combine(
                 _currentMonth,
-                dataStore.safeData().map { it[Prefs.currencySymbolKey] ?: "$" },
+                // The symbol is a write-only-through-Settings value, so a preference write
+                // for anything else must not cancel and restart the two Room queries below.
+                dataStore
+                    .safeData()
+                    .map { it[Prefs.currencySymbolKey] ?: "$" }
+                    .distinctUntilChanged(),
             ) { month, symbol ->
                 Pair(month, symbol)
             }.flatMapLatest { (month, symbol) ->

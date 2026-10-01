@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.budge.R
 import com.example.budge.data.backup.BackupData
 import com.example.budge.data.backup.decodeBackup
+import com.example.budge.data.readAtMost
 import com.example.budge.data.backup.encodeBackup
 import com.example.budge.data.prefs.Prefs
 import com.example.budge.data.prefs.safeData
@@ -52,6 +53,9 @@ data class SettingsUiState(
  * Import is deliberately two-phase: the picked file is validated and parsed
  * first, and the overwrite only runs after the user confirms it.
  */
+/** Twenty megabytes: far above any real backup, far below anything that hurts. */
+private const val MAX_BACKUP_CHARS = 20 * 1024 * 1024
+
 @HiltViewModel
 class SettingsViewModel
     @Inject
@@ -230,7 +234,8 @@ class SettingsViewModel
         ): BackupData? =
             try {
                 context.contentResolver.openInputStream(uri)?.use { input ->
-                    decodeBackup(input.bufferedReader().use { it.readText() })
+                    val text = input.bufferedReader().use { reader -> reader.readAtMost(MAX_BACKUP_CHARS) }
+                    text?.let(::decodeBackup)
                 }
             } catch (_: Exception) {
                 null
@@ -266,4 +271,5 @@ class SettingsViewModel
             @PluralsRes id: Int,
             count: Int,
         ): String = getApplication<Application>().resources.getQuantityString(id, count, count)
+
     }

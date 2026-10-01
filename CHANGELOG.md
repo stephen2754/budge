@@ -18,6 +18,59 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-beta.2] — the ways it could still fall over
+
+Two audits — one on the crash surface, one on where the work goes — turned up more than the
+first beta had covered. Everything below is either a way the app could die, a way it could
+lose something the user did, or a way it told an untruth; the rest of the findings are
+recorded as decisions in `DESIGN.md` §12.21 rather than quietly dropped.
+
+### Fixed
+
+- **A database that cannot be opened no longer locks the user out.** Room refuses to open a
+  file whose version it has no path back from, and the app's own update screen opens the
+  releases page where every older APK is downloadable — so installing an older build over a
+  newer one crashed on every launch, with clearing app data (and so deleting the ledger) as
+  the only way back. Versions 1, 2 and 3 are one schema, so the reverse migrations are
+  no-ops and the version can now go down as well as up.
+- **A read that fails no longer kills the process.** Room reports a failure by throwing from
+  the flow, and these flows are collected in `viewModelScope` and in composition, where the
+  exception has nowhere to go. Reads now end in `fallingBackTo(...)`: an unreadable database
+  shows an empty screen instead of crashing, and the writes that fail say so where they
+  happen. A *corrupt* file is still not repaired — that would mean deleting a ledger the
+  user may not have backed up.
+- **First-launch work cannot crash before the first screen.** It opens the database and
+  writes preferences on a scope with no handler, and none of it has a reader waiting on it.
+- **The entry form keeps what was typed.** It lived in plain `remember`, so a configuration
+  change — the system switching to dark mode at sunset, a font-scale change — closed the
+  form and threw the input away. The overlay is saved now, and `EntryViewModel.init` no
+  longer resets a form it has already prepared for the same target.
+- **An import cannot be made to eat the app's memory.** The file was read whole and parsed
+  twice; the read is capped and the parse happens once. Both the import and the update check
+  go through one bounded-read helper, because an `OutOfMemoryError` is an `Error` and so
+  escapes every `catch (Exception)` on those paths.
+- **An imported file cannot leave the ledger disagreeing with itself.** A direction that is
+  neither expense nor income used to render as one while the SQL totals counted it as
+  neither, and an out-of-range amount could wrap a day's subtotal into a small, plausible
+  number. Both are brought into range on the way in, through the app's own mapping rather
+  than a second rule that could drift from it.
+- **Two read-then-write races are single transactions**: seeding built-in categories, and
+  `ensureCategoryOfType` — which the entry form can lose against itself, leaving duplicate
+  categories that the once-only seed flag never repairs. The first-launch currency default is
+  decided inside the write it belongs to, so it can no longer overwrite a sign chosen in
+  Settings while the database was still opening.
+
+### Changed
+
+- **Dark mode no longer opens with a white flash.** The window theme had no night variant,
+  so the system splash and the pre-Compose window were light on a dark device.
+- **The first frame tells the truth.** Before the first query answered, the home screen drew
+  a full summary of zeros — in the dollar sign, whatever currency was chosen — and "no
+  transactions this month". The state now distinguishes "not read yet" from "empty", and the
+  first frames show a placeholder the reader cannot mistake for a balance.
+- **The stored theme is applied on the first frame**, from the read the locale already makes,
+  instead of one dispatch later.
+
 ## [0.1.0-beta.1] — beta, and what that now asserts
 
 This is the first **beta**. The channel rules in `DESIGN.md` §12.15 spell out what that
@@ -325,6 +378,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-beta.2]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.2
 [0.1.0-beta.1]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.1
 [0.1.0-alpha.9]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.9
 [0.1.0-alpha.8]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.8

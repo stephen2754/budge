@@ -70,6 +70,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.budge.R
 import com.example.budge.model.Transaction
 import com.example.budge.model.TransactionType
+import com.example.budge.model.Amount
 import com.example.budge.ui.SummaryFigure
 import com.example.budge.ui.amountTextStyle
 import com.example.budge.ui.categoryInitialColor
@@ -172,8 +173,14 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        val expense = formatMoney(uiState.totalExpense, uiState.currencySymbol)
-                        val income = formatMoney(uiState.totalIncome, uiState.currencySymbol)
+                        // Placeholders rather than "$0.00" before the first emission: the
+                        // figures are not known yet, and zeros in a currency the reader may
+                        // not have chosen are worse than a mark that admits it.
+                        val loaded = uiState.transactions != null
+                        val expense =
+                            if (loaded) formatMoney(uiState.totalExpense, uiState.currencySymbol) else UNKNOWN_AMOUNT
+                        val income =
+                            if (loaded) formatMoney(uiState.totalIncome, uiState.currencySymbol) else UNKNOWN_AMOUNT
                         SummaryFigure(
                             label = stringResource(R.string.home_expense),
                             amount = expense,
@@ -192,7 +199,11 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     val balanceCents = uiState.totalIncome - uiState.totalExpense
                     val balance = formatMoney(balanceCents, uiState.currencySymbol)
-                    val balanceText = stringResource(R.string.home_balance, balance)
+                    val balanceText =
+                        stringResource(
+                            R.string.home_balance,
+                            if (uiState.transactions != null) balance else UNKNOWN_AMOUNT,
+                        )
                     // The same two colours the figures above use: money in is green, money
                     // out is the theme's error colour. Break-even is neither, so it keeps
                     // the page's own colour rather than claiming to be one of them.
@@ -222,8 +233,17 @@ fun HomeScreen(
                 }
             }
 
-            // Transaction list
-            if (uiState.transactions.isEmpty()) {
+            // Transaction list. Null is "nothing has been read yet" and gets no message:
+            // "no transactions this month" would be a claim the app cannot make yet.
+            val transactions = uiState.transactions
+            if (transactions == null) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .weight(1f),
+                )
+            } else if (transactions.isEmpty()) {
                 Box(
                     modifier =
                         Modifier
@@ -248,8 +268,8 @@ fun HomeScreen(
                 // a list instead of two numbers, which is the difference between a row that
                 // can be skipped and one that cannot.
                 val days =
-                    remember(uiState.transactions) {
-                        uiState.transactions
+                    remember(transactions) {
+                        transactions
                             .groupBy { transaction ->
                                 Instant
                                     .ofEpochMilli(transaction.timestamp)
@@ -259,8 +279,18 @@ fun HomeScreen(
                                 DayTransactions(
                                     date = date,
                                     rows = rows,
-                                    expense = rows.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount },
-                                    income = rows.filter { it.type == TransactionType.INCOME }.sumOf { it.amount },
+                                    // Clamped like the month's own totals are: a day of
+                                    // amounts that each fit can still add up past what an
+                                    // amount may be, and a wrapped total looks like a small
+                                    // real figure rather than an impossible one.
+                                    expense =
+                                        Amount.coerceToAmount(
+                                            rows.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount },
+                                        ),
+                                    income =
+                                        Amount.coerceToAmount(
+                                            rows.filter { it.type == TransactionType.INCOME }.sumOf { it.amount },
+                                        ),
                                 )
                             }
                     }
@@ -293,6 +323,15 @@ fun HomeScreen(
         }
     }
 }
+
+/**
+ * Stands in for a figure that has not been read yet.
+ *
+ * Two hyphens, not a zero: this is what the summary shows for the frame or two between the
+ * screen appearing and the first query answering, and a placeholder that cannot be mistaken
+ * for a balance is the point of it.
+ */
+private const val UNKNOWN_AMOUNT = "--"
 
 /** One day of the list: its rows and the two figures its header shows. */
 private data class DayTransactions(

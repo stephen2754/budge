@@ -22,9 +22,10 @@ class CategoryRepository
         private val categoryDao: CategoryDao,
     ) {
         fun getAll(): Flow<List<Category>> =
-            categoryDao.getAll().map { entities ->
-                entities.map { it.toDomain() }
-            }
+            categoryDao
+                .getAll()
+                .map { entities -> entities.map { it.toDomain() } }
+                .fallingBackTo(emptyList())
 
         /**
          * One-shot variant for callers that have just reset their own state and cannot
@@ -34,9 +35,10 @@ class CategoryRepository
         suspend fun getAllOnce(): List<Category> = categoryDao.getAllOnce().map { it.toDomain() }
 
         fun getByType(type: TransactionType): Flow<List<Category>> =
-            categoryDao.getByType(type.value).map { entities ->
-                entities.map { it.toDomain() }
-            }
+            categoryDao
+                .getByType(type.value)
+                .map { entities -> entities.map { it.toDomain() } }
+                .fallingBackTo(emptyList())
 
         suspend fun getById(id: Long): Category? = categoryDao.getById(id)?.toDomain()
 
@@ -81,9 +83,8 @@ class CategoryRepository
             type: TransactionType,
             locale: Locale,
         ): Long {
-            categoryDao.getFirstByType(type.value)?.let { return it.id }
             val template = defaultCategoriesFor(locale).first { it.type == type.value }
-            return categoryDao.insert(template.toEntity())
+            return categoryDao.getFirstByTypeOrInsert(type.value, template.toEntity())
         }
 
         // Seeded rows are flagged as such for provenance; the flag gates nothing.

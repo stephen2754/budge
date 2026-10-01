@@ -146,6 +146,28 @@ class BackupCodecTest {
     }
 
     @Test
+    fun `brings an out-of-range direction and amount back into range`() {
+        // A file the picker can reach is believed, and a restore wipes the ledger first. A
+        // row whose direction is neither of the two the app defines would render as an
+        // expense while the SQL totals — which count only 0 and 1 — left it out of the
+        // figures entirely; an amount past the ceiling could wrap a day's subtotal into a
+        // small, plausible number. Both are brought into range rather than dropped.
+        val json =
+            encodeBackup(BackupData(transactions = transactions, categories = categories))
+                .replace("\"type\":0", "\"type\":7")
+                .replace("\"amount\":1234", "\"amount\":-5")
+                .replace("\"amount\":500000", "\"amount\":9999999999999")
+
+        val decoded = decodeBackup(json)
+
+        assertNotNull(decoded)
+        val rows = decoded!!.transactions.sortedBy { it.id }
+        assertEquals("an unknown direction becomes an expense", 0, rows[0].type)
+        assertEquals("a negative amount is clamped to zero", 0L, rows[0].amount)
+        assertEquals("an amount past the ceiling is clamped to it", 4_294_967_295L, rows[1].amount)
+    }
+
+    @Test
     fun `keeps category references intact so a restore can match them`() {
         val decoded = decodeBackup(encodeBackup(BackupData(transactions = transactions, categories = categories)))!!
 

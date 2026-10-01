@@ -83,7 +83,20 @@ class EntryViewModel
         /** Whether the collectors below have been started for this instance. */
         private var collectorsStarted = false
 
+        /** The target the form has already been prepared for, or null before the first call. */
+        private var initializedId: Long? = null
+
         fun init(transactionId: Long) {
+            // The screen calls init() from a LaunchedEffect, so it runs again whenever the
+            // form is composed — including during the exit animation, when the navigation
+            // state has already cleared the target. Re-initialising then blanked the form
+            // while it was still fading out and cost a categories query and a preference
+            // read per close; after a configuration change it threw away what the user had
+            // typed, because the view model survived but the reset did not spare it. A
+            // *different* target still resets the form; the same one coming back is the
+            // same form.
+            if (initializedId == transactionId) return
+            initializedId = transactionId
             // Reset the form; if editing (id > 0) populate it from the stored
             // transaction, and always load the category lists and currency.
             _transactionId.value = transactionId

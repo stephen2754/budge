@@ -22,9 +22,10 @@ class BudgetRepository
         private val budgetDao: BudgetDao,
     ) {
         fun getByMonth(month: Long): Flow<Budget?> =
-            budgetDao.getByMonth(month).map { entity ->
-                entity?.toDomain()
-            }
+            budgetDao
+                .getByMonth(month)
+                .map { entity -> entity?.toDomain() }
+                .fallingBackTo(null)
 
         private fun BudgetEntity.toDomain() =
             Budget(

@@ -68,6 +68,21 @@ interface CategoryDao {
     suspend fun getCount(): Int
 
     /**
+     * The first category of [type], or [template] inserted and returned when there is none.
+     *
+     * Lookup and insert in one transaction. Split across two calls it is a race, and one
+     * that the entry form can lose against itself: it asks for a category of the current
+     * direction both when the form opens and when the direction is switched, and if both
+     * reads see an empty table before either insert lands, the user is left with two
+     * identical built-in categories — which the once-only seed flag never repairs.
+     */
+    @Transaction
+    suspend fun getFirstByTypeOrInsert(
+        type: Int,
+        template: CategoryEntity,
+    ): Long = getFirstByType(type)?.id ?: insert(template)
+
+    /**
      * Inserts [categories] only when the table has none, as a single transaction.
      *
      * The count and the insert used to be two calls with a suspension between them, which

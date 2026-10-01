@@ -11,6 +11,7 @@ import java.io.StringReader
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import java.net.URL
+import com.example.budge.data.readAtMost
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.xml.parsers.DocumentBuilderFactory
@@ -83,7 +84,17 @@ class UrlConnectionGet
 
             return try {
                 val code = connection.responseCode
-                val body = if (code in 200..299) connection.inputStream.bufferedReader().use { it.readText() } else ""
+                val body =
+                    if (code in 200..299) {
+                        // Bounded. The app needs a few hundred kilobytes of release list;
+                        // a response does not get to decide how much of this process's
+                        // memory reading it costs, and an unread one is reported as a parse
+                        // failure rather than half-parsed.
+                        connection.inputStream.bufferedReader()
+                            .use { reader -> reader.readAtMost(MAX_RESPONSE_CHARS) } ?: ""
+                    } else {
+                        ""
+                    }
                 HttpResult.Answered(code, body, rateLimitExhausted(code, connection.getHeaderField(RATE_LIMIT_REMAINING)))
             } catch (e: Exception) {
                 HttpResult.Failed(failureFor(e))
@@ -106,6 +117,13 @@ class UrlConnectionGet
             const val USER_AGENT = "Budge-Android"
 
             const val RATE_LIMIT_REMAINING = "x-ratelimit-remaining"
+
+            /**
+             * Two megabytes. A page of thirty releases with their notes is a few hundred
+             * kilobytes and the release feed is smaller still, so this is far above anything
+             * real and far below anything that hurts.
+             */
+            const val MAX_RESPONSE_CHARS = 2 * 1024 * 1024
         }
     }
 

@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Budge keeps its ledger on-device: no account, no server, no sync. The single
-     network use is the user-initiated update check, which is a read-only GET to the
-     releases address configured in UpdateConfig, and nothing at all while that
-     address is still the placeholder. No ledger data is ever sent. -->
+<!-- Budge keeps its ledger on-device: no account, no server, no sync, and the app
+     itself never uploads anything. Its single network use is the user-initiated update
+     check, a read-only GET to the releases address configured in UpdateConfig, and
+     nothing at all while that address is still the placeholder.
+
+     allowBackup is on, which is what lets *Android's* backup — the user's own Google
+     account, or a device-to-device transfer — carry the database and preferences along
+     with the rest of the app's data. The two rule files below say exactly what may be
+     included; adding an <exclude domain="database" path="." /> there keeps the ledger out
+     of it. That is the system's copy of the user's own file, not a server this app syncs
+     to. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Required for the update check only; see the note above. -->
