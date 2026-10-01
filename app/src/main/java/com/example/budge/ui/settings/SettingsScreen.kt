@@ -109,6 +109,10 @@ private fun openReleasePage(
     context: Context,
     url: String,
 ) {
+    // The address is taken from a remote response, so it is not opened on trust: only an
+    // https GitHub page is handed to a browser. A release list is not a place to accept a
+    // URL from and pass on, whatever it parses to.
+    if (!url.startsWith("https://github.com/")) return
     runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
 }
 

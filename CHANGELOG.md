@@ -18,6 +18,59 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-beta.1] — beta, and what that now asserts
+
+This is the first **beta**. The channel rules in `DESIGN.md` §12.15 spell out what that
+changes: alpha was an unstable test build that could have security problems, and beta is a
+stable test build with no *known* security problems — crashes and other major problems are
+still possible. Earning that meant going looking for the ways this app can fall over rather
+than declaring it finished, so most of this release is things that were wrong in ways nobody
+would have seen until they were.
+
+### Fixed
+
+- **A failing preference read no longer crashes the app, and no longer costs the settings.**
+  DataStore reports an unreadable settings file by throwing from its flow, and every reader
+  here collects that flow from a view model or from composition, where the exception is a
+  crash on every launch. Reads now go through `safeData()`, which reports a failed read as
+  "nothing is stored". Writes are wrapped where they happen and leave the stored value
+  alone, so the UI follows the store instead of the tap. The first-launch path is the one
+  deliberate exception: it *skips* on a read failure rather than treating it as an empty
+  store, because that path writes defaults for whatever it cannot find and would have
+  overwritten the user's currency choice.
+- **A delete that fails says so instead of taking the app down.** `HomeViewModel`'s delete
+  had no handler at all, so a storage failure during a swipe-to-delete was an unhandled
+  exception in a coroutine: a crash, from a gesture whose whole point is that it is
+  reversible. It now reports the failure and the row stays where it is, which is the truth
+  of it.
+
+### Changed
+
+- **An export is a single transaction.** The three reads that make up a backup could be
+  interleaved by a write, producing a file whose transactions point at a category that is
+  missing from its own categories — restoring that quietly re-homes rows onto other
+  categories.
+- **Category seeding is a single transaction.** The count and the insert were two calls with
+  a suspension between them, which is long enough for "clear all records" to empty the table
+  in between and leave a second set of built-ins on top of the twelve that path had just
+  written. The once-only seed flag never repairs that.
+- **Only a GitHub https address is opened.** The release page comes from a remote response;
+  a release list is not a place to accept an address from and hand to a browser.
+- **Each day's totals are summed once, with the grouping.** The header used to add up its own
+  rows on every recomposition, and its parameter was a list — which is the difference between
+  a row the list can skip and one it cannot.
+- The unused `compose.ui.tooling.preview` dependency is gone (nothing annotates a preview;
+  the debug tooling brings it transitively). R8 had already removed its classes, so this is
+  hygiene rather than size.
+
+### Checked, and left alone
+
+Every DAO query was replayed against the exported schema under `EXPLAIN QUERY PLAN`: the
+month list, the month totals and the category summaries all search on
+`index_transactions_timestamp`, the per-category count uses the covering
+`index_transactions_categoryId`, and the only temporary sorts are over one period's rows or
+over the twelve-row category table. No index was added because none was needed.
+
 ## [0.1.0-alpha.9] — three things that did not line up
 
 ### Fixed
@@ -272,6 +325,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-beta.1]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.1
 [0.1.0-alpha.9]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.9
 [0.1.0-alpha.8]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.8
 [0.1.0-alpha.7]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-alpha.7

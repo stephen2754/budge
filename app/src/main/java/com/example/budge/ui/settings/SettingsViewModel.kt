@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.annotation.PluralsRes
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.AndroidViewModel
@@ -15,6 +16,7 @@ import com.example.budge.data.backup.BackupData
 import com.example.budge.data.backup.decodeBackup
 import com.example.budge.data.backup.encodeBackup
 import com.example.budge.data.prefs.Prefs
+import com.example.budge.data.prefs.safeData
 import com.example.budge.data.prefs.appLocaleFor
 import com.example.budge.data.repository.BackupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import java.io.IOException
 
 /**
  * Screen state for [SettingsScreen]. `message` is a one-shot field: the screen
@@ -69,7 +72,7 @@ class SettingsViewModel
             // Single source of truth: mirror the DataStore preferences into
             // _uiState so the screen always reflects the persisted values.
             viewModelScope.launch {
-                dataStore.data.collect { preferences ->
+                dataStore.safeData().collect { preferences ->
                     _uiState.update {
                         it.copy(
                             currencySymbol = preferences[Prefs.currencySymbolKey] ?: "$",
@@ -82,11 +85,7 @@ class SettingsViewModel
         }
 
         fun updateCurrencySymbol(symbol: String) {
-            viewModelScope.launch {
-                dataStore.edit { preferences ->
-                    preferences[Prefs.currencySymbolKey] = symbol
-                }
-            }
+            persist { preferences -> preferences[Prefs.currencySymbolKey] = symbol }
         }
 
         /** Cycles theme system -> light -> dark so one tap moves to the next. */
@@ -97,11 +96,7 @@ class SettingsViewModel
                     Prefs.LIGHT -> Prefs.DARK
                     else -> Prefs.FOLLOW_SYSTEM
                 }
-            viewModelScope.launch {
-                dataStore.edit { preferences ->
-                    preferences[Prefs.themeKey] = nextTheme
-                }
-            }
+            persist { preferences -> preferences[Prefs.themeKey] = nextTheme }
         }
 
         /**
@@ -111,11 +106,7 @@ class SettingsViewModel
          * language must not rewrite names the user may have chosen.
          */
         fun updateLanguage(language: String) {
-            viewModelScope.launch {
-                dataStore.edit { preferences ->
-                    preferences[Prefs.languageKey] = language
-                }
-            }
+            persist { preferences -> preferences[Prefs.languageKey] = language }
         }
 
         /**
@@ -244,6 +235,27 @@ class SettingsViewModel
             } catch (_: Exception) {
                 null
             }
+
+        /**
+         * Writes a preference without letting a failed write take the app down.
+         *
+         * A write can fail for reasons the reader cannot act on, and the value simply stays
+         * as it was. Every screen reads its state from the store rather than from the tap,
+         * so the control follows the store — which is an honest account of a write that did
+         * not happen, and better than a crash or a setting that silently disagrees with
+         * what is stored.
+         */
+        private fun persist(write: suspend (MutablePreferences) -> Unit) {
+            viewModelScope.launch {
+                try {
+                    dataStore.edit(write)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: IOException) {
+                    // Left as it was; the UI follows the store.
+                }
+            }
+        }
 
         private fun string(
             @StringRes id: Int,

@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.budge.data.prefs.Prefs
+import com.example.budge.data.prefs.safeData
 import com.example.budge.data.repository.BudgetRepository
 import com.example.budge.data.repository.TransactionRepository
 import com.example.budge.model.Budget
@@ -97,7 +98,7 @@ class StatsViewModel
             combine(
                 _period,
                 _currentDate,
-                dataStore.data.map { it[Prefs.currencySymbolKey] ?: "$" },
+                dataStore.safeData().map { it[Prefs.currencySymbolKey] ?: "$" },
             ) { period, date, symbol ->
                 StatsInputs(period, date, symbol)
             }.flatMapLatest { (period, date, symbol) ->

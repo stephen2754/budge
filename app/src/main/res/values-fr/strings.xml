@@ -102,6 +102,7 @@
     <string name="cancel">Annuler</string>
     <string name="delete">Supprimer</string>
     <string name="confirm_delete">Voulez-vous vraiment supprimer cette transaction ?</string>
+    <string name="home_delete_failed">Impossible de supprimer l’opération</string>
     <string name="delete_transaction">Supprimer la transaction</string>
     <string name="confirm">Confirmer</string>
 

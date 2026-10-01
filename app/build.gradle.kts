@@ -41,11 +41,11 @@ android {
         applicationId = "com.example.budge"
         minSdk = 26 // Android 8.0
         targetSdk = 35
-        versionCode = 9
+        versionCode = 10
         // The channel a build belongs to is read from this string (see
         // AppVersion.channelOf): an "-alpha.N" or "-beta.N" suffix is what makes the
         // update check offer prereleases, and the absence of one is what keeps them out.
-        versionName = "0.1.0-alpha.9"
+        versionName = "0.1.0-beta.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -133,7 +133,6 @@ dependencies {
     // Compose (BOM manages versions)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
-    implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.compose.foundation)
     debugImplementation(libs.compose.ui.tooling)

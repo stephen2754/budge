@@ -102,6 +102,7 @@
     <string name="cancel">Cancelar</string>
     <string name="delete">Excluir</string>
     <string name="confirm_delete">Tem certeza de que deseja excluir este lançamento?</string>
+    <string name="home_delete_failed">Não foi possível excluir o lançamento</string>
     <string name="delete_transaction">Excluir lançamento</string>
     <string name="confirm">Confirmar</string>
 

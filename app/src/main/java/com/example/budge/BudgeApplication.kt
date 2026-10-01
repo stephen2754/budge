@@ -9,6 +9,7 @@ import com.example.budge.data.prefs.Prefs
 import com.example.budge.data.prefs.defaultCurrencyFor
 import com.example.budge.data.prefs.deviceLocale
 import com.example.budge.data.repository.CategoryRepository
+import java.io.IOException
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +40,16 @@ class BudgeApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         applicationScope.launch {
-            val preferences = dataStore.data.first()
+            // A read that fails is not a empty store, and this work writes defaults for
+            // everything it cannot find — so treating a failure as "nothing is stored"
+            // would overwrite the user's currency choice with the locale default. The next
+            // launch tries again instead.
+            val preferences =
+                try {
+                    dataStore.data.first()
+                } catch (_: IOException) {
+                    return@launch
+                }
             val deviceLocale = deviceLocale()
 
             // First launch only. The seeded categories are named in the device language

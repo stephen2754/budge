@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.budge.data.local.entity.CategoryEntity
 import kotlinx.coroutines.flow.Flow
@@ -65,4 +66,17 @@ interface CategoryDao {
 
     @Query("SELECT COUNT(*) FROM categories")
     suspend fun getCount(): Int
+
+    /**
+     * Inserts [categories] only when the table has none, as a single transaction.
+     *
+     * The count and the insert used to be two calls with a suspension between them, which
+     * is long enough for the "clear all records" path to empty the table in between — and
+     * the seed would then be inserted on top of the twelve rows that path had just written,
+     * leaving duplicate categories that the once-only seed flag never repairs.
+     */
+    @Transaction
+    suspend fun insertAllIfEmpty(categories: List<CategoryEntity>) {
+        if (getCount() == 0) insertAll(categories)
+    }
 }

@@ -34,13 +34,22 @@ class BackupRepository
         private val database: BudgeDatabase,
         private val categoryRepository: CategoryRepository,
     ) {
-        /** Snapshot of everything a backup restores. */
+        /**
+         * Snapshot of everything a backup restores.
+         *
+         * One transaction, so the three reads cannot be interleaved by a write. Read
+         * separately they can produce a file whose transactions point at a category that is
+         * missing from its own categories — which restores into a ledger with rows quietly
+         * re-homed onto other categories.
+         */
         suspend fun export(): BackupData =
-            BackupData(
-                transactions = database.transactionDao().getAllOnce(),
-                categories = database.categoryDao().getAllOnce(),
-                budgets = database.budgetDao().getAllOnce(),
-            )
+            database.withTransaction {
+                BackupData(
+                    transactions = database.transactionDao().getAllOnce(),
+                    categories = database.categoryDao().getAllOnce(),
+                    budgets = database.budgetDao().getAllOnce(),
+                )
+            }
 
         /**
          * Replaces the whole database with [data] in one transaction.

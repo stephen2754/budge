@@ -106,6 +106,7 @@
     <string name="cancel">Отмена</string>
     <string name="delete">Удалить</string>
     <string name="confirm_delete">Удалить эту операцию?</string>
+    <string name="home_delete_failed">Не удалось удалить операцию</string>
     <string name="delete_transaction">Удалить операцию</string>
     <string name="confirm">Подтвердить</string>
 

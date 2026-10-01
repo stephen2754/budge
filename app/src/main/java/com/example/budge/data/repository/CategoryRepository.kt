@@ -59,8 +59,7 @@ class CategoryRepository
          * the screens collect a Room `Flow` and fill in as soon as the rows land.
          */
         suspend fun seedDefaultsIfEmpty(locale: Locale = Locale.getDefault()) {
-            if (categoryDao.getCount() > 0) return
-            categoryDao.insertAll(defaultCategoriesFor(locale).map { it.toEntity() })
+            categoryDao.insertAllIfEmpty(defaultCategoriesFor(locale).map { it.toEntity() })
         }
 
         /**

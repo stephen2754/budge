@@ -99,6 +99,7 @@
     <string name="cancel">取消</string>
     <string name="delete">删除</string>
     <string name="confirm_delete">确定要删除这笔交易吗？</string>
+    <string name="home_delete_failed">无法删除这笔交易</string>
     <string name="delete_transaction">删除交易</string>
     <string name="confirm">确认</string>
 
@@ -137,6 +138,7 @@
     <string name="licenses_intro">账目数据保存在本机数据库中，不会上传。应用唯一的联网行为是检查更新：它只向配置好的版本发布地址发起一次只读请求，不包含任何账目数据，也不包含任何标识信息。导出与导入使用你自己选择的本地 JSON 文件。</string>
     <string name="licenses_third_party">开源组件</string>
     <string name="licenses_full_text_note">各组件的完整许可文本见其项目主页。</string>
+    <string name="release_notes_0_1_0_beta_1">首个 beta：偏好设置的读写不再可能导致崩溃；删除失败会给出提示而不是崩溃；导出改为一次性快照；并逐条核对了热点查询的索引命中。</string>
     <string name="release_notes_0_1_0_alpha_9">快速短划不再在没有震动的情况下弹出删除确认；统计页的“跳转至今日”不再把日期顶上去；语言列表按语言代码排序，不再把中文放在最前。</string>
     <string name="release_notes_0_1_0_alpha_8">修复失效的左滑删除；保留“滑够距离时震动”的提示；去掉交易行的右滑翻页——它做不到和直接滑动页面一样的手感。</string>
     <string name="release_notes_0_1_0_alpha_7">余额为正显示绿色、为负显示红色；删除需要滑够距离并在此之前震动提示；交易行右滑可切到统计页；统计页日期不在今天时提供“跳转至今日”。</string>

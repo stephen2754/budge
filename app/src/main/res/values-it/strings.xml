@@ -102,6 +102,7 @@
     <string name="cancel">Annulla</string>
     <string name="delete">Elimina</string>
     <string name="confirm_delete">Eliminare questo movimento?</string>
+    <string name="home_delete_failed">Impossibile eliminare il movimento</string>
     <string name="delete_transaction">Elimina movimento</string>
     <string name="confirm">Conferma</string>
 

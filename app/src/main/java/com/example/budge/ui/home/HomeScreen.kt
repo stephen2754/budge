@@ -30,6 +30,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -113,6 +115,18 @@ fun HomeScreen(
     // one. Re-reading it on resume is what closes that gap.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refreshMonth() }
 
+    // A delete that failed leaves the row in place; saying so is the difference between a
+    // gesture that did nothing and one that silently did nothing.
+    val deleteError by viewModel.deleteError.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val deleteFailed = stringResource(R.string.home_delete_failed)
+    LaunchedEffect(deleteError) {
+        if (deleteError) {
+            snackbarHostState.showSnackbar(deleteFailed)
+            viewModel.clearDeleteError()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -126,6 +140,7 @@ fun HomeScreen(
                 },
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddTransaction) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.cd_add_transaction))
@@ -227,14 +242,27 @@ fun HomeScreen(
                 // each day is shown under its own header with a daily subtotal.
                 // Remembered because this walks (and re-buckets) the whole month
                 // on every recomposition otherwise.
-                val groupedTransactions =
+                // Grouped once, with each day's two totals summed once here rather than
+                // in the header composable: a header that adds up its own rows does that
+                // work again on every recomposition of the list, and its parameters are then
+                // a list instead of two numbers, which is the difference between a row that
+                // can be skipped and one that cannot.
+                val days =
                     remember(uiState.transactions) {
-                        uiState.transactions.groupBy { transaction ->
-                            Instant
-                                .ofEpochMilli(transaction.timestamp)
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDate()
-                        }
+                        uiState.transactions
+                            .groupBy { transaction ->
+                                Instant
+                                    .ofEpochMilli(transaction.timestamp)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                            }.map { (date, rows) ->
+                                DayTransactions(
+                                    date = date,
+                                    rows = rows,
+                                    expense = rows.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount },
+                                    income = rows.filter { it.type == TransactionType.INCOME }.sumOf { it.amount },
+                                )
+                            }
                     }
 
                 LazyColumn(
@@ -247,11 +275,11 @@ fun HomeScreen(
                     // on the newest transaction opened the add form instead of editing it.
                     contentPadding = PaddingValues(bottom = 96.dp),
                 ) {
-                    groupedTransactions.forEach { (date, transactions) ->
-                        item {
-                            DayHeader(date, transactions, uiState.currencySymbol)
+                    days.forEach { day ->
+                        item(key = "day-${day.date}") {
+                            DayHeader(day.date, day.expense, day.income, uiState.currencySymbol)
                         }
-                        items(transactions, key = { it.id }) { transaction ->
+                        items(day.rows, key = { it.id }) { transaction ->
                             TransactionItem(
                                 transaction = transaction,
                                 onClick = { onEditTransaction(transaction.id) },
@@ -266,6 +294,14 @@ fun HomeScreen(
     }
 }
 
+/** One day of the list: its rows and the two figures its header shows. */
+private data class DayTransactions(
+    val date: LocalDate,
+    val rows: List<Transaction>,
+    val expense: Long,
+    val income: Long,
+)
+
 /**
  * Header row for a single day: the formatted date on the left and the day's
  * expense/income subtotals (signed and colored) on the right.
@@ -273,12 +309,10 @@ fun HomeScreen(
 @Composable
 private fun DayHeader(
     date: LocalDate,
-    transactions: List<Transaction>,
+    dayExpense: Long,
+    dayIncome: Long,
     currencySymbol: String,
 ) {
-    val dayExpense = transactions.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
-    val dayIncome = transactions.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
-
     Row(
         modifier =
             Modifier

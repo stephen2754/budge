@@ -5,12 +5,15 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.budge.data.prefs.Prefs
+import com.example.budge.data.prefs.safeData
 import com.example.budge.data.repository.TransactionRepository
 import com.example.budge.model.Transaction
 import com.example.budge.model.TransactionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -55,7 +58,7 @@ class HomeViewModel
         val uiState: StateFlow<HomeUiState> =
             combine(
                 _currentMonth,
-                dataStore.data.map { it[Prefs.currencySymbolKey] ?: "$" },
+                dataStore.safeData().map { it[Prefs.currencySymbolKey] ?: "$" },
             ) { month, symbol ->
                 Pair(month, symbol)
             }.flatMapLatest { (month, symbol) ->
@@ -94,11 +97,28 @@ class HomeViewModel
             if (_currentMonth.value != today) _currentMonth.value = today
         }
 
+        private val _deleteError = MutableStateFlow(false)
+
+        /** True once a delete has failed, until the screen has said so. */
+        val deleteError: StateFlow<Boolean> = _deleteError.asStateFlow()
+
+        fun clearDeleteError() {
+            _deleteError.value = false
+        }
+
         fun deleteTransaction(id: Long) {
             // Runs on Room's dispatcher via the suspend DAO; the Flow-backed
             // uiState automatically re-emits the updated transaction list.
             viewModelScope.launch {
-                transactionRepository.deleteById(id)
+                try {
+                    transactionRepository.deleteById(id)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    // The row is still there, which is the truth of it; the reader is told
+                    // so rather than left to wonder why the swipe did nothing.
+                    _deleteError.value = true
+                }
             }
         }
     }

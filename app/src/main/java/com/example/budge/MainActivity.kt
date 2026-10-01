@@ -18,6 +18,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.example.budge.data.prefs.Prefs
 import com.example.budge.data.prefs.appLocaleFor
 import com.example.budge.di.settingsDataStore
+import com.example.budge.data.prefs.safeData
 import com.example.budge.ui.LocalAppLocale
 import com.example.budge.ui.navigation.BudgeNavGraph
 import com.example.budge.ui.theme.BudgeTheme
@@ -58,14 +59,14 @@ class MainActivity : ComponentActivity() {
         // page background instead of content.
         enableEdgeToEdge()
         setContent {
-            val theme by dataStore.data
+            val theme by dataStore.safeData()
                 .map { it[Prefs.themeKey] ?: Prefs.FOLLOW_SYSTEM }
                 .collectAsState(initial = Prefs.FOLLOW_SYSTEM)
 
             // Start from the language actually applied in attachBaseContext so the
             // initial value never differs from the applied locale (avoids a
             // recreate() loop on startup).
-            val language by dataStore.data
+            val language by dataStore.safeData()
                 .map { it[Prefs.languageKey] ?: Prefs.FOLLOW_SYSTEM }
                 .collectAsState(initial = appliedLanguage)
 
@@ -106,7 +107,7 @@ class MainActivity : ComponentActivity() {
         val language =
             try {
                 runBlocking {
-                    settingsDataStore(context.applicationContext).data
+                    settingsDataStore(context.applicationContext).safeData()
                         .first()[Prefs.languageKey] ?: Prefs.FOLLOW_SYSTEM
                 }
             } catch (_: Exception) {

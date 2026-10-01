@@ -165,6 +165,12 @@ version of it.
 - **Dates follow the locale.** Day headers, month titles and clock times come from the
   arrangement each locale uses (`ui/LocalizedPatterns.kt`), and the time picker follows the
   device's 12/24-hour setting, rather than from a fixed pattern shared by every language.
+- **A failure the reader cannot act on must not crash the app.** Preference reads go
+  through `safeData()`, which reports an unreadable settings file as "nothing is stored";
+  preference writes are wrapped where they happen and simply leave the stored value alone,
+  so the UI follows the store rather than the tap. The one exception is deliberate: the
+  first-launch seeding skips on a read failure instead of treating it as an empty store,
+  because that path would otherwise overwrite the user's currency choice.
 - **R8 keeps.** Anything Gson reflects over needs `@SerializedName` *and* a keep rule;
   `data/backup` and `data/update` are the two such packages. Check
   `app/build/outputs/mapping/release/mapping.txt` after touching either.

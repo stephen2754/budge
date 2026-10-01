@@ -9,6 +9,7 @@ import com.example.budge.R
 import com.example.budge.data.prefs.Prefs
 import com.example.budge.data.prefs.Currencies
 import com.example.budge.data.prefs.deviceLocale
+import com.example.budge.data.prefs.safeData
 import com.example.budge.data.repository.CategoryRepository
 import com.example.budge.data.repository.TransactionRepository
 import com.example.budge.model.Category
@@ -99,7 +100,7 @@ class EntryViewModel
             // ones did not. Reading both once per open is what makes every open work; the
             // collectors are what keep them current while the form is up.
             viewModelScope.launch { applyCategories(categoryRepository.getAllOnce()) }
-            viewModelScope.launch { applyCurrencySymbol(dataStore.data.first()[Prefs.currencySymbolKey]) }
+            viewModelScope.launch { applyCurrencySymbol(dataStore.safeData().first()[Prefs.currencySymbolKey]) }
 
             // The screen calls init() from a LaunchedEffect, which re-runs every time the
             // form is composed — including during the exit animation, when the target id
@@ -141,7 +142,7 @@ class EntryViewModel
             // Read the currency symbol preference from DataStore once it is
             // available and merge it into the form state.
             viewModelScope.launch {
-                dataStore.data
+                dataStore.safeData()
                     .map { it[Prefs.currencySymbolKey] }
                     .collect { symbol -> applyCurrencySymbol(symbol) }
             }
