@@ -142,6 +142,11 @@ each one a link to its own repository. A **stable** build that is behind a beta 
 update window, and that offer is re-decided on every check — it is never shown to a build
 that is already on a test channel, and never points at an alpha.
 
+A **release candidate** (`0.1.0-rc.1`) is the stable release with nothing changed but the
+version number: the same source, the same strings, the same behaviour. A beta build is
+offered it, the candidate is offered the release it leads to, and a stable build is never
+shown either — the candidate is the last check, not a stream stable users are on.
+
 ## Data and privacy
 
 - Records live in a local Room database; preferences in DataStore. Neither is uploaded.

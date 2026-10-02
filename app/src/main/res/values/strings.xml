@@ -150,11 +150,13 @@
     <string name="changelog_current">Installed</string>
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Beta</string>
+    <string name="channel_rc">Release candidate</string>
     <string name="channel_stable">Stable</string>
     <string name="licenses_intro">Your records stay in a local database on this device and are never uploaded. The only network request is the update check, which carries no ledger data and no identifier. Export and import use a local JSON file you choose.</string>
     <string name="licenses_components">Open-source components</string>
     <string name="licenses_third_party">Open-source components</string>
     <string name="licenses_full_text_note">The full licence text of each component is available at its project page.</string>
+    <string name="release_notes_0_1_0_rc_1">The release candidate: the stable release with nothing changed but the version number. Same features, same strings, same behaviour.</string>
     <string name="release_notes_0_1_0_beta_6">Updates can now be downloaded and installed in the app: the file is checked against the SHA-256 the release publishes, and only then handed to the system installer. Nothing is installed without your approval, and your records are untouched.</string>
     <string name="release_notes_0_1_0_beta_5">Long release histories no longer push the dialog buttons off the screen, long button labels no longer break in half, and the statistics date sits lower with the period selector closer to it.</string>
     <string name="release_notes_0_1_0_beta_4">Buttons that belong in a dialog corner now sit there; a beta build can add the alpha releases to the history; the licence window keeps only what matters, with the components and their links on their own page; and the jump-to-today line no longer moves the statistics screen.</string>
@@ -175,5 +177,6 @@
     <!-- What each channel promises the user. -->
     <string name="channel_alpha_note">Unstable test build: major problems are possible, including security issues.</string>
     <string name="channel_beta_note">Stable test build: no security issues, but crashes and other major problems are still possible.</string>
+    <string name="channel_rc_note">Release candidate: the stable release with nothing changed but the version number. No known security issues, though problems can still appear.</string>
     <string name="channel_stable_note">Stable release: no known problems.</string>
 </resources>

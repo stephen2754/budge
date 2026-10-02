@@ -78,6 +78,7 @@ private fun channelLabel(channel: ReleaseChannel): Int =
     when (channel) {
         ReleaseChannel.ALPHA -> R.string.channel_alpha
         ReleaseChannel.BETA -> R.string.channel_beta
+        ReleaseChannel.RC -> R.string.channel_rc
         ReleaseChannel.STABLE -> R.string.channel_stable
     }
 
@@ -87,6 +88,7 @@ private fun channelNote(channel: ReleaseChannel): Int =
     when (channel) {
         ReleaseChannel.ALPHA -> R.string.channel_alpha_note
         ReleaseChannel.BETA -> R.string.channel_beta_note
+        ReleaseChannel.RC -> R.string.channel_rc_note
         ReleaseChannel.STABLE -> R.string.channel_stable_note
     }
 

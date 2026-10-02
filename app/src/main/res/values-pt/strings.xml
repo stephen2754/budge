@@ -150,6 +150,7 @@
     <string name="changelog_current">Instalada</string>
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Beta</string>
+    <string name="channel_rc">Versão candidata</string>
     <string name="channel_stable">Estável</string>
     <string name="licenses_intro">Os seus lançamentos ficam numa base de dados local neste dispositivo e nunca são enviados. O único pedido de rede é a verificação de atualizações, sem dados dos lançamentos nem identificadores. A exportação e a importação usam um ficheiro JSON local à sua escolha.</string>
     <string name="licenses_components">Componentes de código aberto</string>
@@ -160,5 +161,6 @@
     <!-- What each channel promises the user. -->
     <string name="channel_alpha_note">Versão de teste instável: problemas graves são possíveis, inclusive de segurança.</string>
     <string name="channel_beta_note">Versão de teste estável: sem problemas de segurança, mas travamentos e outros problemas graves ainda são possíveis.</string>
+    <string name="channel_rc_note">Versão candidata: a versão estável, sem qualquer alteração além do número de versão. Sem problemas de segurança conhecidos, mas problemas ainda podem surgir.</string>
     <string name="channel_stable_note">Versão estável: nenhum problema conhecido.</string>
 </resources>

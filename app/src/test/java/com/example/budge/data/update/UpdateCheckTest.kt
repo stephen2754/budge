@@ -3,6 +3,7 @@ package com.example.budge.data.update
 import com.example.budge.BuildConfig
 import com.example.budge.R
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -85,6 +86,55 @@ class UpdateCheckTest {
         val update = selectUpdate(current, published)
 
         assertEquals("2.0.0-alpha.1", update?.version?.toString())
+    }
+
+    @Test
+    fun `a beta build is offered the candidate, and a candidate the release it leads to`() {
+        assertFalse("a candidate is the last check, not a stream stable users are on", ReleaseChannel.STABLE.accepts(ReleaseChannel.RC))
+        assertTrue(ReleaseChannel.BETA.accepts(ReleaseChannel.RC))
+        assertTrue(ReleaseChannel.RC.accepts(ReleaseChannel.RC))
+        assertTrue(ReleaseChannel.RC.accepts(ReleaseChannel.STABLE))
+        assertFalse(ReleaseChannel.RC.accepts(ReleaseChannel.BETA))
+        assertFalse(ReleaseChannel.RC.accepts(ReleaseChannel.ALPHA))
+    }
+
+    @Test
+    fun `a beta build is moved onto the candidate, and the candidate onto the release`() {
+        // The last step of a release: nothing but pre-releases published yet. A beta build is
+        // offered the newest candidate, and a candidate has nothing above it but the release.
+        val candidates =
+            listOf(remote("0.1.0-rc.1"), remote("0.1.0-rc.2"), remote("0.1.0-beta.6"))
+
+        assertEquals(
+            AppVersion.parse("0.1.0-rc.2"),
+            selectUpdate(AppVersion.parse("0.1.0-beta.6")!!, candidates)?.version,
+        )
+        assertNull(
+            "a candidate is not offered a lower candidate",
+            selectUpdate(AppVersion.parse("0.1.0-rc.2")!!, candidates),
+        )
+
+        // The release published on top of them: both move onto it rather than stopping at the
+        // candidate, which is the whole point of ordering a candidate below its release.
+        val released = candidates + remote("0.1.0")
+
+        assertEquals(
+            AppVersion.parse("0.1.0"),
+            selectUpdate(AppVersion.parse("0.1.0-beta.6")!!, released)?.version,
+        )
+        assertEquals(
+            AppVersion.parse("0.1.0"),
+            selectUpdate(AppVersion.parse("0.1.0-rc.2")!!, released)?.version,
+        )
+        assertNull(
+            "a stable build is never shown a candidate",
+            selectUpdate(AppVersion.parse("0.1.0")!!, released),
+        )
+    }
+
+    @Test
+    fun `a candidate build may look at the candidate and the release, not the alphas`() {
+        assertTrue(alphasFor(ReleaseChannel.RC).isEmpty())
     }
 
     @Test

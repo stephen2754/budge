@@ -150,6 +150,7 @@
     <string name="changelog_current">Installiert</string>
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Beta</string>
+    <string name="channel_rc">Release-Kandidat</string>
     <string name="channel_stable">Stabil</string>
     <string name="licenses_intro">Ihre Buchungen bleiben in einer lokalen Datenbank auf diesem Gerät und werden nie hochgeladen. Die einzige Netzwerkanfrage ist die Update-Prüfung, ohne Buchungsdaten und ohne Kennung. Export und Import nutzen eine lokale JSON-Datei Ihrer Wahl.</string>
     <string name="licenses_components">Open-Source-Komponenten</string>
@@ -160,5 +161,6 @@
     <!-- What each channel promises the user. -->
     <string name="channel_alpha_note">Instabile Testversion: ernste Probleme bis hin zu Sicherheitslücken sind möglich.</string>
     <string name="channel_beta_note">Stabile Testversion: keine Sicherheitslücken, aber Abstürze und andere ernste Probleme bleiben möglich.</string>
+    <string name="channel_rc_note">Release-Kandidat: die stabile Version, geändert wurde nur die Versionsnummer. Keine bekannten Sicherheitsprobleme, Probleme sind aber weiterhin möglich.</string>
     <string name="channel_stable_note">Stabile Version: keine bekannten Probleme.</string>
 </resources>

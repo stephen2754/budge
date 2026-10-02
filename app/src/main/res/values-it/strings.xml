@@ -150,6 +150,7 @@
     <string name="changelog_current">Installata</string>
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Beta</string>
+    <string name="channel_rc">Release candidate</string>
     <string name="channel_stable">Stabile</string>
     <string name="licenses_intro">I tuoi movimenti restano in un database locale su questo dispositivo e non vengono mai caricati. L’unica richiesta di rete è il controllo aggiornamenti, senza dati dei movimenti né identificatori. Esportazione e importazione usano un file JSON locale che scegli tu.</string>
     <string name="licenses_components">Componenti open source</string>
@@ -160,5 +161,6 @@
     <!-- What each channel promises the user. -->
     <string name="channel_alpha_note">Versione di test instabile: sono possibili problemi gravi, anche di sicurezza.</string>
     <string name="channel_beta_note">Versione di test stabile: nessun problema di sicurezza, ma crash e altri problemi gravi sono ancora possibili.</string>
+    <string name="channel_rc_note">Release candidate: la versione stabile, senza altre modifiche se non il numero di versione. Nessun problema di sicurezza noto, ma problemi sono ancora possibili.</string>
     <string name="channel_stable_note">Versione stabile: nessun problema noto.</string>
 </resources>

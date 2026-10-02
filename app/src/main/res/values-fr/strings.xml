@@ -150,6 +150,7 @@
     <string name="changelog_current">Installée</string>
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Bêta</string>
+    <string name="channel_rc">Version candidate</string>
     <string name="channel_stable">Stable</string>
     <string name="licenses_intro">Vos opérations restent dans une base de données locale sur cet appareil et ne sont jamais envoyées. La seule requête réseau est la recherche de mise à jour, sans données ni identifiant. L’export et l’import utilisent un fichier JSON local que vous choisissez.</string>
     <string name="licenses_components">Composants open source</string>
@@ -160,5 +161,6 @@
     <!-- What each channel promises the user. -->
     <string name="channel_alpha_note">Version de test instable : des problèmes graves sont possibles, y compris de sécurité.</string>
     <string name="channel_beta_note">Version de test stable : aucun problème de sécurité, mais des plantages et d’autres problèmes graves restent possibles.</string>
+    <string name="channel_rc_note">Version candidate : la version stable, sans autre changement que le numéro de version. Aucun problème de sécurité connu, mais des problèmes restent possibles.</string>
     <string name="channel_stable_note">Version stable : aucun problème connu.</string>
 </resources>

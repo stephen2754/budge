@@ -154,6 +154,7 @@
     <string name="changelog_current">Установлена</string>
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Beta</string>
+    <string name="channel_rc">Кандидат в релизы</string>
     <string name="channel_stable">Стабильная</string>
     <string name="licenses_intro">Записи остаются в локальной базе данных на этом устройстве и никуда не отправляются. Единственный сетевой запрос — проверка обновлений, без данных записей и без идентификаторов. Экспорт и импорт используют локальный JSON-файл, который вы выбираете.</string>
     <string name="licenses_components">Компоненты с открытым исходным кодом</string>
@@ -164,5 +165,6 @@
     <!-- What each channel promises the user. -->
     <string name="channel_alpha_note">Нестабильная тестовая сборка: возможны серьёзные проблемы, включая проблемы безопасности.</string>
     <string name="channel_beta_note">Стабильная тестовая сборка: проблем безопасности нет, но возможны вылеты и другие серьёзные проблемы.</string>
+    <string name="channel_rc_note">Кандидат в релизы: стабильная версия, изменён только номер версии. Известных проблем безопасности нет, но проблемы всё ещё возможны.</string>
     <string name="channel_stable_note">Стабильная версия: известных проблем нет.</string>
 </resources>

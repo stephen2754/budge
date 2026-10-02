@@ -25,13 +25,21 @@ class AppVersionTest {
     }
 
     @Test
+    fun `reads a release candidate`() {
+        assertEquals(AppVersion(1, 0, 0, ReleaseChannel.RC, 1), AppVersion.parse("1.0.0-rc.1"))
+        assertEquals(AppVersion(1, 0, 0, ReleaseChannel.RC, 0), AppVersion.parse("v1.0.0-rc"))
+        assertEquals(ReleaseChannel.RC, AppVersion.channelOf("0.1.0-rc.1"))
+        assertEquals("1.0.0-rc.1", AppVersion(1, 0, 0, ReleaseChannel.RC, 1).toString())
+    }
+
+    @Test
     fun `refuses anything that is not a version`() {
         assertNull(AppVersion.parse(null))
         assertNull(AppVersion.parse(""))
         assertNull(AppVersion.parse("latest"))
         assertNull(AppVersion.parse("1.0"))
         assertNull(AppVersion.parse("1.0.0.0"))
-        assertNull(AppVersion.parse("1.0.0-rc.1"))
+        assertNull(AppVersion.parse("1.0.0-preview.1"))
     }
 
     @Test
@@ -44,6 +52,12 @@ class AppVersionTest {
         // beta user be moved onto the stable build by ordinary comparison.
         assertTrue(AppVersion.parse("1.0.0-alpha.1")!! < AppVersion.parse("1.0.0-beta.1")!!)
         assertTrue(AppVersion.parse("1.0.0-beta.9")!! < AppVersion.parse("1.0.0")!!)
+        // The rung a release candidate occupies: above every beta, below the release it is a
+        // candidate for. Without it a beta build could never be offered the candidate, and
+        // the last step of a release would be untestable.
+        assertTrue(AppVersion.parse("1.0.0-beta.9")!! < AppVersion.parse("1.0.0-rc.1")!!)
+        assertTrue(AppVersion.parse("1.0.0-rc.1")!! < AppVersion.parse("1.0.0-rc.2")!!)
+        assertTrue(AppVersion.parse("1.0.0-rc.2")!! < AppVersion.parse("1.0.0")!!)
         // The concrete step this project took: if alpha.9 did not sort below beta.1, an
         // alpha build would never be offered the beta that supersedes it.
         assertTrue(AppVersion.parse("0.1.0-alpha.9")!! < AppVersion.parse("0.1.0-beta.1")!!)

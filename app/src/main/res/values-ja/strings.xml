@@ -148,6 +148,7 @@
     <string name="changelog_current">インストール済み</string>
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Beta</string>
+    <string name="channel_rc">リリース候補</string>
     <string name="channel_stable">正式版</string>
     <string name="licenses_intro">記録はこの端末内のローカルデータベースに保存され、アップロードされません。唯一の通信は更新確認で、記録データも識別情報も含みません。エクスポートとインポートは、選んだローカルの JSON ファイルを使います。</string>
     <string name="licenses_components">オープンソースコンポーネント</string>
@@ -158,5 +159,6 @@
     <!-- What each channel promises the user. -->
     <string name="channel_alpha_note">不安定なテスト版です。セキュリティ上の問題を含む重大な問題が起きる可能性があります。</string>
     <string name="channel_beta_note">安定したテスト版です。セキュリティ上の問題はありませんが、強制終了などの重大な問題が起きる可能性があります。</string>
+    <string name="channel_rc_note">リリース候補：安定版とバージョン番号以外は同一です。既知のセキュリティ問題はありませんが、問題が生じる可能性は残ります。</string>
     <string name="channel_stable_note">正式版です。既知の問題はありません。</string>
 </resources>

@@ -18,6 +18,23 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-rc.1] — the release candidate
+
+The release candidate. Apart from its version string it **is** the stable release: the same
+source, the same strings, the same behaviour, the same build type and signing configuration.
+There is nothing in this build that will not be in `0.1.0`, and nothing missing from it, which
+is what makes installing it a test of the release rather than of something else.
+
+### Added
+
+- **A release-candidate channel**, because a version the app cannot parse is a version it
+  cannot reason about: before this, `0.1.0-rc.1` failed to parse, `channelOf` fell back to
+  stable, and an unparseable `versionName` made every published release look newer than the
+  one installed. The rung sits between beta and stable, exactly where SemVer puts it —
+  `0.1.0-beta.6 < 0.1.0-rc.1 < 0.1.0` — so a beta build is offered the candidate and the
+  candidate is offered the release, both by ordinary comparison. A *stable* build is never
+  shown a candidate.
+
 ## [0.1.0-beta.6] — an update that installs itself, but not behind your back
 
 ### Added
@@ -503,6 +520,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-rc.1]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-rc.1
 [0.1.0-beta.6]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.6
 [0.1.0-beta.5]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.5
 [0.1.0-beta.4]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.4

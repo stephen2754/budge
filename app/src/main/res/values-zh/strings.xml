@@ -147,11 +147,13 @@
     <string name="changelog_current">当前版本</string>
     <string name="channel_alpha">Alpha 测试版</string>
     <string name="channel_beta">Beta 测试版</string>
+    <string name="channel_rc">候选版本</string>
     <string name="channel_stable">正式版</string>
     <string name="licenses_intro">账目保存在本机数据库中，不会上传。应用唯一的联网行为是检查更新，其中不含账目数据与标识信息。导出与导入使用你自己选择的本地 JSON 文件。</string>
     <string name="licenses_components">本软件使用的开源组件</string>
     <string name="licenses_third_party">开源组件</string>
     <string name="licenses_full_text_note">各组件的完整许可文本见其项目主页。</string>
+    <string name="release_notes_0_1_0_rc_1">候选版本：除版本号外与即将发布的正式版完全一致——功能、文案、行为均相同。</string>
     <string name="release_notes_0_1_0_beta_6">现在可以在应用内下载并安装更新：文件会先与发布记录中的 SHA-256 校验，通过后才交给系统安装器。未经你确认不会安装，账目数据不受影响。</string>
     <string name="release_notes_0_1_0_beta_5">过长的更新记录不再把对话框按钮挤出屏幕；较长的按钮文字不再被拆成多行；统计页日期下移、与年月日按钮的距离缩短。</string>
     <string name="release_notes_0_1_0_beta_4">属于对话框左下角的按钮现在真的在左下角；beta 构建可在历史记录中加入 alpha 版本；许可窗口只保留必要内容，开源组件及其链接移到独立页面；统计页的“跳转至今日”不再挤动页面。</string>
@@ -172,5 +174,6 @@
     <!-- What each channel promises the user. -->
     <string name="channel_alpha_note">不稳定测试版：可能出现重大问题，包括安全性问题。</string>
     <string name="channel_beta_note">稳定测试版：不会出现安全性问题，但可能出现闪退等重大问题。</string>
+    <string name="channel_rc_note">候选版本：除版本号外与即将发布的正式版完全一致。没有已知安全问题，但仍可能存在问题。</string>
     <string name="channel_stable_note">稳定版（正式版）：不会出现任何已知问题。</string>
 </resources>

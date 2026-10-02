@@ -5,9 +5,16 @@ package com.example.budge.data.update
  *
  * | installed | offered |
  * | --- | --- |
- * | `STABLE` | stable releases |
- * | `BETA` | beta and stable, never alpha |
+ * | `STABLE` | stable releases only |
+ * | `RC` | the candidate and the stable release it leads to |
+ * | `BETA` | beta, candidate and stable, never alpha |
  * | `ALPHA` | everything, alpha included |
+ *
+ * A release candidate sits between beta and stable because that is where it sits in the
+ * version ordering, and because it is what makes the last step of a release testable: a beta
+ * build can be offered the candidate, a candidate can be moved onto the release, and a
+ * *stable* build is never shown either — the candidate is the last chance to find a problem,
+ * not a stream stable users are on.
  *
  * The release history uses the same rule, so it cannot show a version the update check
  * would refuse.
@@ -15,6 +22,7 @@ package com.example.budge.data.update
 enum class ReleaseChannel {
     ALPHA,
     BETA,
+    RC,
     STABLE,
     ;
 
@@ -23,25 +31,31 @@ enum class ReleaseChannel {
         when (this) {
             ALPHA -> true
             BETA -> candidate != ALPHA
+            RC -> candidate == RC || candidate == STABLE
             STABLE -> candidate == STABLE
         }
 
-    /** Ordering used when comparing two versions of the same number: alpha < beta < stable. */
+    /**
+     * Ordering used when comparing two versions of the same number:
+     * alpha < beta < candidate < stable.
+     */
     internal val rank: Int
         get() =
             when (this) {
                 ALPHA -> 0
                 BETA -> 1
-                STABLE -> 2
+                RC -> 2
+                STABLE -> 3
             }
 }
 
 /**
- * A version: `major.minor.patch`, with an optional `-alpha.N` or `-beta.N` suffix.
+ * A version: `major.minor.patch`, with an optional `-alpha.N`, `-beta.N` or `-rc.N` suffix.
  *
- * Ordering is semantic: `1.0.0-alpha.2 < 1.0.0-beta.1 < 1.0.0 < 1.0.1`. A pre-release
- * therefore sorts below the release it leads up to, which is what lets a beta user be
- * moved onto the stable build without a special case.
+ * Ordering is semantic, and follows SemVer's own rule for the suffix:
+ * `1.0.0-alpha.2 < 1.0.0-beta.1 < 1.0.0-rc.1 < 1.0.0 < 1.0.1`. Every pre-release sorts
+ * below the release it leads up to, which is what lets a beta user be moved onto the
+ * candidate, and the candidate onto the release, without a special case anywhere.
  */
 data class AppVersion(
     val major: Int,
@@ -68,15 +82,16 @@ data class AppVersion(
             ReleaseChannel.STABLE -> number
             ReleaseChannel.ALPHA -> "$number-alpha.$channelNumber"
             ReleaseChannel.BETA -> "$number-beta.$channelNumber"
+            ReleaseChannel.RC -> "$number-rc.$channelNumber"
         }
 
     companion object {
         // Tolerates a leading "v" and a missing channel number ("1.0.0-beta" == beta.0).
-        private val PATTERN = Regex("""^v?(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta)\.?(\d+)?)?$""", RegexOption.IGNORE_CASE)
+        private val PATTERN = Regex("""^v?(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.?(\d+)?)?$""", RegexOption.IGNORE_CASE)
 
         /**
-         * Parses `v1.2.3`, `1.2.3`, `1.2.3-beta.2` or `1.2.3-alpha`. Returns null for
-         * anything else.
+         * Parses `v1.2.3`, `1.2.3`, `1.2.3-beta.2`, `1.2.3-rc.1` or `1.2.3-alpha`. Returns
+         * null for anything else.
          *
          * Both sides of every comparison come through here: the installed `versionName`
          * and each release tag. A tag that does not parse is skipped, never guessed at.
@@ -88,6 +103,7 @@ data class AppVersion(
                 when (suffix.lowercase()) {
                     "alpha" -> ReleaseChannel.ALPHA
                     "beta" -> ReleaseChannel.BETA
+                    "rc" -> ReleaseChannel.RC
                     else -> ReleaseChannel.STABLE
                 }
             // The digits are unbounded in the pattern, so `v9999999999.0.0` has to be
