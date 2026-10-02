@@ -154,6 +154,7 @@
     <string name="licenses_components">本软件使用的开源组件</string>
     <string name="licenses_third_party">开源组件</string>
     <string name="licenses_full_text_note">各组件的完整许可文本见其项目主页。</string>
+    <string name="release_notes_0_1_0">首个正式版。除版本号与本条说明外，与 0.1.0-rc.2 完全一致。</string>
     <string name="release_notes_0_1_0_rc_2">不再丢弃“后缀无法识别”的发布标签：现在会按预发布版读取，因此新类型的标签不会再让发布对所有人不可见。首页余额整行着色（含“余额：”）。</string>
     <string name="release_notes_0_1_0_rc_1">候选版本：除版本号外与即将发布的正式版完全一致——功能、文案、行为均相同。</string>
     <string name="release_notes_0_1_0_beta_6">现在可以在应用内下载并安装更新：文件会先与发布记录中的 SHA-256 校验，通过后才交给系统安装器。未经你确认不会安装，账目数据不受影响。</string>

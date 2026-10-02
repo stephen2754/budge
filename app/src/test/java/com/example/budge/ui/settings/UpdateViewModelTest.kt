@@ -141,7 +141,9 @@ class UpdateViewModelTest {
      */
     private val offered =
         AppVersion.parse(com.example.budge.BuildConfig.VERSION_NAME)!!.let { running ->
-            running.copy(channelNumber = running.channelNumber + 1)
+            // The patch number, not the channel number: a stable version has no number to
+            // raise, and raising it would render the same string as the version under test.
+            running.copy(patch = running.patch + 1)
         }
 
     private fun release(

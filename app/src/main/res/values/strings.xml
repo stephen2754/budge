@@ -157,6 +157,7 @@
     <string name="licenses_components">Open-source components</string>
     <string name="licenses_third_party">Open-source components</string>
     <string name="licenses_full_text_note">The full licence text of each component is available at its project page.</string>
+    <string name="release_notes_0_1_0">The first stable release. Identical to 0.1.0-rc.2 apart from this version string and this note.</string>
     <string name="release_notes_0_1_0_rc_2">A release tag whose suffix this build does not recognise is no longer dropped: it is read as a pre-release, so a new kind of tag can never make a release invisible to everyone. The home balance colours the whole line, label included.</string>
     <string name="release_notes_0_1_0_rc_1">The release candidate: the stable release with nothing changed but the version number. Same features, same strings, same behaviour.</string>
     <string name="release_notes_0_1_0_beta_6">Updates can now be downloaded and installed in the app: the file is checked against the SHA-256 the release publishes, and only then handed to the system installer. Nothing is installed without your approval, and your records are untouched.</string>

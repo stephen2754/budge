@@ -27,6 +27,7 @@ data class ReleaseNotes(
  */
 private val RELEASES: List<ReleaseNotes> =
     listOf(
+        ReleaseNotes(AppVersion(0, 1, 0, ReleaseChannel.STABLE, 0), R.string.release_notes_0_1_0),
         ReleaseNotes(AppVersion(0, 1, 0, ReleaseChannel.RC, 2), R.string.release_notes_0_1_0_rc_2),
         ReleaseNotes(AppVersion(0, 1, 0, ReleaseChannel.RC, 1), R.string.release_notes_0_1_0_rc_1),
         ReleaseNotes(AppVersion(0, 1, 0, ReleaseChannel.BETA, 6), R.string.release_notes_0_1_0_beta_6),

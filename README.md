@@ -5,7 +5,7 @@
 
 | | |
 | --- | --- |
-| **Version** | 0.1.0-rc.1 (release candidate) — see [CHANGELOG.md](CHANGELOG.md) |
+| **Version** | 0.1.0 (stable) — see [CHANGELOG.md](CHANGELOG.md) |
 | **Platform** | Android 8.0+ (minSdk 26), targetSdk 35 |
 | **Stack** | Kotlin 2.0.21, Jetpack Compose (Material 3), Room, Hilt, DataStore |
 | **Languages** | English, 中文, Français, Deutsch, Español, Русский, 日本語, Italiano, Português |

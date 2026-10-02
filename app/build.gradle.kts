@@ -45,7 +45,7 @@ android {
         // The channel a build belongs to is read from this string (see
         // AppVersion.channelOf): an "-alpha.N" or "-beta.N" suffix is what makes the
         // update check offer prereleases, and the absence of one is what keeps them out.
-        versionName = "0.1.0-rc.2"
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

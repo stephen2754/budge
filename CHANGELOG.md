@@ -18,6 +18,34 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0] — the first stable release
+
+Identical to `0.1.0-rc.2` apart from the version string and this entry. That is not a
+simplification: it is the property the candidates existed to establish, and it can be checked
+rather than believed — the two APKs differ only in the version name and one resource string,
+and both carry the commit they were built from in
+`META-INF/version-control-info.textproto`.
+
+Three read-only audits ran before this release — security and trust, robustness, and release
+readiness — and everything they found that was a way to crash, a way to lose something or a
+way to tell an untruth was fixed in `0.1.0-rc.1` or `0.1.0-rc.2`. What they could not fix is
+that a build already in the field cannot learn a new version suffix: `0.1.0-rc.1` was invisible
+to `0.1.0-beta.6` and everything older, which is why the candidate line needed a manual install
+and why the parser now reads any unknown suffix as a pre-release instead of dropping the
+release entirely.
+
+This release is visible to every build ever published here, including `0.1.0-beta.6`: a stable
+tag has no suffix to misread, and the ladder offers it to alpha, beta, candidate and stable
+builds alike.
+
+- Records are integer cents, held in one local Room database, and never uploaded by the app.
+- Android backup may copy them; the downloaded update APK is excluded from it.
+- The only network use is the update check and, when asked, the download of an update. Neither
+  carries ledger data or any identifier.
+- An update installs only after its published SHA-256 matches, and only through the system
+  installer, which enforces the signing key.
+- Licence: Apache-2.0.
+
 ## [0.1.0-rc.2] — a release nobody could see
 
 ### Fixed
@@ -542,6 +570,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0]: https://github.com/stephen2754/budge/releases/tag/v0.1.0
 [0.1.0-rc.2]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-rc.2
 [0.1.0-rc.1]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-rc.1
 [0.1.0-beta.6]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.6
