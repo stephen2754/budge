@@ -4,6 +4,8 @@ import com.example.budge.data.update.AndroidApkInstaller
 import com.example.budge.data.update.ApkDownloader
 import com.example.budge.data.update.ApkInstaller
 import com.example.budge.data.update.GithubReleaseSource
+import com.example.budge.data.update.InternalUpdateFileStore
+import com.example.budge.data.update.UpdateFileStore
 import com.example.budge.data.update.UrlConnectionApkDownloader
 import com.example.budge.data.update.HttpGet
 import com.example.budge.data.update.ReleaseSource
@@ -40,4 +42,8 @@ abstract class UpdateModule {
     @Binds
     @Singleton
     abstract fun bindApkInstaller(impl: AndroidApkInstaller): ApkInstaller
+
+    @Binds
+    @Singleton
+    abstract fun bindUpdateFileStore(impl: InternalUpdateFileStore): UpdateFileStore
 }

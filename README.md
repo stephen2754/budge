@@ -5,7 +5,7 @@
 
 | | |
 | --- | --- |
-| **Version** | 0.1.0-alpha.2 (alpha) — see [CHANGELOG.md](CHANGELOG.md) |
+| **Version** | 0.1.0-rc.1 (release candidate) — see [CHANGELOG.md](CHANGELOG.md) |
 | **Platform** | Android 8.0+ (minSdk 26), targetSdk 35 |
 | **Stack** | Kotlin 2.0.21, Jetpack Compose (Material 3), Room, Hilt, DataStore |
 | **Languages** | English, 中文, Français, Deutsch, Español, Русский, 日本語, Italiano, Português |
@@ -104,6 +104,7 @@ behind the choices.
 | `versionName` | channel | offered updates | what it promises |
 | --- | --- | --- | --- |
 | `1.0.0` | stable (正式版) | stable only | no known problems |
+| `1.0.0-rc.1` | release candidate (候选版本) | the candidate and the release it leads to | the stable release, with nothing changed but the version number |
 | `1.1.0-beta.2` | beta (Beta 测试版) | beta and stable | no security issues, but crashes and other major problems are still possible |
 | `2.0.0-alpha.1` | alpha (Alpha 测试版) | everything | an unstable test build: major problems, security issues included, are possible |
 
@@ -119,9 +120,25 @@ what makes the rule meaningful. Publishing a release is three steps:
    not translated into all nine languages; the other seven fall back to English. A unit
    test fails if the entry and the installed version disagree.
 3. Tag it `v<versionName>` and publish a GitHub release. The update check reads
-   `GET /repos/stephen2754/budge/releases`, and the tag suffix (`-beta.2`, `-alpha.1`)
-   is what assigns the channel. Drafts are skipped, and a release that is never
+   `GET /repos/stephen2754/budge/releases`, and the tag suffix (`-rc.1`, `-beta.2`,
+   `-alpha.1`) is what assigns the channel. Drafts are skipped, and a release that is never
    published is simply not offered.
+4. **Do not tick "Set as a pre-release" for a stable release.** A stable tag GitHub flags as
+   a pre-release is read by the app as a *beta*, and neither a beta-and-above build nor a
+   release candidate accepts a beta: the release would be invisible to everyone it was meant
+   to reach, and the only fix is to delete and recreate it.
+5. **Attach the APK**, and confirm GitHub shows its SHA-256. The in-app install is offered
+   only for an asset whose name ends `.apk` and that carries a digest; without it every user
+   gets the release page instead.
+6. **Rebuild from a clean tree and check the provenance stamp.** An APK carries
+   `META-INF/version-control-info.textproto`, and a build from a dirty tree stamps the
+   *previous* commit — an artifact matching no commit at all:
+   `unzip -p app/build/outputs/apk/release/app-release.apk META-INF/version-control-info.textproto`
+7. **A stable release keeps the candidate's `versionCode`.** The only intended differences
+   between `0.1.0-rc.1` and `0.1.0` are the version *name*, and the release's own history
+   entry and notes string (a test requires the installed version to have one). Do not add the
+   `0.1.0` entry to the candidate: a candidate accepts the stable release, so it would
+   advertise a version that does not exist yet.
 
 [CHANGELOG.md](CHANGELOG.md) holds the full detail; the in-app history is the one-line
 version of it.
@@ -205,8 +222,10 @@ shown either — the candidate is the last check, not a stream stable users are 
   An import's values are also brought back into range (`BackupData.sanitized()`), so a
   file cannot leave the ledger disagreeing with itself.
 - **R8 keeps.** Anything Gson reflects over needs `@SerializedName` *and* a keep rule;
-  `data/backup` and `data/update` are the two such packages. Check
-  `app/build/outputs/mapping/release/mapping.txt` after touching either.
+  `data/backup` and `data/update` are the two such packages. Verify it in the **dex**, not in
+  `mapping.txt`: R8 prints no field entries for a kept class at all, so an unchanged mapping
+  file proves nothing, while `dexdump -a` on the shipped `classes.dex` shows both the original
+  field names and the surviving `@SerializedName` keys.
 
 ## Not implemented yet
 

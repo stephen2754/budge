@@ -140,6 +140,7 @@
     <string name="update_hash_mismatch">Le fichier téléchargé ne correspond pas à l’empreinte publiée. Il a été supprimé et ne sera pas installé.</string>
     <string name="update_need_install_permission">Android exige votre autorisation avant que cette application puisse installer une mise à jour. Appuyez sur Installer pour ouvrir ce réglage.</string>
     <string name="update_retry">Réessayer</string>
+    <string name="update_install_failed">Android n’a pas ouvert l’installateur. Le fichier vérifié est toujours là : rien à retélécharger.</string>
     <string name="update_history">Historique des mises à jour</string>
     <string name="update_include_alpha">Inclure les versions alpha</string>
     <string name="update_exclude_alpha">Masquer les versions alpha</string>
@@ -152,7 +153,7 @@
     <string name="channel_beta">Bêta</string>
     <string name="channel_rc">Version candidate</string>
     <string name="channel_stable">Stable</string>
-    <string name="licenses_intro">Vos opérations restent dans une base de données locale sur cet appareil et ne sont jamais envoyées. La seule requête réseau est la recherche de mise à jour, sans données ni identifiant. L’export et l’import utilisent un fichier JSON local que vous choisissez.</string>
+    <string name="licenses_intro">Vos opérations restent sur cet appareil et cette application ne les envoie jamais. La sauvegarde Android peut les copier si vous l’avez activée. L’application n’utilise le réseau que lorsque vous le demandez : pour chercher une mise à jour et pour en télécharger une. Ni l’un ni l’autre n’envoie de données ni d’identifiant.</string>
     <string name="licenses_components">Composants open source</string>
     <string name="licenses_third_party">Composants open source</string>
     <string name="licenses_full_text_note">Le texte complet de la licence de chaque composant est disponible sur sa page de projet.</string>

@@ -137,6 +137,7 @@
     <string name="update_hash_mismatch">下载文件的校验值与发布记录不一致，文件已删除且不会安装。</string>
     <string name="update_need_install_permission">安装更新前，Android 需要你授予本应用安装权限。点击“安装”将打开该设置。</string>
     <string name="update_retry">重试</string>
+    <string name="update_install_failed">Android 未能打开安装器。已校验的文件仍在，无需重新下载。</string>
     <string name="update_history">历史更新记录</string>
     <string name="update_include_alpha">包括alpha版本</string>
     <string name="update_exclude_alpha">不包括alpha版本</string>
@@ -149,7 +150,7 @@
     <string name="channel_beta">Beta 测试版</string>
     <string name="channel_rc">候选版本</string>
     <string name="channel_stable">正式版</string>
-    <string name="licenses_intro">账目保存在本机数据库中，不会上传。应用唯一的联网行为是检查更新，其中不含账目数据与标识信息。导出与导入使用你自己选择的本地 JSON 文件。</string>
+    <string name="licenses_intro">账目保存在本机，本应用不会上传。若你开启了 Android 备份，系统备份可能包含这些数据。应用仅在你主动操作时联网：检查更新与下载更新，二者都不包含账目数据或任何标识信息。</string>
     <string name="licenses_components">本软件使用的开源组件</string>
     <string name="licenses_third_party">开源组件</string>
     <string name="licenses_full_text_note">各组件的完整许可文本见其项目主页。</string>

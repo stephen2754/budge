@@ -140,6 +140,7 @@
     <string name="update_hash_mismatch">El archivo descargado no coincide con la suma de comprobación publicada. Se ha eliminado y no se instalará.</string>
     <string name="update_need_install_permission">Android necesita su permiso antes de que esta aplicación pueda instalar una actualización. Al pulsar Instalar se abre ese ajuste.</string>
     <string name="update_retry">Reintentar</string>
+    <string name="update_install_failed">Android no abrió el instalador. El archivo verificado sigue aquí, así que no hay que volver a descargarlo.</string>
     <string name="update_history">Historial de versiones</string>
     <string name="update_include_alpha">Incluir versiones alpha</string>
     <string name="update_exclude_alpha">Ocultar versiones alpha</string>
@@ -152,7 +153,7 @@
     <string name="channel_beta">Beta</string>
     <string name="channel_rc">Versión candidata</string>
     <string name="channel_stable">Estable</string>
-    <string name="licenses_intro">Sus movimientos permanecen en una base de datos local en este dispositivo y nunca se suben. La única petición de red es la comprobación de actualizaciones, sin datos de movimientos ni identificadores. La exportación y la importación usan un archivo JSON local que usted elige.</string>
+    <string name="licenses_intro">Sus movimientos permanecen en este dispositivo y esta aplicación nunca los sube. La copia de seguridad de Android puede copiarlos si la tiene activada. La aplicación usa la red solo cuando usted lo pide: para buscar una actualización y para descargarla. Ninguna de las dos envía datos ni identificadores.</string>
     <string name="licenses_components">Componentes de código abierto</string>
     <string name="licenses_third_party">Componentes de código abierto</string>
     <string name="licenses_full_text_note">El texto completo de la licencia de cada componente está en su página de proyecto.</string>

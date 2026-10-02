@@ -1,11 +1,12 @@
 package com.example.budge.ui.settings
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.budge.BuildConfig
 import com.example.budge.data.update.ApkDownloader
 import com.example.budge.data.update.ApkInstaller
+import com.example.budge.data.update.UpdateFileStore
+import com.example.budge.data.update.UpdateFailure
 import com.example.budge.data.update.AppVersion
 import com.example.budge.data.update.ReleaseChannel
 import com.example.budge.data.update.ReleaseFetch
@@ -20,11 +21,10 @@ import com.example.budge.data.update.releaseHistoryFor
 import com.example.budge.data.update.selectBetaOffer
 import com.example.budge.data.update.selectUpdate
 import com.example.budge.data.update.sha256
-import com.example.budge.data.update.updateDirectory
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,6 +65,9 @@ sealed interface UpdateDownload {
     data object DownloadFailed : UpdateDownload
 
     data object VerificationFailed : UpdateDownload
+
+    /** The verified file exists but the platform would not open its installer. */
+    data object InstallFailed : UpdateDownload
 }
 
 @HiltViewModel
@@ -74,7 +77,7 @@ class UpdateViewModel
         private val releaseSource: ReleaseSource,
         private val apkDownloader: ApkDownloader,
         private val apkInstaller: ApkInstaller,
-        @ApplicationContext private val context: Context,
+        private val fileStore: UpdateFileStore,
     ) : ViewModel() {
         /** The channel of the running build. */
         val channel: ReleaseChannel = AppVersion.channelOf(BuildConfig.VERSION_NAME)
@@ -129,57 +132,68 @@ class UpdateViewModel
 
         private var downloadJob: Job? = null
 
-        /** The verified file, if the last download passed its check. */
-        private var downloadedFile: File? = null
+        /** The scratch file the running download is writing, if there is one. */
+        private var scratchFile: File? = null
 
-        init {
-            // Files from an earlier attempt are of no use: the previous install succeeded (the
-            // process would not be running the old build otherwise) or was abandoned. This is
-            // also what removes the downloaded APK after an update has been installed, since
-            // that install restarts the app.
-            apkInstaller.clearDownloadedUpdates()
-        }
+        /** The verified file, and the version it belongs to, if the last download passed. */
+        private var readyFile: File? = null
 
-        /**
-         * Asks the release source whether a newer release exists for this channel.
-         *
-         * With no source configured nothing is requested and the state says so, rather
-         * than reporting a version that was never compared.
-         */
+        private var readyVersion: AppVersion? = null
+
         /**
          * Downloads the offered release and checks it against the hash GitHub published.
          *
-         * The file is written into app-private storage and is deleted again unless the hash
-         * matches: a download that cannot be checked is treated as a failed one, because
-         * installing it is exactly the thing the check exists to prevent.
+         * The bytes go to a `.part` file and only a file that passed its check is renamed to
+         * the name the installer will be given. That separation is not tidiness: writing both
+         * attempts to one name meant a retry after a cancelled download could interleave with
+         * the abandoned writer and produce a mixture that failed its own checksum check —
+         * telling the reader a download had been tampered with when it had not.
          */
         fun downloadUpdate() {
             val release = (_status.value as? UpdateStatus.Available)?.release ?: return
             val url = release.assetUrl ?: return
             if (_download.value is UpdateDownload.Downloading || _download.value is UpdateDownload.Verifying) return
 
-            downloadedFile?.delete()
-            downloadedFile = null
-            val target = File(updateDirectory(context), "budge-${release.version}.apk")
+            clearReady()
+            val scratch = fileStore.scratch(release.version)
+            scratchFile = scratch
             _download.value = UpdateDownload.Downloading(bytes = 0L, total = 0L)
             downloadJob =
                 viewModelScope.launch {
-                    val complete = apkDownloader.download(url, target) { bytes, total ->
-                        _download.value = UpdateDownload.Downloading(bytes = bytes, total = total)
-                    }
+                    val complete =
+                        apkDownloader.download(url, scratch) { bytes, total ->
+                            // The callback runs on the download's own thread and can arrive
+                            // after the reader has cancelled, so it writes progress only while
+                            // this download is still the one on screen. That also stops a late
+                            // callback from pulling the state back out of Verifying.
+                            if (_download.value is UpdateDownload.Downloading) {
+                                _download.value = UpdateDownload.Downloading(bytes = bytes, total = total)
+                            }
+                        }
+                    scratchFile = null
                     if (!complete) {
-                        target.delete()
+                        scratch.delete()
                         _download.value = UpdateDownload.DownloadFailed
                         return@launch
                     }
                     _download.value = UpdateDownload.Verifying
-                    val actual = withContext(Dispatchers.IO) { sha256(target) }
+                    val actual = withContext(Dispatchers.IO) { sha256(scratch) }
                     if (!matchesSha256(release.digest, actual)) {
-                        target.delete()
+                        scratch.delete()
                         _download.value = UpdateDownload.VerificationFailed
                         return@launch
                     }
-                    downloadedFile = target
+                    val ready = fileStore.verified(release.version)
+                    if (!scratch.renameTo(ready)) {
+                        // A rename that fails means the file could not be put where the
+                        // installer is allowed to read it; that is a failed download, not a
+                        // verified one.
+                        scratch.delete()
+                        _download.value = UpdateDownload.DownloadFailed
+                        return@launch
+                    }
+                    readyFile = ready
+                    readyVersion = release.version
                     _download.value = UpdateDownload.Ready
                 }
         }
@@ -188,9 +202,18 @@ class UpdateViewModel
         fun cancelDownload() {
             downloadJob?.cancel()
             downloadJob = null
-            downloadedFile?.delete()
-            downloadedFile = null
+            // The scratch file is the one a cancelled download is writing — the verified file
+            // is a different name, which is what keeps this from deleting something installable.
+            scratchFile?.delete()
+            scratchFile = null
+            clearReady()
             _download.value = UpdateDownload.Idle
+        }
+
+        private fun clearReady() {
+            readyFile?.delete()
+            readyFile = null
+            readyVersion = null
         }
 
         /** Whether the platform will let this app hand a file to the installer. */
@@ -199,15 +222,17 @@ class UpdateViewModel
         /**
          * Hands the verified file to the system installer, which asks the user to confirm.
          *
-         * The file is deliberately left in place: the installer reads it after this returns.
-         * It is removed on the next launch, by which time an install that succeeded has
-         * restarted the app.
+         * The file and the ready state are deliberately kept. Starting an installer tells this
+         * app nothing about what the user did with it — they may cancel, or the platform may
+         * refuse — and throwing the verified download away on "an activity started" meant a
+         * cancelled install cost another whole download. It is removed when the app next
+         * starts as a version that no longer needs it, which is what cleans up after a
+         * successful install.
          */
         fun installDownloaded() {
-            val file = downloadedFile ?: return
-            if (apkInstaller.install(file)) {
-                downloadedFile = null
-                _download.value = UpdateDownload.Idle
+            val file = readyFile ?: return
+            if (!apkInstaller.install(file)) {
+                _download.value = UpdateDownload.InstallFailed
             }
         }
 
@@ -221,9 +246,14 @@ class UpdateViewModel
                 return
             }
             viewModelScope.launch {
+                try {
                 _status.value = UpdateStatus.Checking
                 _betaOffer.value = null
-                cancelDownload()
+                // A check re-decides which release to offer. A download in flight is abandoned
+                // — the offer may change under it — but a file that is already verified and
+                // ready to install is kept, because throwing it away would make the reader pay
+                // for it twice for no reason.
+                if (_download.value !is UpdateDownload.Ready) cancelDownload()
                 _status.value =
                     when (val fetched = releaseSource.releases(UpdateConfig.GITHUB_REPOSITORY)) {
                         is ReleaseFetch.Failure -> UpdateStatus.Unreachable(fetched.failure, fetched.statusCode)
@@ -235,6 +265,12 @@ class UpdateViewModel
                                 // that is already ahead of every beta.
                                 _betaOffer.value = selectBetaOffer(currentVersion, fetched.releases)
                                 val newer = selectUpdate(currentVersion, fetched.releases)
+                                // A verified file is only useful while its release is still the
+                                // one being offered; otherwise it would sit in storage with no
+                                // way to reach it.
+                                if (_download.value is UpdateDownload.Ready && readyVersion != newer?.version) {
+                                    cancelDownload()
+                                }
                                 if (newer == null) {
                                     UpdateStatus.UpToDate(currentVersion)
                                 } else {
@@ -243,6 +279,13 @@ class UpdateViewModel
                             }
                         }
                     }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    // A check that could not be completed says so; it must never read as "up to
+                    // date", and it must not take the app down on the way.
+                    _status.value = UpdateStatus.Unreachable(UpdateFailure.PARSE)
+                }
             }
         }
     }

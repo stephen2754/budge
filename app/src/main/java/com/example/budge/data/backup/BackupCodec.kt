@@ -133,9 +133,26 @@ fun BackupData.sanitized(): BackupData =
                     // already give it — and a second rule would be free to drift from it.
                     type = TransactionType.fromValue(transaction.type).value,
                     amount = transaction.amount.coerceIn(0L, Amount.MAX_CENTS),
+                    // The date picker the form opens on a stored transaction refuses a year
+                    // outside its own window — and it refuses it by throwing while the dialog
+                    // is being composed, which is an unhandled crash on a screen the reader
+                    // cannot leave. The app cannot produce such a row (both pickers stop at
+                    // today), so a foreign file is the only way one gets in; it is brought
+                    // into range here, like the direction and the amount.
+                    timestamp = transaction.timestamp.coerceIn(0L, MAX_PICKER_MILLIS),
+                    createdAt = transaction.createdAt.coerceIn(0L, MAX_PICKER_MILLIS),
+                    updatedAt = transaction.updatedAt.coerceIn(0L, MAX_PICKER_MILLIS),
                 )
             },
     )
+
+/**
+ * The end of the date picker's own year window: 2100-01-01T00:00:00Z.
+ *
+ * Material's picker refuses a year outside 1900..2100 by throwing while it is being built, so
+ * a stored value beyond this is not a date the form can show — it is a crash waiting for a tap.
+ */
+private const val MAX_PICKER_MILLIS = 4_102_444_800_000L
 
 /** Serializes a backup to the JSON written to the user's file. */
 fun encodeBackup(data: BackupData): String =

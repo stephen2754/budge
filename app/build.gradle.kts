@@ -66,6 +66,12 @@ android {
                 storePassword = keystoreProperties.getProperty("storePassword")
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
+                // v3 as well as v2: v3 is what carries a key-rotation proof, so a release key
+                // that is ever compromised can be rotated instead of forcing every user to
+                // uninstall — which for this app would mean losing the ledger. Android 8
+                // ignores v3 and verifies v2, so nothing is lost on the oldest releases this
+                // app supports.
+                enableV3Signing = true
             }
         }
     }
@@ -168,6 +174,7 @@ dependencies {
 
     // Testing
     testImplementation(libs.junit)
+    testImplementation(libs.coroutines.test)
     androidTestImplementation(libs.junit.ext)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))

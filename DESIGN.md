@@ -20,7 +20,7 @@
 | Core Positioning | Fully manual bookkeeping — no auto sync, no bank import, all data stays on device |
 | Design Standard | Material Design 3 (Material You, dynamic color) |
 | Data Storage | Local SQLite via Room, with JSON export/import |
-| Network Permission | `INTERNET`, for the user-initiated update check only — see §12.13 |
+| Network Permission | `INTERNET`, for the user-initiated update check and the update download; `REQUEST_INSTALL_PACKAGES`, to hand a verified download to the system installer — see §12.15 |
 | minSdk | 26 (Android 8.0 Oreo) |
 | targetSdk | 35 (Android 15) |
 | compileSdk | 35 |
@@ -32,7 +32,7 @@
 - The app ships **nine languages**: Simplified Chinese, English, French, German, Spanish, Russian, Japanese, Italian and Portuguese.
 - The language is **user-configurable** in Settings: **Follow System** plus those nine, each listed under its own name and ordered by language code — `de, en, es, fr, it, ja, pt, ru, zh` — which is an order a reader can predict: the Latin names come out alphabetical and the two written in other scripts sit where their code puts them, instead of the app's own language being first (defaults to Follow System). Following the system means the device language is used when the app has it, and English otherwise — including when the locale cannot be read at all.
 - The choice is stored in DataStore (`language` key). It is applied in `MainActivity.attachBaseContext` so the Activity's resources are localized while `LocalContext` remains the Activity (required by Hilt's `hiltViewModel`). A `LocalAppLocale` CompositionLocal drives the date/time formatting helpers.
-- All UI strings live in resource files: `values/strings.xml` (English, the default) plus one `values-<language>/strings.xml` per translation, 113 keys each (117 in English and Chinese, which also carry the release-note summaries) and two plurals. `LocaleResourcesTest` holds that in step: same keys in every locale, same format specifiers in the same order, and every plural defined with the forms its language needs (Russian's `one`/`few`/`many` included, so a count of one no longer reads "1 операций").
+- All UI strings live in resource files: `values/strings.xml` (English, the default) plus one `values-<language>/strings.xml` per translation, 132 keys each (148 in English and Chinese, which also carry the release-note summaries) and two plurals. `LocaleResourcesTest` holds that in step: same keys in every locale, same format specifiers in the same order, and every plural defined with the forms its language needs (Russian's `one`/`few`/`many` included, so a count of one no longer reads "1 операций").
 - **Anything that carries a count is a `<plurals>`**, never a `%1$d` inside a plain string, so a language that inflects gets its own forms.
 - **Dates and times come from the locale**, not from a fixed pattern: the day header, the month title, the statistics date and the clock all ask the platform for the arrangement a CLDR skeleton resolves to (`ui/LocalizedPatterns.kt`), and the time picker follows the device's own 12/24-hour setting. The old fixed patterns read "août 11, mar." in French where French writes "mar. 11 août", and showed a 24-hour clock to everyone. Chinese and Japanese keep their year-first `2026年8月11日` style.
 - Changing the language **does not** touch category names: the built-ins are seeded in the device language on first launch and are ordinary user-editable categories afterwards (see §12.4).
@@ -347,7 +347,7 @@ budge/
 ### Not yet implemented (stretch goals)
 - **An update source other than GitHub.** The check itself is live — it reads the
   releases of `stephen2754/budge`, channel-aware, with the release history and licences
-  behind it (§12.13) — and pointing it somewhere else is a one-line change to
+  behind it (§12.15) — and pointing it somewhere else is a one-line change to
   `UpdateConfig.GITHUB_REPOSITORY`. A second `ReleaseSource` implementation is all a
   different host would take.
 - Editable monthly budget. The table, DAO, repository and stats card all exist, but
@@ -407,11 +407,11 @@ by the comment in `TransactionDao` that records why the grouping has to include 
 direction; a regression there would be caught by a user, not by the build. Closing that
 gap is what the "Data layer" and "UI tests" rows above are for.
 
-### 11.1 CI/CD (planned GitHub Actions)
+### 11.2 CI/CD (GitHub Actions)
 
 ```yaml
 # .github/workflows/android.yml
-- Lint check          # blocked today — see §12.9
+- Lint check          # blocked today — see §12.11
 - Unit tests (JUnit)  # ./gradlew :app:testDebugUnitTest
 - Build debug APK
 - Compose UI tests (optional)
@@ -432,7 +432,7 @@ earned rather than declared, and these are the checks behind it:
 | A failing read does not crash and does not lose settings | Preference reads go through `safeData()` (§12.14) and are covered by `SafePreferencesTest`; the first-launch seeding and currency derivation skip entirely on a read failure rather than treating it as an empty store |
 | Nothing in the app trusts a remote address | The update check only ever parses the payload; the release page it opens has to be `https://github.com/…` (§12.15) |
 | The ledger cannot be silently destroyed | The import still validates before it wipes, the empty-document refusal and format marker are pinned by tests, and an export is now a single transaction so it cannot reference a category missing from itself (§12.7) |
-| The shipped artefact is what was measured | Release APK measured at 1,637,673 bytes at the time of writing, of which the `classes.dex` entry is 2.73 MB uncompressed, `resources.arsc` 96 KB for nine locales, and eight native libraries (four ABIs, two libraries) totalling ~60 KB — of which ~30 KB is the x86/x86_64 pair that no phone uses. R8 and resource shrinking are on; the removed-code report (`app/build/outputs/mapping/release/usage.txt`) shows unused Compose tooling already stripped |
+| The shipped artefact is what was measured | Release APK measured at 1,637,673 bytes at the time of writing, of which the `classes.dex` entry is 2.73 MB uncompressed, `resources.arsc` 96 KB for nine locales, and eight native libraries (four ABIs, two libraries) totalling ~60 KB — of which ~30 KB is the x86/x86_64 pair that no phone uses. R8 and resource shrinking are on; the removed-code report (`app/build/outputs/mapping/release/usage.txt`) shows no Compose tooling at all, because it is scoped to `debugImplementation` and is never on the release classpath |
 
 What it does **not** claim: there are no instrumented or Robolectric tests (§11), so the
 gestures, the haptics, rendering and the DAO SQL are verified by reading and by device
@@ -480,6 +480,13 @@ is stated again in §12.
 20. **Startup work cannot kill the process before the first screen.** `BudgeApplication`'s first-launch work opens the database and writes preferences on an application scope with no handler; none of it has a reader waiting on it, so a failure there (an unopenable database, a full disk) is caught and left for the next launch rather than crashing every launch while the condition lasts.
 21. **Measured, and deliberately left alone.** These were found by audit and are recorded as decisions, not oversights: the `runBlocking` preference read in `MainActivity.attachBaseContext` stays, because the language has to be applied before any resource exists and caching it in memory would apply a *stale* language after a language change (the one path that triggers `recreate()`), while the warm re-reads are a dispatcher hop rather than a file read; `budgets.month` has no index and does not need one while nothing writes budgets — the first budget editor needs a real migration; the per-day-header date formatters are rebuilt when a header scrolls back in, which measures below a frame for a screenful and would need a process-wide formatter cache to improve; `.animateContentSize()` stays on the transaction rows because an edited row's amount *can* change width through `amountTextStyle`; and the `libdatastore_shared_counter.so` payload (22.9 KB across four ABIs) stays because excluding a native library DataStore may load is not worth 1.4% of the APK.
 
+22. **A download is written under a scratch name and renamed only after its hash passes.** `UpdateFileStore` keeps two names per version: `…​.apk.part` while it is arriving, and `…​.apk` once it is verified, which is the only name the installer is ever given. Writing both attempts to one name meant a retry after a cancelled download could interleave with the abandoned writer and produce a mixture that failed its own checksum — a tampered-download report for a download that was fine. The version is in the name, which is also what makes cleanup safe: `clearStale` removes scratch files and anything **not newer** than the running build, so the file the installer is reading (the app is still the old version while it reads it) is never deleted, and the file left after a successful install is removed by the next launch.
+23. **Cancelling a download has to be observed by the loop, not just by the job.** `read` blocks on a socket and `cancel()` cannot interrupt it, so the loop calls `ensureActive()` every iteration; the progress callback runs on the download's own thread and therefore writes only while the state is still `Downloading`, so a late callback cannot put a finished progress bar back on screen after the reader cancelled. Without both, Cancel kept downloading and the window froze at 100% with no way out but a second Cancel.
+24. **A verified download is not thrown away on "an activity started".** `install()` returning true means only that the system installer was launched; it says nothing about whether the user installed, refused or cancelled. The ready state and the file are kept until a new download, a new offer, or the next launch — otherwise cancelling the system dialog cost another whole download.
+25. **The release checklist has three traps worth naming.** A stable tag GitHub flags as a *pre-release* is read by the app as a beta, which neither a beta-and-above build nor a candidate accepts — the release becomes invisible and must be deleted and recreated. A release without an attached APK with a digest gets the release page instead of the in-app install. And an APK built from a dirty tree stamps the *previous* commit in `META-INF/version-control-info.textproto`, so it matches no commit at all: rebuild from a clean tree and check the stamp against the tag.
+26. **The update directory is excluded from Android's backup** (`backup_rules.xml`, `data_extraction_rules.xml`, both destinations). A downloaded APK can be fetched again, would consume the backup quota, and is meant to be installed rather than restored. Both rules files are also covered by a test that parses them and asserts the schema the platform expects — because `lintVitalRelease` is switched off for this project (§12.11) and that class of defect has shipped here once.
+27. **Two things the update path deliberately does not claim.** The SHA-256 is not an independent trust anchor: it and the asset URL arrive in the same response, so it defends against truncation, corruption, a substituted CDN copy and redirect abuse, not against a compromised release response — the platform installer's signature check is the backstop, and the app relies on it rather than duplicating it. And `REQUEST_INSTALL_PACKAGES` used for self-update is outside Google Play's permitted uses for that permission: fine for distribution through GitHub releases, a blocker if this app ever ships on Play.
+
 ## 13. Version & Build Recommendations
 
 - **minSdk 26**, **targetSdk 35**, **compileSdk 35**
@@ -493,7 +500,7 @@ is stated again in §12.
   with it. Remove that block when the toolchain is upgraded
 - **Version and channel live in `versionName`** (`0.1.0-alpha.1`, `1.0.0`,
   `1.1.0-beta.2`). The channel decides which releases a build may see and install, and it
-  is read from the installed build at runtime — see §12.13
+  is read from the installed build at runtime — see §12.15
 - Publishing a release: bump `versionCode`/`versionName`, add the entry to
   `RELEASES` in `data/update/Changelog.kt` **and** its `release_notes_*` string in
   `values/` and `values-zh/` (the other locales fall back to English), mirror it in

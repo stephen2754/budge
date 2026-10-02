@@ -138,6 +138,7 @@
     <string name="update_hash_mismatch">ダウンロードしたファイルが公開されたチェックサムと一致しません。削除され、インストールされません。</string>
     <string name="update_need_install_permission">このアプリが更新をインストールするには Android の許可が必要です。「インストール」を押すとその設定が開きます。</string>
     <string name="update_retry">再試行</string>
+    <string name="update_install_failed">Android がインストーラーを開けませんでした。検証済みのファイルは残っているので、再ダウンロードは不要です。</string>
     <string name="update_history">更新履歴</string>
     <string name="update_include_alpha">アルファ版を含める</string>
     <string name="update_exclude_alpha">アルファ版を隠す</string>
@@ -150,7 +151,7 @@
     <string name="channel_beta">Beta</string>
     <string name="channel_rc">リリース候補</string>
     <string name="channel_stable">正式版</string>
-    <string name="licenses_intro">記録はこの端末内のローカルデータベースに保存され、アップロードされません。唯一の通信は更新確認で、記録データも識別情報も含みません。エクスポートとインポートは、選んだローカルの JSON ファイルを使います。</string>
+    <string name="licenses_intro">記録はこの端末に残り、このアプリがアップロードすることはありません。Android のバックアップを有効にしている場合、それが記録をコピーすることがあります。通信はあなたが操作したときだけ行います：更新の確認と、更新のダウンロードです。どちらも記録データや識別情報を送信しません。</string>
     <string name="licenses_components">オープンソースコンポーネント</string>
     <string name="licenses_third_party">オープンソースコンポーネント</string>
     <string name="licenses_full_text_note">各コンポーネントのライセンス全文は、そのプロジェクトページで確認できます。</string>

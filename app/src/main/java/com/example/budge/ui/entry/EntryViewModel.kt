@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -112,8 +113,8 @@ class EntryViewModel
             // something happened to write to the database — the first open worked, later
             // ones did not. Reading both once per open is what makes every open work; the
             // collectors are what keep them current while the form is up.
-            viewModelScope.launch { applyCategories(categoryRepository.getAllOnce()) }
-            viewModelScope.launch { applyCurrencySymbol(dataStore.safeData().first()[Prefs.currencySymbolKey]) }
+            launchGuarded { applyCategories(categoryRepository.getAllOnce()) }
+            launchGuarded { applyCurrencySymbol(dataStore.safeData().first()[Prefs.currencySymbolKey]) }
 
             // The screen calls init() from a LaunchedEffect, which re-runs every time the
             // form is composed — including during the exit animation, when the target id
@@ -187,10 +188,31 @@ class EntryViewModel
             }
         }
 
+        /**
+         * Runs a one-shot storage read, and does not take the app down if it fails.
+         *
+         * Every *flow* in the repositories ends in `fallingBackTo`, so a read failure shows as
+         * an empty screen; these one-shot reads are launched bare, where a failure would be an
+         * unhandled exception in `viewModelScope` — a crash. There is nothing the reader could
+         * do about it and nothing to report that they could act on, so the failure is left as
+         * a form that did not fill itself in.
+         */
+        private fun launchGuarded(block: suspend CoroutineScope.() -> Unit) {
+            viewModelScope.launch {
+                try {
+                    block()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    // Left as it was.
+                }
+            }
+        }
+
         private fun loadTransaction(id: Long) {
             // Populate the form fields from the persisted transaction; the stored
             // amount in cents is rendered back as an editable decimal string.
-            viewModelScope.launch {
+            launchGuarded {
                 val transaction = transactionRepository.getById(id)
                 if (transaction != null) {
                     loadedCreatedAt = transaction.createdAt
@@ -229,7 +251,7 @@ class EntryViewModel
             // repairs a table that has no categories at all, and switching to a type whose
             // rows were all deleted would leave the form with nothing to select.
             if (_uiState.value.categories.isEmpty()) {
-                viewModelScope.launch {
+                launchGuarded {
                     categoryRepository.ensureCategoryOfType(type, deviceLocale())
                 }
             }

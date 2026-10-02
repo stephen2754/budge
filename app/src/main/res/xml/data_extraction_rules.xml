@@ -19,10 +19,15 @@
         <include domain="database" path="." />
         <include domain="sharedpref" path="." />
         <include domain="file" path="." />
+        <!-- The downloaded update APK is not backup material: it can be downloaded again, it
+             would consume the backup quota, and it is meant to be installed rather than
+             restored. -->
+        <exclude domain="file" path="updates/" />
     </cloud-backup>
     <device-transfer>
         <include domain="database" path="." />
         <include domain="sharedpref" path="." />
         <include domain="file" path="." />
+        <exclude domain="file" path="updates/" />
     </device-transfer>
 </data-extraction-rules>

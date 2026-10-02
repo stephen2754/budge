@@ -167,11 +167,14 @@ class CategoryViewModel
          */
         fun delete(category: Category) {
             viewModelScope.launch {
-                if (transactionRepository.getTransactionCountForCategory(category.id) > 0) {
-                    _uiState.update { it.copy(error = getApplication<Application>().getString(R.string.category_cannot_delete)) }
-                    return@launch
-                }
                 try {
+                    // Inside the handler: the count is a read like any other, and a read that
+                    // fails must report the same thing a refused delete does rather than
+                    // escaping as an unhandled exception.
+                    if (transactionRepository.getTransactionCountForCategory(category.id) > 0) {
+                        _uiState.update { it.copy(error = getApplication<Application>().getString(R.string.category_cannot_delete)) }
+                        return@launch
+                    }
                     categoryRepository.deleteById(category.id)
                 } catch (e: CancellationException) {
                     throw e

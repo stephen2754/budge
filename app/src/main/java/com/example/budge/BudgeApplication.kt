@@ -9,7 +9,8 @@ import com.example.budge.data.prefs.Prefs
 import com.example.budge.data.prefs.defaultCurrencyFor
 import com.example.budge.data.prefs.deviceLocale
 import com.example.budge.data.repository.CategoryRepository
-import com.example.budge.data.update.updateDirectory
+import com.example.budge.data.update.AppVersion
+import com.example.budge.data.update.UpdateFileStore
 import java.io.IOException
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +38,9 @@ class BudgeApplication : Application() {
     @Inject
     lateinit var dataStore: DataStore<Preferences>
 
+    @Inject
+    lateinit var fileStore: UpdateFileStore
+
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onCreate() {
@@ -61,11 +65,11 @@ class BudgeApplication : Application() {
             // the condition lasts. The screens report what they can and cannot read.
             try {
                 // A downloaded update is of no use once it has been installed: this launch is
-                // the new version if it worked, and a download cannot outlive the process it
-                // started in, so anything still here was abandoned. Removing it here rather
-                // than only when the settings screen is opened is what makes that true even
-                // for someone who never opens the screen again.
-                runCatching { updateDirectory(this@BudgeApplication).deleteRecursively() }
+                // the new version if it worked. The store keeps anything *newer* than the
+                // running build, because the system installer may be reading it right now —
+                // opening its content URI starts this process, and deleting the file it is
+                // about to read would break the install it was asked to perform.
+                fileStore.clearStale(AppVersion.parse(BuildConfig.VERSION_NAME) ?: AppVersion(0, 0, 0))
 
                 // First launch only. The seeded categories are named in the device language
                 // of that moment and never renamed again: from here on they belong to the

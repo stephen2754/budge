@@ -794,6 +794,15 @@ fun SettingsScreen(
                                 )
                             }
 
+                            UpdateDownload.InstallFailed -> {
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = stringResource(R.string.update_install_failed),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            }
+
                             UpdateDownload.Idle -> {
                                 status.release.notes?.let { notes ->
                                     Spacer(modifier = Modifier.height(8.dp))
@@ -836,7 +845,7 @@ fun SettingsScreen(
                         DialogButton(stringResource(R.string.close)) { showUpdateResult = false }
                         if (status is UpdateStatus.Available) {
                             when {
-                                download is UpdateDownload.Ready ->
+                                download is UpdateDownload.Ready || download is UpdateDownload.InstallFailed ->
                                     DialogButton(stringResource(R.string.update_install)) {
                                         // Asked again at the moment it matters: the answer can
                                         // have changed since this dialog was drawn.

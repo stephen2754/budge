@@ -2,6 +2,7 @@ package com.example.budge.data.update
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.w3c.dom.Element
@@ -214,9 +215,15 @@ class GithubReleaseSource
                         else ->
                             try {
                                 ReleaseFetch.Success(parse(result.body))
-                            } catch (_: Exception) {
-                                // The answer arrived but was not what this app reads:
-                                // a captive portal, a block page, a changed format.
+                            } catch (e: CancellationException) {
+                                throw e
+                            } catch (_: Throwable) {
+                                // Throwable, not Exception: a parser can raise an Error on a
+                                // body it cannot handle, and "the answer could not be read" is
+                                // the right verdict for that — the alternative is an unhandled
+                                // throwable in a coroutine, which is a crash. The answer
+                                // arrived but was not what this app reads: a captive portal, a
+                                // block page, a changed format.
                                 ReleaseFetch.Failure(UpdateFailure.PARSE)
                             }
                     }
@@ -305,6 +312,13 @@ internal fun parseGithubReleases(json: String): List<RemoteRelease> {
  * Throws if the body is not this XML, which the caller maps to [UpdateFailure.PARSE].
  */
 internal fun parseGithubFeed(xml: String): List<RemoteRelease> {
+    // Fail closed before any parser sees the document. The strongest control below — a feature
+    // that refuses a document type declaration outright — is set through runCatching, because a
+    // parser that does not know the feature throws when asked for it; on such a parser the
+    // remaining controls are weaker, so a body carrying a doctype at all is refused here rather
+    // than handed over.
+    if (xml.contains("<!DOCTYPE", ignoreCase = true)) return emptyList()
+
     val builder =
         DocumentBuilderFactory.newInstance().apply {
             isNamespaceAware = false

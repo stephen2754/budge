@@ -4,7 +4,7 @@ Notable changes per release, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-A `-alpha.N` or `-beta.N` suffix marks a test build, and the suffix is the only thing
+A `-alpha.N`, `-beta.N` or `-rc.N` suffix marks a test build, and the suffix is the only thing
 that decides which updates a build is offered:
 
 - **alpha** — an unstable test build. Major problems are possible, security issues

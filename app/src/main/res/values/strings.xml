@@ -140,6 +140,7 @@
     <string name="update_hash_mismatch">The downloaded file does not match the published checksum. It has been deleted and will not be installed.</string>
     <string name="update_need_install_permission">Android needs your permission before this app can install an update. Pressing Install opens that setting.</string>
     <string name="update_retry">Try again</string>
+    <string name="update_install_failed">Android would not open the installer. The verified file is still here, so nothing needs downloading again.</string>
     <string name="update_history">Update history</string>
     <string name="update_include_alpha">Include alpha versions</string>
     <string name="update_exclude_alpha">Hide alpha versions</string>
@@ -152,7 +153,7 @@
     <string name="channel_beta">Beta</string>
     <string name="channel_rc">Release candidate</string>
     <string name="channel_stable">Stable</string>
-    <string name="licenses_intro">Your records stay in a local database on this device and are never uploaded. The only network request is the update check, which carries no ledger data and no identifier. Export and import use a local JSON file you choose.</string>
+    <string name="licenses_intro">Your records stay on this device, and this app never uploads them. Android backup may copy them if you have it switched on. The app uses the network only when you ask it to: to check for updates, and to download one. Neither sends ledger data or any identifier.</string>
     <string name="licenses_components">Open-source components</string>
     <string name="licenses_third_party">Open-source components</string>
     <string name="licenses_full_text_note">The full licence text of each component is available at its project page.</string>

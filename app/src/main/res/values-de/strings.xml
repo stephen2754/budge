@@ -140,6 +140,7 @@
     <string name="update_hash_mismatch">Die heruntergeladene Datei stimmt nicht mit der veröffentlichten Prüfsumme überein. Sie wurde gelöscht und wird nicht installiert.</string>
     <string name="update_need_install_permission">Android benötigt Ihre Erlaubnis, bevor diese App ein Update installieren darf. Über Installieren öffnen Sie diese Einstellung.</string>
     <string name="update_retry">Erneut versuchen</string>
+    <string name="update_install_failed">Android hat den Installer nicht geöffnet. Die geprüfte Datei ist noch da, es muss nichts erneut geladen werden.</string>
     <string name="update_history">Versionsverlauf</string>
     <string name="update_include_alpha">Alpha-Versionen einbeziehen</string>
     <string name="update_exclude_alpha">Alpha-Versionen ausblenden</string>
@@ -152,7 +153,7 @@
     <string name="channel_beta">Beta</string>
     <string name="channel_rc">Release-Kandidat</string>
     <string name="channel_stable">Stabil</string>
-    <string name="licenses_intro">Ihre Buchungen bleiben in einer lokalen Datenbank auf diesem Gerät und werden nie hochgeladen. Die einzige Netzwerkanfrage ist die Update-Prüfung, ohne Buchungsdaten und ohne Kennung. Export und Import nutzen eine lokale JSON-Datei Ihrer Wahl.</string>
+    <string name="licenses_intro">Ihre Buchungen bleiben auf diesem Gerät, und diese App lädt sie nie hoch. Die Android-Sicherung kann sie kopieren, wenn Sie sie eingeschaltet haben. Die App nutzt das Netzwerk nur auf Ihre Anforderung: für die Update-Prüfung und für den Download eines Updates. Beides sendet keine Buchungsdaten und keine Kennung.</string>
     <string name="licenses_components">Open-Source-Komponenten</string>
     <string name="licenses_third_party">Open-Source-Komponenten</string>
     <string name="licenses_full_text_note">Der vollständige Lizenztext jeder Komponente steht auf ihrer Projektseite.</string>

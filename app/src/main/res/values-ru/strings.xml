@@ -144,6 +144,7 @@
     <string name="update_hash_mismatch">Загруженный файл не совпадает с опубликованной контрольной суммой. Он удалён и не будет установлен.</string>
     <string name="update_need_install_permission">Android требует вашего разрешения, прежде чем приложение сможет установить обновление. Нажатие «Установить» открывает эту настройку.</string>
     <string name="update_retry">Повторить</string>
+    <string name="update_install_failed">Android не открыл установщик. Проверенный файл на месте, загружать заново не нужно.</string>
     <string name="update_history">История обновлений</string>
     <string name="update_include_alpha">Включить альфа-версии</string>
     <string name="update_exclude_alpha">Скрыть альфа-версии</string>
@@ -156,7 +157,7 @@
     <string name="channel_beta">Beta</string>
     <string name="channel_rc">Кандидат в релизы</string>
     <string name="channel_stable">Стабильная</string>
-    <string name="licenses_intro">Записи остаются в локальной базе данных на этом устройстве и никуда не отправляются. Единственный сетевой запрос — проверка обновлений, без данных записей и без идентификаторов. Экспорт и импорт используют локальный JSON-файл, который вы выбираете.</string>
+    <string name="licenses_intro">Записи остаются на этом устройстве, и приложение никогда их не отправляет. Резервная копия Android может их скопировать, если она включена. Приложение использует сеть только по вашему запросу: для проверки обновлений и для их загрузки. Ни то, ни другое не отправляет данные записей и идентификаторы.</string>
     <string name="licenses_components">Компоненты с открытым исходным кодом</string>
     <string name="licenses_third_party">Открытые компоненты</string>
     <string name="licenses_full_text_note">Полный текст лицензии каждого компонента доступен на его странице проекта.</string>

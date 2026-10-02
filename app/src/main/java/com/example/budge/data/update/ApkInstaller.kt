@@ -24,9 +24,6 @@ interface ApkInstaller {
 
     /** Opens the per-app "install unknown apps" screen so that permission can be granted. */
     fun requestInstallPermission()
-
-    /** Deletes any downloaded update files, which are of no use once installed or refused. */
-    fun clearDownloadedUpdates()
 }
 
 /**
@@ -67,10 +64,6 @@ class AndroidApkInstaller
             runCatching { context.startActivity(intent) }
         }
 
-        override fun clearDownloadedUpdates() {
-            runCatching { updateDirectory(context).deleteRecursively() }
-        }
-
         private companion object {
             const val AUTHORITY_SUFFIX = ".updates"
 
@@ -78,11 +71,6 @@ class AndroidApkInstaller
         }
     }
 
-/**
- * Where a downloaded update is kept.
- *
- * App-private internal storage, so no permission is needed to write it and nothing else on
- * the device can read it; the installer is handed a content URI through the provider in the
- * manifest rather than a file path.
- */
-fun updateDirectory(context: Context): File = File(context.filesDir, "updates")
+// Where a downloaded update is kept lives in UpdateFileStore: app-private internal storage,
+// so no permission is needed to write it and nothing else on the device can read it, and the
+// installer is handed a content URI through the provider in the manifest rather than a path.
