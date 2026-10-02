@@ -42,6 +42,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -108,7 +109,13 @@ private fun CorneredAlertDialog(
     // ones, and only the button row differs.
     BasicAlertDialog(onDismissRequest = onDismissRequest) {
         Surface(
-            modifier = Modifier.width(IntrinsicSize.Min),
+            // Max, not Min. The minimum intrinsic width of a paragraph is its longest
+            // *word*, so sizing to that made the dialog as narrow as one word and left the
+            // buttons fighting over the space: in German "Open-Source-Komponenten" squeezed
+            // "Schliessen" onto three lines. The maximum intrinsic width is the width the
+            // content actually wants, so a short dialog stays compact and a long one gets the
+            // room it needs — still capped by the window, which is what keeps it on screen.
+            modifier = Modifier.width(IntrinsicSize.Max),
             shape = MaterialTheme.shapes.extraLarge,
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
             tonalElevation = 6.dp,
@@ -125,7 +132,11 @@ private fun CorneredAlertDialog(
                     LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
                     LocalTextStyle provides MaterialTheme.typography.bodyMedium,
                 ) {
-                    text()
+                    // The text takes the height that is left and no more. Without this a long
+                    // release history grew the dialog past the bottom of the screen and took
+                    // the buttons with it; `fill = false` lets a short text stay short rather
+                    // than stretching the dialog to fill the window.
+                    Box(modifier = Modifier.weight(1f, fill = false)) { text() }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
@@ -136,10 +147,29 @@ private fun CorneredAlertDialog(
                     // An empty box reserves the corner, so the closing button stays where it
                     // is whether or not there is anything opposite it.
                     Box { startButton?.invoke() }
+                    Spacer(modifier = Modifier.width(8.dp))
                     Box { endButton() }
                 }
             }
         }
+    }
+}
+
+/**
+ * A dialog button whose label stays on one line.
+ *
+ * A label squeezed into "Sche / liess / en" by whatever sits opposite it is not a label any
+ * more. The dialog is now wide enough for its buttons, and this is the guarantee: the
+ * address of the component list may shorten with an ellipsis in a language that spells it
+ * longer still, but the button that closes the window never breaks in half.
+ */
+@Composable
+private fun DialogButton(
+    text: String,
+    onClick: () -> Unit,
+) {
+    TextButton(onClick = onClick) {
+        Text(text = text, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -549,10 +579,10 @@ fun SettingsScreen(
                 }
             },
             startButton = {
-                TextButton(onClick = { showUpdateHistory = true }) { Text(stringResource(R.string.update_history)) }
+                DialogButton(stringResource(R.string.update_history)) { showUpdateHistory = true }
             },
             endButton = {
-                TextButton(onClick = { showChangelog = false }) { Text(stringResource(R.string.close)) }
+                DialogButton(stringResource(R.string.close)) { showChangelog = false }
             },
         )
     }
@@ -592,8 +622,8 @@ fun SettingsScreen(
                         // A tap only reveals and hides: nothing else on the screen moves, and
                         // the list stays in the same order because it is merged and sorted
                         // once rather than appended.
-                        TextButton(onClick = { showAlphaHistory = !showAlphaHistory }) {
-                            Text(
+                        DialogButton(
+                            text =
                                 stringResource(
                                     if (showAlphaHistory) {
                                         R.string.update_exclude_alpha
@@ -601,17 +631,14 @@ fun SettingsScreen(
                                         R.string.update_include_alpha
                                     },
                                 ),
-                            )
-                        }
+                        ) { showAlphaHistory = !showAlphaHistory }
                     }
                 },
             endButton = {
-                TextButton(
-                    onClick = {
-                        showUpdateHistory = false
-                        showAlphaHistory = false
-                    },
-                ) { Text(stringResource(R.string.close)) }
+                DialogButton(stringResource(R.string.close)) {
+                    showUpdateHistory = false
+                    showAlphaHistory = false
+                }
             },
         )
     }
@@ -630,10 +657,10 @@ fun SettingsScreen(
                 )
             },
             startButton = {
-                TextButton(onClick = { showComponents = true }) { Text(stringResource(R.string.licenses_components)) }
+                DialogButton(stringResource(R.string.licenses_components)) { showComponents = true }
             },
             endButton = {
-                TextButton(onClick = { showLicenses = false }) { Text(stringResource(R.string.close)) }
+                DialogButton(stringResource(R.string.close)) { showLicenses = false }
             },
         )
     }
@@ -656,7 +683,7 @@ fun SettingsScreen(
                 }
             },
             endButton = {
-                TextButton(onClick = { showComponents = false }) { Text(stringResource(R.string.close)) }
+                DialogButton(stringResource(R.string.close)) { showComponents = false }
             },
         )
     }
@@ -699,27 +726,19 @@ fun SettingsScreen(
                 // because nothing was learned.
                 val offer = betaOffer
                 if (offer != null) {
-                    TextButton(
-                        onClick = {
-                            openReleasePage(context, offer.pageUrl)
-                            showUpdateResult = false
-                        },
-                    ) {
-                        Text(stringResource(R.string.update_join_beta))
+                    DialogButton(stringResource(R.string.update_join_beta)) {
+                        openReleasePage(context, offer.pageUrl)
+                        showUpdateResult = false
                     }
                 }
             },
             endButton = {
                 Row {
-                    TextButton(onClick = { showUpdateResult = false }) { Text(stringResource(R.string.close)) }
+                    DialogButton(stringResource(R.string.close)) { showUpdateResult = false }
                     if (status is UpdateStatus.Available) {
-                        TextButton(
-                            onClick = {
-                                openReleasePage(context, status.release.pageUrl)
-                                showUpdateResult = false
-                            },
-                        ) {
-                            Text(stringResource(R.string.update_download))
+                        DialogButton(stringResource(R.string.update_download)) {
+                            openReleasePage(context, status.release.pageUrl)
+                            showUpdateResult = false
                         }
                     }
                 }

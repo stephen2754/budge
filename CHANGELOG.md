@@ -18,6 +18,30 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-beta.5] — long words, long lists, and a top-heavy page
+
+Three layout problems, all of them found by looking at the German build.
+
+### Fixed
+
+- **A long release history pushed the dialog buttons off the bottom of the screen.** The body
+  now takes the height that is left over (`weight(1f, fill = false)`) and scrolls inside
+  itself, instead of growing the dialog until the buttons left the window. `fill = false`
+  keeps a short body short rather than stretching it to fill the window.
+- **"Schliessen" was squeezed onto three lines by the button opposite it.** The dialog was
+  sized by its content's *minimum* intrinsic width, and for a paragraph that is its longest
+  single word — so the dialog was as narrow as one word and the two buttons fought over what
+  was left. It is sized by the *maximum* intrinsic width now: the width the content actually
+  wants, still capped by the window. Every dialog button label also goes through
+  `DialogButton`, which pins it to a single line with an ellipsis as the last resort, because
+  a label broken into "Sche / liess / en" is not a label.
+- **The statistics page was top-heavy.** The date sat against the status bar and then a
+  reserved line and two lots of padding pushed the period selector far below it. The screen
+  now lays its own top area out instead of using Material's fixed-height `TopAppBar`: the
+  date is 16dp below the status bar, the "jump to today" line sits directly under it, and the
+  period selector follows 8dp under that. Nothing moves when the line appears — it is still
+  always laid out — but the gap it used to leave is gone.
+
 ## [0.1.0-beta.4] — corners, and a line that stays put
 
 ### Fixed
@@ -441,6 +465,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-beta.5]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.5
 [0.1.0-beta.4]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.4
 [0.1.0-beta.3]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.3
 [0.1.0-beta.2]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.2

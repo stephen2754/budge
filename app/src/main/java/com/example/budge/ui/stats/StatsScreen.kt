@@ -5,6 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +32,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -89,38 +91,71 @@ fun StatsScreen(viewModel: StatsViewModel = hiltViewModel()) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        IconButton(onClick = { viewModel.previousPeriod() }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.cd_previous_period),
-                            )
-                        }
-                        Text(
-                            text =
-                                when (uiState.period) {
-                                    StatsPeriod.YEARLY -> formatYear(uiState.currentDate)
-                                    StatsPeriod.DAILY -> formatDayMonthYear(uiState.currentDate)
-                                    StatsPeriod.MONTHLY -> formatMonthYear(uiState.currentMonth)
-                                },
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center,
+            // A plain column rather than Material's TopAppBar. The bar has a fixed height, so
+            // the only way to place the date and the line under it exactly — and to keep the
+            // page below from being pushed around — is to lay them out here. The status bar
+            // inset is applied to this area, so everything under it still draws edge to edge.
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        // Room to breathe under the status bar: the date used to sit against
+                        // it, which is what made the page look top-heavy.
+                        .padding(top = 16.dp),
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    IconButton(onClick = { viewModel.previousPeriod() }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.cd_previous_period),
                         )
-                        IconButton(onClick = { viewModel.nextPeriod() }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = stringResource(R.string.cd_next_period),
-                            )
-                        }
                     }
-                },
-            )
+                    Text(
+                        text =
+                            when (uiState.period) {
+                                StatsPeriod.YEARLY -> formatYear(uiState.currentDate)
+                                StatsPeriod.DAILY -> formatDayMonthYear(uiState.currentDate)
+                                StatsPeriod.MONTHLY -> formatMonthYear(uiState.currentMonth)
+                            },
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center,
+                    )
+                    IconButton(onClick = { viewModel.nextPeriod() }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = stringResource(R.string.cd_next_period),
+                        )
+                    }
+                }
+
+                // The way back to today is drawn whether or not there is anywhere to go back
+                // from, and only its visibility and clickability change. Taking it out of the
+                // layout when the anchor *is* today moved the period selector and everything
+                // below it down the moment it appeared. Keeping the same text in the same
+                // place reserves exactly its own height at any font scale, and because it
+                // lives here rather than in the scrolling page, the gap between the date and
+                // the period selector is the few dp it looks like. A hidden one is removed
+                // from the accessibility tree so it is not read out as a control.
+                val onToday = uiState.currentDate == today
+                Text(
+                    text = stringResource(R.string.stats_jump_to_today),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .alpha(if (onToday) 0f else 1f)
+                            .clickable(enabled = !onToday) { viewModel.jumpToToday() }
+                            .then(if (onToday) Modifier.clearAndSetSemantics {} else Modifier)
+                            .padding(top = 2.dp, bottom = 2.dp),
+                )
+            }
         },
             // The bottom system inset belongs to the navigation bar laid out below this
         // page, not to the page itself.
@@ -132,31 +167,11 @@ fun StatsScreen(viewModel: StatsViewModel = hiltViewModel()) {
                     .fillMaxSize()
                     .padding(top = paddingValues.calculateTopPadding())
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
+                    // Tighter at the top than at the bottom: the date and the line under it
+                    // belong to the bar, and the period selector should follow them closely
+                    // rather than floating in the middle of a gap.
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
         ) {
-            // The way back to today is drawn whether or not there is anywhere to go back
-            // from, and only its visibility and clickability change. Taking it out of the
-            // layout when the anchor *is* today moved the period selector and everything
-            // below it down the moment it appeared — a row that has to shift to make room for
-            // a hint is a row that moves every time the reader changes period. Keeping the
-            // same text in the same place means the line reserves exactly its own height
-            // whatever the font scale, and nothing under it ever moves. A hidden one is
-            // removed from the accessibility tree so it is not read out as a control.
-            val onToday = uiState.currentDate == today
-            Text(
-                text = stringResource(R.string.stats_jump_to_today),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .alpha(if (onToday) 0f else 1f)
-                        .clickable(enabled = !onToday) { viewModel.jumpToToday() }
-                        .then(if (onToday) Modifier.clearAndSetSemantics {} else Modifier)
-                        .padding(vertical = 4.dp),
-            )
-
             // Centered period selector: each chip takes equal width so the
             // active period always sits in the middle of the row.
             Row(

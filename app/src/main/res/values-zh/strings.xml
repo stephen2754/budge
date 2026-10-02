@@ -143,6 +143,7 @@
     <string name="licenses_components">本软件使用的开源组件</string>
     <string name="licenses_third_party">开源组件</string>
     <string name="licenses_full_text_note">各组件的完整许可文本见其项目主页。</string>
+    <string name="release_notes_0_1_0_beta_5">过长的更新记录不再把对话框按钮挤出屏幕；较长的按钮文字不再被拆成多行；统计页日期下移、与年月日按钮的距离缩短。</string>
     <string name="release_notes_0_1_0_beta_4">属于对话框左下角的按钮现在真的在左下角；beta 构建可在历史记录中加入 alpha 版本；许可窗口只保留必要内容，开源组件及其链接移到独立页面；统计页的“跳转至今日”不再挤动页面。</string>
     <string name="release_notes_0_1_0_beta_3">版本号窗口现在只讲这个版本改了什么，历史更新记录移至左下角按钮；正式版落后于某个 beta 时，更新窗口左下角会出现“加入测试版”。</string>
     <string name="release_notes_0_1_0_beta_2">数据库损坏或安装旧版后不再无法进入；旋转屏幕或切换主题时输入内容不再丢失；首帧不再显示零余额；深色模式不再先闪白屏；导入文件不会再撑爆内存。</string>
