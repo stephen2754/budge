@@ -18,6 +18,28 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-rc.2] — a release nobody could see
+
+### Fixed
+
+- **A tag whose suffix the build did not recognise made the release invisible to everyone.**
+  When `0.1.0-rc.1` was published, every beta build in the field skipped it: a tag that does
+  not parse is dropped from the release list *entirely*, so there was no candidate to compare
+  against and the app reported itself up to date. The parser now reads **any** word suffix as a
+  pre-release — `alpha`, `beta` and `rc` keep their own rungs, and anything else is treated as
+  a pre-release whose name this build does not know: visible to beta-and-above builds, never
+  to a stable one. The failure this prevents is not hypothetical; it stranded every build
+  released before the candidate, and it would have done the same to every suffix added later.
+- **The home balance colours the whole line**, label and colon included, rather than only the
+  figure — a coloured amount beside an uncoloured label reads as two separate things.
+
+### Note on installing this
+
+`0.1.0-rc.1` is invisible to `0.1.0-beta.6` and anything older, and nothing shipped here can
+change a build that already exists: for anyone on beta.6 or earlier, getting onto the candidate
+line is a manual install. From there the chain works as intended — a candidate is offered the
+next candidate and the release it leads to, and a beta is offered both.
+
 ## [0.1.0-rc.1] — the release candidate
 
 The release candidate. Apart from its version string it **is** the stable release: the same
@@ -520,6 +542,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-rc.2]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-rc.2
 [0.1.0-rc.1]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-rc.1
 [0.1.0-beta.6]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.6
 [0.1.0-beta.5]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.5

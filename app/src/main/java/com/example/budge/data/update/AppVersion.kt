@@ -87,11 +87,18 @@ data class AppVersion(
 
     companion object {
         // Tolerates a leading "v" and a missing channel number ("1.0.0-beta" == beta.0).
-        private val PATTERN = Regex("""^v?(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.?(\d+)?)?$""", RegexOption.IGNORE_CASE)
+        // The suffix is any word, not a fixed list. A release whose tag does not parse is
+        // dropped from the list *entirely*, so a build that predates a new suffix cannot see
+        // any release that uses it and reports itself up to date forever — which is exactly
+        // what happened when `-rc.1` was published and every beta build before it could not
+        // read the tag. Anything unrecognised is treated as a pre-release, which is the
+        // cautious direction: beta-and-above builds see it, a stable build never does.
+        private val PATTERN = Regex("""^v?(\d+)\.(\d+)\.(\d+)(?:-([A-Za-z]+)\.?(\d+)?)?$""", RegexOption.IGNORE_CASE)
 
         /**
-         * Parses `v1.2.3`, `1.2.3`, `1.2.3-beta.2`, `1.2.3-rc.1` or `1.2.3-alpha`. Returns
-         * null for anything else.
+         * Parses `v1.2.3`, `1.2.3`, `1.2.3-beta.2`, `1.2.3-rc.1` or `1.2.3-alpha`, and any
+         * other word suffix as a pre-release this build does not know the name of. Returns
+         * null only for something that is not a version at all.
          *
          * Both sides of every comparison come through here: the installed `versionName`
          * and each release tag. A tag that does not parse is skipped, never guessed at.
@@ -104,7 +111,12 @@ data class AppVersion(
                     "alpha" -> ReleaseChannel.ALPHA
                     "beta" -> ReleaseChannel.BETA
                     "rc" -> ReleaseChannel.RC
-                    else -> ReleaseChannel.STABLE
+                    // No suffix is a stable release; a suffix this build does not know is a
+                    // pre-release of some kind. Reading it as stable would put a test build in
+                    // front of stable users, and refusing to read it at all would hide the
+                    // release from everybody — the failure this exists to prevent.
+                    "" -> ReleaseChannel.STABLE
+                    else -> ReleaseChannel.BETA
                 }
             // The digits are unbounded in the pattern, so `v9999999999.0.0` has to be
             // refused here rather than thrown: parse() promises null for anything it

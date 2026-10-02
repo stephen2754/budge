@@ -132,8 +132,20 @@ class UpdateViewModelTest {
         return "sha256:${sha256(file)}"
     }
 
+    /**
+     * A version strictly newer than the one under test.
+     *
+     * Derived from the installed version rather than written down, so bumping the app's
+     * version does not silently turn every offer into "already up to date" — which is exactly
+     * what a hard-coded candidate did when the app moved to the candidate it named.
+     */
+    private val offered =
+        AppVersion.parse(com.example.budge.BuildConfig.VERSION_NAME)!!.let { running ->
+            running.copy(channelNumber = running.channelNumber + 1)
+        }
+
     private fun release(
-        version: String = "0.1.0-rc.2",
+        version: String = offered.toString(),
         digest: String? = digestOf(content),
         assetUrl: String? = "https://github.com/o/r/releases/download/v$version/budge-$version.apk",
     ) = RemoteRelease(
@@ -193,8 +205,8 @@ class UpdateViewModelTest {
         model.awaitSettled()
 
         assertEquals(UpdateDownload.Ready, model.download.value)
-        assertTrue("the verified file is where the installer will look", store.verified(AppVersion.parse("0.1.0-rc.2")!!).exists())
-        assertFalse("the scratch name is not left behind", store.scratch(AppVersion.parse("0.1.0-rc.2")!!).exists())
+        assertTrue("the verified file is where the installer will look", store.verified(offered).exists())
+        assertFalse("the scratch name is not left behind", store.scratch(offered).exists())
     }
 
     @Test
@@ -207,8 +219,8 @@ class UpdateViewModelTest {
         model.awaitSettled()
 
         assertEquals(UpdateDownload.VerificationFailed, model.download.value)
-        assertFalse(store.verified(AppVersion.parse("0.1.0-rc.2")!!).exists())
-        assertFalse(store.scratch(AppVersion.parse("0.1.0-rc.2")!!).exists())
+        assertFalse(store.verified(offered).exists())
+        assertFalse(store.scratch(offered).exists())
     }
 
     @Test
@@ -233,7 +245,7 @@ class UpdateViewModelTest {
             assertEquals(UpdateDownload.Idle, model.download.value)
             assertFalse(
                 "the file being written is removed, not just forgotten",
-                store.scratch(AppVersion.parse("0.1.0-rc.2")!!).exists(),
+                store.scratch(offered).exists(),
             )
 
             downloader.lateProgress()
@@ -275,7 +287,7 @@ class UpdateViewModelTest {
         assertEquals(1, installer.installCalls)
         assertTrue(
             "nothing needs downloading again",
-            store.verified(AppVersion.parse("0.1.0-rc.2")!!).exists(),
+            store.verified(offered).exists(),
         )
     }
 
@@ -295,7 +307,7 @@ class UpdateViewModelTest {
                 UpdateDownload.Ready,
                 model.download.value,
             )
-            assertTrue(store.verified(AppVersion.parse("0.1.0-rc.2")!!).exists())
+            assertTrue(store.verified(offered).exists())
         }
 
     @Test
@@ -308,7 +320,7 @@ class UpdateViewModelTest {
         model.check(this)
 
         assertEquals(UpdateDownload.Ready, model.download.value)
-        assertTrue(store.verified(AppVersion.parse("0.1.0-rc.2")!!).exists())
+        assertTrue(store.verified(offered).exists())
     }
 
     @Test

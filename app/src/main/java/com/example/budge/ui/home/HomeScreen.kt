@@ -53,8 +53,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -214,14 +212,10 @@ fun HomeScreen(
                             else -> Color.Unspecified
                         }
                     Text(
-                        text =
-                            buildAnnotatedString {
-                                append(balanceText)
-                                val start = balanceText.lastIndexOf(balance)
-                                if (start >= 0 && balanceColor != Color.Unspecified) {
-                                    addStyle(SpanStyle(color = balanceColor), start, start + balance.length)
-                                }
-                            },
+                        // The whole line, label included: a coloured figure beside an uncoloured
+                        // label reads as two things, and the sign belongs to the sentence.
+                        text = balanceText,
+                        color = balanceColor,
                         style = amountTextStyle(balance),
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,

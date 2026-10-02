@@ -33,13 +33,28 @@ class AppVersionTest {
     }
 
     @Test
+    fun `a suffix this build does not know is still a version, read as a pre-release`() {
+        // The failure this prevents: a release whose tag does not parse is dropped from the
+        // list entirely, so every build older than the new suffix reports itself up to date
+        // forever. That happened when -rc.1 was published, and it must not happen again.
+        assertEquals(AppVersion(1, 0, 0, ReleaseChannel.BETA, 1), AppVersion.parse("1.0.0-preview.1"))
+        assertEquals(AppVersion(1, 0, 0, ReleaseChannel.BETA, 0), AppVersion.parse("v1.0.0-preview"))
+        assertEquals(ReleaseChannel.BETA, AppVersion.channelOf("2.0.0-next.3"))
+        // Read as a pre-release means a stable build is never shown it...
+        assertFalse(ReleaseChannel.STABLE.accepts(AppVersion.parse("1.0.0-preview.1")!!.channel))
+        // ...and a beta build is, so the release is visible to somebody.
+        assertTrue(ReleaseChannel.BETA.accepts(AppVersion.parse("1.0.0-preview.1")!!.channel))
+    }
+
+    @Test
     fun `refuses anything that is not a version`() {
         assertNull(AppVersion.parse(null))
         assertNull(AppVersion.parse(""))
         assertNull(AppVersion.parse("latest"))
         assertNull(AppVersion.parse("1.0"))
         assertNull(AppVersion.parse("1.0.0.0"))
-        assertNull(AppVersion.parse("1.0.0-preview.1"))
+        assertNull(AppVersion.parse("1.0.0-rc.1.2"))
+        assertNull(AppVersion.parse("1.0.0-1"))
     }
 
     @Test
