@@ -164,6 +164,12 @@ version number: the same source, the same strings, the same behaviour. A beta bu
 offered it, the candidate is offered the release it leads to, and a stable build is never
 shown either — the candidate is the last check, not a stream stable users are on.
 
+## Licence
+
+Budge is licensed under the **Apache License 2.0** — see [LICENSE](LICENSE). The nine
+third-party components it ships are listed under Settings → Licences, each under its own
+licence (all Apache-2.0), with a link to its repository.
+
 ## Data and privacy
 
 - Records live in a local Room database; preferences in DataStore. Neither is uploaded.
