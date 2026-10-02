@@ -48,6 +48,17 @@ data class RemoteRelease(
     val title: String?,
     val notes: String?,
     val pageUrl: String,
+    /**
+     * The APK this release carries, when the answer named one, and the SHA-256 GitHub
+     * records for it.
+     *
+     * Both are null together when the answer says nothing about assets — the release feed
+     * cannot mention them at all — and the app then offers the release page instead of an
+     * in-app download. A download is only ever offered with a hash to check it against:
+     * installing an APK nobody verified is not a thing this app does.
+     */
+    val assetUrl: String? = null,
+    val digest: String? = null,
 )
 
 /**

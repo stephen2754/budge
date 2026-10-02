@@ -131,6 +131,15 @@
     <string name="update_status_unreadable">Die Antwort der Update-Quelle ist nicht lesbar – ob diese Version aktuell ist, lässt sich nicht feststellen</string>
     <string name="update_status_unconfigured">Es ist noch keine Update-Quelle eingerichtet (Platzhalteradresse)</string>
     <string name="update_download">Herunterladen</string>
+    <string name="update_download_install">Herunterladen und installieren</string>
+    <string name="update_downloading">Wird heruntergeladen</string>
+    <string name="update_verifying">Download wird geprüft</string>
+    <string name="update_verified">Geprüft und bereit zur Installation.</string>
+    <string name="update_install">Installieren</string>
+    <string name="update_download_failed">Der Download wurde nicht abgeschlossen. Es wurde nichts installiert.</string>
+    <string name="update_hash_mismatch">Die heruntergeladene Datei stimmt nicht mit der veröffentlichten Prüfsumme überein. Sie wurde gelöscht und wird nicht installiert.</string>
+    <string name="update_need_install_permission">Android benötigt Ihre Erlaubnis, bevor diese App ein Update installieren darf. Über Installieren öffnen Sie diese Einstellung.</string>
+    <string name="update_retry">Erneut versuchen</string>
     <string name="update_history">Versionsverlauf</string>
     <string name="update_include_alpha">Alpha-Versionen einbeziehen</string>
     <string name="update_exclude_alpha">Alpha-Versionen ausblenden</string>

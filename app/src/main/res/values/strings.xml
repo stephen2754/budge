@@ -131,6 +131,15 @@
     <string name="update_status_unreadable">The answer from the update source could not be read, so whether this build is up to date is unknown</string>
     <string name="update_status_unconfigured">No update source is configured yet (placeholder address)</string>
     <string name="update_download">Download</string>
+    <string name="update_download_install">Download and install</string>
+    <string name="update_downloading">Downloading</string>
+    <string name="update_verifying">Checking the download</string>
+    <string name="update_verified">Checked and ready to install.</string>
+    <string name="update_install">Install</string>
+    <string name="update_download_failed">The download did not finish. Nothing was installed.</string>
+    <string name="update_hash_mismatch">The downloaded file does not match the published checksum. It has been deleted and will not be installed.</string>
+    <string name="update_need_install_permission">Android needs your permission before this app can install an update. Pressing Install opens that setting.</string>
+    <string name="update_retry">Try again</string>
     <string name="update_history">Update history</string>
     <string name="update_include_alpha">Include alpha versions</string>
     <string name="update_exclude_alpha">Hide alpha versions</string>
@@ -146,6 +155,7 @@
     <string name="licenses_components">Open-source components</string>
     <string name="licenses_third_party">Open-source components</string>
     <string name="licenses_full_text_note">The full licence text of each component is available at its project page.</string>
+    <string name="release_notes_0_1_0_beta_6">Updates can now be downloaded and installed in the app: the file is checked against the SHA-256 the release publishes, and only then handed to the system installer. Nothing is installed without your approval, and your records are untouched.</string>
     <string name="release_notes_0_1_0_beta_5">Long release histories no longer push the dialog buttons off the screen, long button labels no longer break in half, and the statistics date sits lower with the period selector closer to it.</string>
     <string name="release_notes_0_1_0_beta_4">Buttons that belong in a dialog corner now sit there; a beta build can add the alpha releases to the history; the licence window keeps only what matters, with the components and their links on their own page; and the jump-to-today line no longer moves the statistics screen.</string>
     <string name="release_notes_0_1_0_beta_3">The version row now says what this build changed, with an update history a button away; a stable build that is behind a beta is offered a way onto the test line from the update window.</string>

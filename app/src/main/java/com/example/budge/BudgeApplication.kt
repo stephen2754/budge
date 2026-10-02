@@ -9,6 +9,7 @@ import com.example.budge.data.prefs.Prefs
 import com.example.budge.data.prefs.defaultCurrencyFor
 import com.example.budge.data.prefs.deviceLocale
 import com.example.budge.data.repository.CategoryRepository
+import com.example.budge.data.update.updateDirectory
 import java.io.IOException
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -59,6 +60,13 @@ class BudgeApplication : Application() {
             // can fail on a full disk; either one would kill the process every launch while
             // the condition lasts. The screens report what they can and cannot read.
             try {
+                // A downloaded update is of no use once it has been installed: this launch is
+                // the new version if it worked, and a download cannot outlive the process it
+                // started in, so anything still here was abandoned. Removing it here rather
+                // than only when the settings screen is opened is what makes that true even
+                // for someone who never opens the screen again.
+                runCatching { updateDirectory(this@BudgeApplication).deleteRecursively() }
+
                 // First launch only. The seeded categories are named in the device language
                 // of that moment and never renamed again: from here on they belong to the
                 // user, who is free to edit or delete them.

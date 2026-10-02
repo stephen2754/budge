@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The one directory the installer is allowed to read a downloaded update from. The
+     provider itself is not exported; this grants a content URI for a single file, to the
+     installer, for the length of that one intent. -->
+<paths>
+    <files-path
+        name="updates"
+        path="updates/" />
+</paths>

@@ -131,6 +131,15 @@
     <string name="update_status_unreadable">No se pudo leer la respuesta del origen de actualizaciones, así que no se puede saber si esta versión está al día</string>
     <string name="update_status_unconfigured">Todavía no hay un origen de actualizaciones configurado (dirección provisional)</string>
     <string name="update_download">Descargar</string>
+    <string name="update_download_install">Descargar e instalar</string>
+    <string name="update_downloading">Descargando</string>
+    <string name="update_verifying">Comprobando la descarga</string>
+    <string name="update_verified">Comprobado y listo para instalar.</string>
+    <string name="update_install">Instalar</string>
+    <string name="update_download_failed">La descarga no terminó. No se instaló nada.</string>
+    <string name="update_hash_mismatch">El archivo descargado no coincide con la suma de comprobación publicada. Se ha eliminado y no se instalará.</string>
+    <string name="update_need_install_permission">Android necesita su permiso antes de que esta aplicación pueda instalar una actualización. Al pulsar Instalar se abre ese ajuste.</string>
+    <string name="update_retry">Reintentar</string>
     <string name="update_history">Historial de versiones</string>
     <string name="update_include_alpha">Incluir versiones alpha</string>
     <string name="update_exclude_alpha">Ocultar versiones alpha</string>

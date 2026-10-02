@@ -129,6 +129,15 @@
     <string name="update_status_unreadable">更新元の応答を読み取れませんでした。最新かどうかを確認できません</string>
     <string name="update_status_unconfigured">更新元が未設定です（仮のアドレス）</string>
     <string name="update_download">ダウンロード</string>
+    <string name="update_download_install">ダウンロードしてインストール</string>
+    <string name="update_downloading">ダウンロード中</string>
+    <string name="update_verifying">ダウンロードを検証しています</string>
+    <string name="update_verified">検証が完了し、インストールできます。</string>
+    <string name="update_install">インストール</string>
+    <string name="update_download_failed">ダウンロードが完了しませんでした。何もインストールされていません。</string>
+    <string name="update_hash_mismatch">ダウンロードしたファイルが公開されたチェックサムと一致しません。削除され、インストールされません。</string>
+    <string name="update_need_install_permission">このアプリが更新をインストールするには Android の許可が必要です。「インストール」を押すとその設定が開きます。</string>
+    <string name="update_retry">再試行</string>
     <string name="update_history">更新履歴</string>
     <string name="update_include_alpha">アルファ版を含める</string>
     <string name="update_exclude_alpha">アルファ版を隠す</string>

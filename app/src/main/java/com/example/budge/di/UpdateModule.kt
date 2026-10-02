@@ -1,6 +1,10 @@
 package com.example.budge.di
 
+import com.example.budge.data.update.AndroidApkInstaller
+import com.example.budge.data.update.ApkDownloader
+import com.example.budge.data.update.ApkInstaller
 import com.example.budge.data.update.GithubReleaseSource
+import com.example.budge.data.update.UrlConnectionApkDownloader
 import com.example.budge.data.update.HttpGet
 import com.example.budge.data.update.ReleaseSource
 import com.example.budge.data.update.UrlConnectionGet
@@ -28,4 +32,12 @@ abstract class UpdateModule {
     @Binds
     @Singleton
     abstract fun bindHttpGet(impl: UrlConnectionGet): HttpGet
+
+    @Binds
+    @Singleton
+    abstract fun bindApkDownloader(impl: UrlConnectionApkDownloader): ApkDownloader
+
+    @Binds
+    @Singleton
+    abstract fun bindApkInstaller(impl: AndroidApkInstaller): ApkInstaller
 }

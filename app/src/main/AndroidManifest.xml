@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Budge keeps its ledger on-device: no account, no server, no sync, and the app
      itself never uploads anything. Its single network use is the user-initiated update
-     check, a read-only GET to the releases address configured in UpdateConfig, and
-     nothing at all while that address is still the placeholder.
+     check, a read-only GET to the releases address configured in UpdateConfig, and the
+     download of a release's APK when the user asks for it inside the app. Nothing is sent
+     either time — no ledger data, no identifier — and nothing at all happens while that
+     address is still the placeholder.
 
      allowBackup is on, which is what lets *Android's* backup — the user's own Google
      account, or a device-to-device transfer — carry the database and preferences along
@@ -14,6 +16,13 @@
 
     <!-- Required for the update check only; see the note above. -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Required to hand a downloaded update to the system installer. Since Android 8 an
+         app that installs a package must hold this, and the user must also allow this app
+         to install unknown apps — the platform takes that decision out of the app's hands,
+         and the installer shows its own confirmation on top. Nothing is installed without
+         the SHA-256 the release publishes being checked first. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!-- No android:roundIcon: the round variant shipped by the project template was a
          byte-for-byte copy of the square one, so it only doubled the icon payload. A
@@ -28,6 +37,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Budge">
         <!-- Single-Activity app; the Compose NavGraph renders all screens. -->
+        <!-- Hands the installer a content URI for one downloaded file. Not exported, and
+             the grant is per-intent: nothing else can ask this provider for anything. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.updates"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/update_paths" />
+        </provider>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

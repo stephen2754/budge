@@ -131,6 +131,15 @@
     <string name="update_status_unreadable">La réponse de la source des mises à jour est illisible : on ne peut donc pas savoir si cette version est à jour</string>
     <string name="update_status_unconfigured">Aucune source de mise à jour n’est configurée (adresse provisoire)</string>
     <string name="update_download">Télécharger</string>
+    <string name="update_download_install">Télécharger et installer</string>
+    <string name="update_downloading">Téléchargement</string>
+    <string name="update_verifying">Vérification du téléchargement</string>
+    <string name="update_verified">Vérifié et prêt à installer.</string>
+    <string name="update_install">Installer</string>
+    <string name="update_download_failed">Le téléchargement ne s’est pas terminé. Rien n’a été installé.</string>
+    <string name="update_hash_mismatch">Le fichier téléchargé ne correspond pas à l’empreinte publiée. Il a été supprimé et ne sera pas installé.</string>
+    <string name="update_need_install_permission">Android exige votre autorisation avant que cette application puisse installer une mise à jour. Appuyez sur Installer pour ouvrir ce réglage.</string>
+    <string name="update_retry">Réessayer</string>
     <string name="update_history">Historique des mises à jour</string>
     <string name="update_include_alpha">Inclure les versions alpha</string>
     <string name="update_exclude_alpha">Masquer les versions alpha</string>

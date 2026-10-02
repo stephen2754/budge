@@ -126,6 +126,13 @@ what makes the rule meaningful. Publishing a release is three steps:
 [CHANGELOG.md](CHANGELOG.md) holds the full detail; the in-app history is the one-line
 version of it.
 
+An update is fetched and installed in the app: the window offers "download and install"
+when the release publishes an APK and its SHA-256, the file is checked against that hash
+before anything else happens, and the system installer takes over from there — with its own
+confirmation, and with the platform refusing any file not signed by the same key. A mismatch
+is deleted and nothing is installed. Your records are never touched: an update replaces the
+application in place.
+
 Tapping the version row says what the installed build is and what it changed; the releases
 before it are one button away in the dialog's bottom-left corner, filtered the same way the
 update check filters what it will offer, and a beta build can add the alpha releases to that

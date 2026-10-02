@@ -135,6 +135,15 @@
     <string name="update_status_unreadable">Не удалось прочитать ответ источника обновлений, поэтому неизвестно, последняя ли это версия</string>
     <string name="update_status_unconfigured">Источник обновлений ещё не настроен (адрес-заглушка)</string>
     <string name="update_download">Скачать</string>
+    <string name="update_download_install">Скачать и установить</string>
+    <string name="update_downloading">Загрузка</string>
+    <string name="update_verifying">Проверка загруженного файла</string>
+    <string name="update_verified">Проверено, можно устанавливать.</string>
+    <string name="update_install">Установить</string>
+    <string name="update_download_failed">Загрузка не завершилась. Ничего не установлено.</string>
+    <string name="update_hash_mismatch">Загруженный файл не совпадает с опубликованной контрольной суммой. Он удалён и не будет установлен.</string>
+    <string name="update_need_install_permission">Android требует вашего разрешения, прежде чем приложение сможет установить обновление. Нажатие «Установить» открывает эту настройку.</string>
+    <string name="update_retry">Повторить</string>
     <string name="update_history">История обновлений</string>
     <string name="update_include_alpha">Включить альфа-версии</string>
     <string name="update_exclude_alpha">Скрыть альфа-версии</string>

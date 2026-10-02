@@ -135,4 +135,51 @@ class GithubReleaseSourceTest {
         assertTrue(UpdateConfig.GITHUB_REPOSITORY.matches(Regex("[^/]+/[^/]+")))
         assertTrue(UpdateConfig.releasesUrl("owner/name").endsWith("/repos/owner/name/releases?per_page=30"))
     }
+
+    @Test
+    fun `reads the apk and its hash when the release carries one`() {
+        val json =
+            """
+            [
+              {
+                "tag_name": "v1.2.0",
+                "name": "1.2.0",
+                "html_url": "https://github.com/o/r/releases/tag/v1.2.0",
+                "assets": [
+                  {"name": "notes.txt", "browser_download_url": "https://github.com/o/r/releases/download/v1.2.0/notes.txt", "digest": "sha256:aaaa"},
+                  {"name": "budge-1.2.0.apk", "browser_download_url": "https://github.com/o/r/releases/download/v1.2.0/budge-1.2.0.apk", "digest": "sha256:bbbb"}
+                ]
+              }
+            ]
+            """.trimIndent()
+
+        val release = parseGithubReleases(json).single()
+
+        assertEquals("https://github.com/o/r/releases/download/v1.2.0/budge-1.2.0.apk", release.assetUrl)
+        assertEquals("sha256:bbbb", release.digest)
+    }
+
+    @Test
+    fun `an apk with no published hash is offered as a page, not a download`() {
+        // An install nobody can check is not one this app performs, so the release falls back
+        // to opening its page — the same answer the release feed always gives, since a feed
+        // entry cannot mention assets at all.
+        val json =
+            """
+            [
+              {
+                "tag_name": "v1.2.0",
+                "html_url": "https://github.com/o/r/releases/tag/v1.2.0",
+                "assets": [
+                  {"name": "budge-1.2.0.apk", "browser_download_url": "https://github.com/o/r/releases/download/v1.2.0/budge-1.2.0.apk"}
+                ]
+              }
+            ]
+            """.trimIndent()
+
+        val release = parseGithubReleases(json).single()
+
+        assertNull(release.assetUrl)
+        assertNull(release.digest)
+    }
 }

@@ -22,6 +22,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -34,7 +35,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.LocalContentColor
@@ -293,6 +297,14 @@ fun SettingsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val updateStatus by updateViewModel.status.collectAsStateWithLifecycle()
     val betaOffer by updateViewModel.betaOffer.collectAsStateWithLifecycle()
+    val updateDownload by updateViewModel.download.collectAsStateWithLifecycle()
+
+    // Whether an install would need the platform's permission is a question for the system,
+    // so it is asked again whenever the screen comes back — the user may have just granted it
+    // in the settings screen this dialog sent them to.
+    var permissionCheck by remember { mutableIntStateOf(0) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { permissionCheck++ }
+    val canInstallUpdates = remember(permissionCheck) { updateViewModel.canInstallPackages() }
     var showCurrencyDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showClearAllDialog by remember { mutableStateOf(false) }
@@ -690,6 +702,7 @@ fun SettingsScreen(
 
     if (showUpdateResult) {
         val status = updateStatus
+        val download = updateDownload
         CorneredAlertDialog(
             onDismissRequest = { showUpdateResult = false },
             title = { Text(stringResource(R.string.settings_check_update)) },
@@ -706,39 +719,148 @@ fun SettingsScreen(
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.primary,
                         )
-                        status.release.notes?.let { notes ->
-                            Spacer(modifier = Modifier.height(8.dp))
-                            // The API sends the notes as Markdown; the dialog can only
-                            // show text, so the markup comes off before it is shown.
-                            Text(
-                                text = remember(notes) { releaseNotesText(notes) },
-                                style = MaterialTheme.typography.bodySmall,
-                            )
+                        // What the download is doing replaces the notes while it runs: a
+                        // progress bar under a screenful of release notes is a progress bar
+                        // nobody sees.
+                        when (download) {
+                            is UpdateDownload.Downloading -> {
+                                Spacer(modifier = Modifier.height(12.dp))
+                                val fraction =
+                                    if (download.total > 0L) {
+                                        (download.bytes.toFloat() / download.total).coerceIn(0f, 1f)
+                                    } else {
+                                        null
+                                    }
+                                Text(
+                                    text =
+                                        stringResource(R.string.update_downloading) +
+                                            if (fraction != null) "  ${(fraction * 100).toInt()}%" else "",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                if (fraction != null) {
+                                    LinearProgressIndicator(
+                                        progress = { fraction },
+                                        modifier = Modifier.fillMaxWidth(),
+                                    )
+                                } else {
+                                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                                }
+                            }
+
+                            UpdateDownload.Verifying -> {
+                                Spacer(modifier = Modifier.height(12.dp))
+                                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = stringResource(R.string.update_verifying),
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+
+                            UpdateDownload.Ready -> {
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = stringResource(R.string.update_verified),
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                                if (!canInstallUpdates) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = stringResource(R.string.update_need_install_permission),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.error,
+                                    )
+                                }
+                            }
+
+                            UpdateDownload.DownloadFailed -> {
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = stringResource(R.string.update_download_failed),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            }
+
+                            UpdateDownload.VerificationFailed -> {
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = stringResource(R.string.update_hash_mismatch),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            }
+
+                            UpdateDownload.Idle -> {
+                                status.release.notes?.let { notes ->
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    // The API sends the notes as Markdown; the dialog can only
+                                    // show text, so the markup comes off before it is shown.
+                                    Text(
+                                        text = remember(notes) { releaseNotesText(notes) },
+                                        style = MaterialTheme.typography.bodySmall,
+                                    )
+                                }
+                            }
                         }
                     }
                 }
             },
             startButton = {
-                // The way onto the test programme, in the dialog's own bottom-left corner and
-                // level with the buttons opposite. Offered only by a stable build, only while
-                // a beta is actually ahead of it, and decided by the check that just ran
-                // rather than remembered from an earlier one: a failed check offers nothing,
-                // because nothing was learned.
                 val offer = betaOffer
-                if (offer != null) {
-                    DialogButton(stringResource(R.string.update_join_beta)) {
-                        openReleasePage(context, offer.pageUrl)
-                        showUpdateResult = false
-                    }
+                when {
+                    // While a download runs, the corner holds the way out of it.
+                    download is UpdateDownload.Downloading ->
+                        DialogButton(stringResource(R.string.cancel)) { updateViewModel.cancelDownload() }
+                    // The way onto the test programme, in the dialog's own bottom-left corner
+                    // and level with the buttons opposite. Offered only by a stable build, only
+                    // while a beta is actually ahead of it, and decided by the check that just
+                    // ran rather than remembered from an earlier one.
+                    offer != null && download is UpdateDownload.Idle ->
+                        DialogButton(stringResource(R.string.update_join_beta)) {
+                            openReleasePage(context, offer.pageUrl)
+                            showUpdateResult = false
+                        }
                 }
             },
             endButton = {
-                Row {
-                    DialogButton(stringResource(R.string.close)) { showUpdateResult = false }
-                    if (status is UpdateStatus.Available) {
-                        DialogButton(stringResource(R.string.update_download)) {
-                            openReleasePage(context, status.release.pageUrl)
-                            showUpdateResult = false
+                // Nothing to press while the file is arriving or being checked: the bar above
+                // says what is happening, and both states end on their own.
+                if (download is UpdateDownload.Downloading || download is UpdateDownload.Verifying) {
+                    Row {}
+                } else {
+                    Row {
+                        DialogButton(stringResource(R.string.close)) { showUpdateResult = false }
+                        if (status is UpdateStatus.Available) {
+                            when {
+                                download is UpdateDownload.Ready ->
+                                    DialogButton(stringResource(R.string.update_install)) {
+                                        // Asked again at the moment it matters: the answer can
+                                        // have changed since this dialog was drawn.
+                                        if (updateViewModel.canInstallPackages()) {
+                                            updateViewModel.installDownloaded()
+                                        } else {
+                                            updateViewModel.requestInstallPermission()
+                                        }
+                                    }
+
+                                download is UpdateDownload.DownloadFailed ||
+                                    download is UpdateDownload.VerificationFailed ->
+                                    DialogButton(stringResource(R.string.update_retry)) { updateViewModel.downloadUpdate() }
+
+                                // A release whose answer named an APK and its hash can be
+                                // fetched here; anything else — the release feed, an answer
+                                // with no hash to check — is a page to open, as before.
+                                status.release.assetUrl != null ->
+                                    DialogButton(stringResource(R.string.update_download_install)) { updateViewModel.downloadUpdate() }
+
+                                else ->
+                                    DialogButton(stringResource(R.string.update_download)) {
+                                        openReleasePage(context, status.release.pageUrl)
+                                        showUpdateResult = false
+                                    }
+                            }
                         }
                     }
                 }

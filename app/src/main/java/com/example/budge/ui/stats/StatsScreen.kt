@@ -103,6 +103,10 @@ fun StatsScreen(viewModel: StatsViewModel = hiltViewModel()) {
                         // Room to breathe under the status bar: the date used to sit against
                         // it, which is what made the page look top-heavy.
                         .padding(top = 16.dp),
+                // The hint below shrinks to its own width rather than filling the row, so its
+                // tap target is the words and a little padding around them — not the whole
+                // line, which is a target nobody aims at and everybody hits.
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -149,11 +153,12 @@ fun StatsScreen(viewModel: StatsViewModel = hiltViewModel()) {
                     textAlign = TextAlign.Center,
                     modifier =
                         Modifier
-                            .fillMaxWidth()
                             .alpha(if (onToday) 0f else 1f)
                             .clickable(enabled = !onToday) { viewModel.jumpToToday() }
                             .then(if (onToday) Modifier.clearAndSetSemantics {} else Modifier)
-                            .padding(top = 2.dp, bottom = 2.dp),
+                            // The clickable modifier comes first, so this padding is inside
+                            // the target: a few dp of slack around the words and no more.
+                            .padding(horizontal = 12.dp, vertical = 4.dp),
                 )
             }
         },

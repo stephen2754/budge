@@ -128,6 +128,15 @@
     <string name="update_status_unreadable">更新源返回的内容无法识别，因此无法确定当前是否为最新版本</string>
     <string name="update_status_unconfigured">尚未配置更新源（当前为占位地址）</string>
     <string name="update_download">下载</string>
+    <string name="update_download_install">下载并安装</string>
+    <string name="update_downloading">下载中</string>
+    <string name="update_verifying">正在校验下载内容</string>
+    <string name="update_verified">校验通过，可以安装。</string>
+    <string name="update_install">安装</string>
+    <string name="update_download_failed">下载未完成，未安装任何内容。</string>
+    <string name="update_hash_mismatch">下载文件的校验值与发布记录不一致，文件已删除且不会安装。</string>
+    <string name="update_need_install_permission">安装更新前，Android 需要你授予本应用安装权限。点击“安装”将打开该设置。</string>
+    <string name="update_retry">重试</string>
     <string name="update_history">历史更新记录</string>
     <string name="update_include_alpha">包括alpha版本</string>
     <string name="update_exclude_alpha">不包括alpha版本</string>
@@ -143,6 +152,7 @@
     <string name="licenses_components">本软件使用的开源组件</string>
     <string name="licenses_third_party">开源组件</string>
     <string name="licenses_full_text_note">各组件的完整许可文本见其项目主页。</string>
+    <string name="release_notes_0_1_0_beta_6">现在可以在应用内下载并安装更新：文件会先与发布记录中的 SHA-256 校验，通过后才交给系统安装器。未经你确认不会安装，账目数据不受影响。</string>
     <string name="release_notes_0_1_0_beta_5">过长的更新记录不再把对话框按钮挤出屏幕；较长的按钮文字不再被拆成多行；统计页日期下移、与年月日按钮的距离缩短。</string>
     <string name="release_notes_0_1_0_beta_4">属于对话框左下角的按钮现在真的在左下角；beta 构建可在历史记录中加入 alpha 版本；许可窗口只保留必要内容，开源组件及其链接移到独立页面；统计页的“跳转至今日”不再挤动页面。</string>
     <string name="release_notes_0_1_0_beta_3">版本号窗口现在只讲这个版本改了什么，历史更新记录移至左下角按钮；正式版落后于某个 beta 时，更新窗口左下角会出现“加入测试版”。</string>

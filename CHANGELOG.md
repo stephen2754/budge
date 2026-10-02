@@ -18,6 +18,44 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-beta.6] — an update that installs itself, but not behind your back
+
+### Added
+
+- **Updates are downloaded and installed in the app.** When the answer from GitHub names an
+  APK *and* the SHA-256 it records for it, the update window offers "download and install"
+  instead of a page:
+  - the file is streamed straight to app-private storage — the bytes never become a string or
+    a byte array — with a progress bar in the window;
+  - it is hashed and compared with the published digest. **Every way of not knowing is a
+    refusal, not a pass**: no digest, an empty one, an algorithm other than SHA-256. A
+    mismatch deletes the file and installs nothing;
+  - only then does the app hand a content URI to the *system* installer, which shows its own
+    confirmation;
+  - the file is deleted on the next launch, by which time a successful install has restarted
+    the app.
+- **The app asks for `REQUEST_INSTALL_PACKAGES`**, which is what Android requires before an
+  app may install anything, and sends you to the per-app "install unknown apps" setting when
+  it is missing rather than pretending it can proceed.
+
+### What this changes about the app, stated plainly
+
+This is the largest capability the app has ever asked for, so it is worth being exact about
+its limits. Nothing is downloaded unless you press the button. Nothing is installed without
+the system installer's own confirmation. The file is installed only if its hash is the one
+GitHub published — and the check happens before the installer is involved at all. The
+platform, in turn, refuses any update not signed with the same key as the installed app, so a
+file signed by anybody else cannot replace this app even if it somehow got that far.
+Downloading and installing are the *only* new network and storage behaviour; no ledger data,
+no identifier and nothing else leaves the device, and an update replaces the application in
+place, so categories, transactions, budgets and preferences are untouched.
+
+### Fixed
+
+- **The "jump to today" line is a tap target the size of its words.** It filled the row, so
+  tapping anywhere along an invisible line — well outside the text — moved the date. It now
+  shrinks to its label plus a few dp of slack, and is centred rather than stretched.
+
 ## [0.1.0-beta.5] — long words, long lists, and a top-heavy page
 
 Three layout problems, all of them found by looking at the German build.
@@ -465,6 +503,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-beta.6]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.6
 [0.1.0-beta.5]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.5
 [0.1.0-beta.4]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.4
 [0.1.0-beta.3]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.3

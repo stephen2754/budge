@@ -237,6 +237,14 @@ private data class GithubReleaseDto(
     @SerializedName("html_url") val htmlUrl: String? = null,
     @SerializedName("draft") val draft: Boolean = false,
     @SerializedName("prerelease") val prerelease: Boolean = false,
+    @SerializedName("assets") val assets: List<GithubAssetDto>? = null,
+)
+
+/** One file attached to a release. `digest` is `sha256:<hex>`, as GitHub writes it. */
+private data class GithubAssetDto(
+    @SerializedName("name") val name: String? = null,
+    @SerializedName("browser_download_url") val downloadUrl: String? = null,
+    @SerializedName("digest") val digest: String? = null,
 )
 
 private val gson = Gson()
@@ -267,11 +275,19 @@ internal fun parseGithubReleases(json: String): List<RemoteRelease> {
                 parsed
             }
         val pageUrl = dto.htmlUrl ?: return@mapNotNull null
+        // The first attached APK that came with a hash. Without the hash there is nothing to
+        // check a download against, so the release is offered as a page instead.
+        val apk =
+            dto.assets
+                ?.firstOrNull { it.name?.endsWith(".apk", ignoreCase = true) == true }
+                ?.takeIf { !it.downloadUrl.isNullOrBlank() && !it.digest.isNullOrBlank() }
         RemoteRelease(
             version = version,
             title = dto.name ?: dto.tagName,
             notes = dto.body?.takeIf { it.isNotBlank() },
             pageUrl = pageUrl,
+            assetUrl = apk?.downloadUrl,
+            digest = apk?.digest,
         )
     }
 }
