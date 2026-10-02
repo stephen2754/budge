@@ -127,8 +127,11 @@ what makes the rule meaningful. Publishing a release is three steps:
 version of it.
 
 Tapping the version row says what the installed build is and what it changed; the releases
-before it are one button away, filtered the same way the update check filters what it will
-offer. A **stable** build that is behind a beta is offered a way onto the test line from the
+before it are one button away in the dialog's bottom-left corner, filtered the same way the
+update check filters what it will offer, and a beta build can add the alpha releases to that
+list with a second button. The licence window carries only what a reader needs to know, and
+the components it is built from are a page of their own behind another bottom-left button,
+each one a link to its own repository. A **stable** build that is behind a beta is offered a way onto the test line from the
 update window, and that offer is re-decided on every check — it is never shown to a build
 that is already on a test channel, and never points at an alpha.
 

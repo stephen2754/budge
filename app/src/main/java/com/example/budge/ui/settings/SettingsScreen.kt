@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -25,12 +30,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Surface
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -73,6 +84,64 @@ private fun channelNote(channel: ReleaseChannel): Int =
         ReleaseChannel.BETA -> R.string.channel_beta_note
         ReleaseChannel.STABLE -> R.string.channel_stable_note
     }
+
+/**
+ * An alert dialog whose two actions sit at opposite ends of the bottom row.
+ *
+ * Material's own `AlertDialog` lays its buttons out right-aligned, which puts a second action
+ * immediately beside "Close" rather than in the dialog's own bottom-left corner — and a
+ * second action is not the same kind of thing as closing. Only the button row is replaced
+ * here; everything else comes from `AlertDialogContent`, so the shape, colours, padding and
+ * typography stay Material's.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CorneredAlertDialog(
+    onDismissRequest: () -> Unit,
+    title: @Composable () -> Unit,
+    text: @Composable () -> Unit,
+    startButton: (@Composable () -> Unit)? = null,
+    endButton: @Composable () -> Unit,
+) {
+    // Material's own dialog markup is internal to the library, so this is the same shell
+    // built from the public pieces: the container, shape and elevations are the Material 3
+    // ones, and only the button row differs.
+    BasicAlertDialog(onDismissRequest = onDismissRequest) {
+        Surface(
+            modifier = Modifier.width(IntrinsicSize.Min),
+            shape = MaterialTheme.shapes.extraLarge,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            tonalElevation = 6.dp,
+        ) {
+            Column(modifier = Modifier.padding(24.dp)) {
+                CompositionLocalProvider(
+                    LocalContentColor provides MaterialTheme.colorScheme.onSurface,
+                    LocalTextStyle provides MaterialTheme.typography.headlineSmall,
+                ) {
+                    title()
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                CompositionLocalProvider(
+                    LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
+                    LocalTextStyle provides MaterialTheme.typography.bodyMedium,
+                ) {
+                    text()
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    // An empty box reserves the corner, so the closing button stays where it
+                    // is whether or not there is anything opposite it.
+                    Box { startButton?.invoke() }
+                    Box { endButton() }
+                }
+            }
+        }
+    }
+}
 
 /**
  * One release in a changelog window: what it is, and what it changed.
@@ -199,6 +268,8 @@ fun SettingsScreen(
     var showClearAllDialog by remember { mutableStateOf(false) }
     var showChangelog by remember { mutableStateOf(false) }
     var showUpdateHistory by remember { mutableStateOf(false) }
+    var showAlphaHistory by remember { mutableStateOf(false) }
+    var showComponents by remember { mutableStateOf(false) }
     var showLicenses by remember { mutableStateOf(false) }
     var showUpdateResult by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -452,7 +523,7 @@ fun SettingsScreen(
     }
 
     if (showChangelog) {
-        AlertDialog(
+        CorneredAlertDialog(
             onDismissRequest = { showChangelog = false },
             title = { Text(stringResource(R.string.changelog_title)) },
             text = {
@@ -477,11 +548,11 @@ fun SettingsScreen(
                     }
                 }
             },
-            confirmButton = {
-                TextButton(onClick = { showChangelog = false }) { Text(stringResource(R.string.close)) }
-            },
-            dismissButton = {
+            startButton = {
                 TextButton(onClick = { showUpdateHistory = true }) { Text(stringResource(R.string.update_history)) }
+            },
+            endButton = {
+                TextButton(onClick = { showChangelog = false }) { Text(stringResource(R.string.close)) }
             },
         )
     }
@@ -491,9 +562,12 @@ fun SettingsScreen(
     // version window rather than inside it: what a reader wants from "what am I running" and
     // from "what came before" are different, and only the second one grows without limit.
     if (showUpdateHistory) {
-        val history = updateViewModel.history
-        AlertDialog(
-            onDismissRequest = { showUpdateHistory = false },
+        val history = if (showAlphaHistory) updateViewModel.historyWithAlphas else updateViewModel.history
+        CorneredAlertDialog(
+            onDismissRequest = {
+                showUpdateHistory = false
+                showAlphaHistory = false
+            },
             title = { Text(stringResource(R.string.update_history)) },
             text = {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -507,31 +581,71 @@ fun SettingsScreen(
                     }
                 }
             },
-            confirmButton = {
-                TextButton(onClick = { showUpdateHistory = false }) { Text(stringResource(R.string.close)) }
+            startButton =
+                // Only a beta build has anything to add: an alpha already sees these, and a
+                // stable build is not on the test programme. The rule lives in alphasFor(),
+                // so an empty list is what says there is no button to show.
+                if (updateViewModel.alphas.isEmpty()) {
+                    null
+                } else {
+                    {
+                        // A tap only reveals and hides: nothing else on the screen moves, and
+                        // the list stays in the same order because it is merged and sorted
+                        // once rather than appended.
+                        TextButton(onClick = { showAlphaHistory = !showAlphaHistory }) {
+                            Text(
+                                stringResource(
+                                    if (showAlphaHistory) {
+                                        R.string.update_exclude_alpha
+                                    } else {
+                                        R.string.update_include_alpha
+                                    },
+                                ),
+                            )
+                        }
+                    }
+                },
+            endButton = {
+                TextButton(
+                    onClick = {
+                        showUpdateHistory = false
+                        showAlphaHistory = false
+                    },
+                ) { Text(stringResource(R.string.close)) }
             },
         )
     }
 
     if (showLicenses) {
-        AlertDialog(
+        // Only what the reader has to know: where the records are, and the one thing the app
+        // does over the network. The components are a page of their own behind the button
+        // below, because a licence window is not where anyone reads a dependency tree.
+        CorneredAlertDialog(
             onDismissRequest = { showLicenses = false },
             title = { Text(stringResource(R.string.settings_licenses)) },
             text = {
+                Text(
+                    text = stringResource(R.string.licenses_intro),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            },
+            startButton = {
+                TextButton(onClick = { showComponents = true }) { Text(stringResource(R.string.licenses_components)) }
+            },
+            endButton = {
+                TextButton(onClick = { showLicenses = false }) { Text(stringResource(R.string.close)) }
+            },
+        )
+    }
+
+    if (showComponents) {
+        CorneredAlertDialog(
+            onDismissRequest = { showComponents = false },
+            title = { Text(stringResource(R.string.licenses_components)) },
+            text = {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    Text(
-                        text = stringResource(R.string.licenses_intro),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(R.string.licenses_third_party),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
                     openSourceComponents.forEach { component ->
-                        ComponentLicence(component)
+                        ComponentLicence(component, onOpen = { url -> openProjectPage(context, url) })
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -541,15 +655,15 @@ fun SettingsScreen(
                     )
                 }
             },
-            confirmButton = {
-                TextButton(onClick = { showLicenses = false }) { Text(stringResource(R.string.close)) }
+            endButton = {
+                TextButton(onClick = { showComponents = false }) { Text(stringResource(R.string.close)) }
             },
         )
     }
 
     if (showUpdateResult) {
         val status = updateStatus
-        AlertDialog(
+        CorneredAlertDialog(
             onDismissRequest = { showUpdateResult = false },
             title = { Text(stringResource(R.string.settings_check_update)) },
             text = {
@@ -577,41 +691,35 @@ fun SettingsScreen(
                     }
                 }
             },
-            confirmButton = {
-                if (status is UpdateStatus.Available) {
+            startButton = {
+                // The way onto the test programme, in the dialog's own bottom-left corner and
+                // level with the buttons opposite. Offered only by a stable build, only while
+                // a beta is actually ahead of it, and decided by the check that just ran
+                // rather than remembered from an earlier one: a failed check offers nothing,
+                // because nothing was learned.
+                val offer = betaOffer
+                if (offer != null) {
                     TextButton(
                         onClick = {
-                            openReleasePage(context, status.release.pageUrl)
+                            openReleasePage(context, offer.pageUrl)
                             showUpdateResult = false
                         },
                     ) {
-                        Text(stringResource(R.string.update_download))
+                        Text(stringResource(R.string.update_join_beta))
                     }
-                } else {
-                    TextButton(onClick = { showUpdateResult = false }) { Text(stringResource(R.string.close)) }
                 }
             },
-            dismissButton = {
-                // Bottom left, level with the buttons opposite: the way onto the test
-                // programme, offered only by a stable build and only while a beta is actually
-                // ahead of it — decided by the check that just ran, not remembered from an
-                // earlier one. A failed check offers nothing, because nothing was learned.
-                val offer = betaOffer
-                val showClose = status is UpdateStatus.Available
-                if (offer != null || showClose) {
-                    Row {
-                        if (offer != null) {
-                            TextButton(
-                                onClick = {
-                                    openReleasePage(context, offer.pageUrl)
-                                    showUpdateResult = false
-                                },
-                            ) {
-                                Text(stringResource(R.string.update_join_beta))
-                            }
-                        }
-                        if (showClose) {
-                            TextButton(onClick = { showUpdateResult = false }) { Text(stringResource(R.string.close)) }
+            endButton = {
+                Row {
+                    TextButton(onClick = { showUpdateResult = false }) { Text(stringResource(R.string.close)) }
+                    if (status is UpdateStatus.Available) {
+                        TextButton(
+                            onClick = {
+                                openReleasePage(context, status.release.pageUrl)
+                                showUpdateResult = false
+                            },
+                        ) {
+                            Text(stringResource(R.string.update_download))
                         }
                     }
                 }
@@ -640,18 +748,50 @@ fun SettingsScreen(
 
 /** One attributed library: its name, its licence and where the licence lives. */
 @Composable
-private fun ComponentLicence(component: OpenSourceComponent) {
-    Column(modifier = Modifier.padding(bottom = 8.dp)) {
+private fun ComponentLicence(
+    component: OpenSourceComponent,
+    onOpen: (String) -> Unit,
+) {
+    Column(modifier = Modifier.padding(bottom = 12.dp)) {
         Text(
             text = component.name,
             style = MaterialTheme.typography.bodyMedium,
         )
         Text(
-            text = "${component.license} · ${component.url}",
+            text = component.license,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        // The address is the link: it is what a reader needs in order to check the licence
+        // for themselves, and it is a constant of this build rather than anything a response
+        // can influence.
+        Text(
+            text = component.url,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
+            textDecoration = TextDecoration.Underline,
+            modifier =
+                Modifier
+                    .clickable { onOpen(component.url) }
+                    .padding(vertical = 4.dp),
+        )
     }
+}
+
+/**
+ * Opens a project page from the component list.
+ *
+ * Held to https, though not to one host: unlike the release page — which arrives from a
+ * response and is restricted to github.com — these addresses ship with the build. The scheme
+ * is still checked, because "it is a constant today" is no reason to hand an arbitrary string
+ * to a browser.
+ */
+private fun openProjectPage(
+    context: Context,
+    url: String,
+) {
+    if (!url.startsWith("https://")) return
+    runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
 }
 
 /** Group of [SettingsItem]s rendered under a primary-colored section title. */

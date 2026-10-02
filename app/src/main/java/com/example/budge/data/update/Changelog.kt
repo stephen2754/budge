@@ -27,6 +27,7 @@ data class ReleaseNotes(
  */
 private val RELEASES: List<ReleaseNotes> =
     listOf(
+        ReleaseNotes(AppVersion(0, 1, 0, ReleaseChannel.BETA, 4), R.string.release_notes_0_1_0_beta_4),
         ReleaseNotes(AppVersion(0, 1, 0, ReleaseChannel.BETA, 3), R.string.release_notes_0_1_0_beta_3),
         ReleaseNotes(AppVersion(0, 1, 0, ReleaseChannel.BETA, 2), R.string.release_notes_0_1_0_beta_2),
         ReleaseNotes(AppVersion(0, 1, 0, ReleaseChannel.BETA, 1), R.string.release_notes_0_1_0_beta_1),
@@ -49,6 +50,20 @@ private val RELEASES: List<ReleaseNotes> =
  * disagree.
  */
 fun releaseHistoryFor(channel: ReleaseChannel): List<ReleaseNotes> = filterHistory(RELEASES, channel)
+
+/**
+ * The alpha releases a build on [channel] may look at when it asks to, newest first.
+ *
+ * Betas only. An alpha build already has them in its history, and a stable build is not on
+ * the test programme at all — the button that offers this must not exist there, so the rule
+ * lives here rather than at the call site.
+ */
+fun alphasFor(channel: ReleaseChannel): List<ReleaseNotes> =
+    if (channel == ReleaseChannel.BETA) {
+        filterHistory(RELEASES, ReleaseChannel.ALPHA).filter { it.version.channel == ReleaseChannel.ALPHA }
+    } else {
+        emptyList()
+    }
 
 /** The filtering rule itself, separated from the shipped list so it can be tested. */
 internal fun filterHistory(

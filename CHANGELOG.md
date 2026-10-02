@@ -18,6 +18,42 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.0-beta.4] — corners, and a line that stays put
+
+### Fixed
+
+- **An extra action in a dialog now sits in the dialog's own bottom-left corner.** It was in
+  Material's `dismissButton` slot, which is laid out immediately beside "Close", near the
+  right — a second action next to the one that closes the window rather than a different
+  place to go. Material's dialog markup is internal to the library, so the shell is rebuilt
+  from `BasicAlertDialog` with Material 3's own container, shape, elevation, spacing and
+  typography; only the button row differs, and the corner is reserved whether or not
+  anything occupies it.
+- **The "jump to today" line no longer moves the statistics screen.** It was added to the
+  layout only when the anchor was not today, so the period selector and everything under it
+  shifted down the moment it appeared — on every period change. It is now always laid out,
+  with only its visibility, clickability and accessibility changing, so it reserves exactly
+  its own height at any font scale and nothing under it ever moves.
+
+### Added
+
+- **A beta build can add the alpha releases to its update history.** An "include alpha
+  versions" button in the history window's bottom-left corner merges them into the list, and
+  the list is merged and sorted once so the order does not change when they appear. The rule
+  lives in `alphasFor`: betas only — an alpha build already sees them, and a stable build is
+  not on the test programme, so the button has nothing to show there and does not exist.
+- **The open-source components have a page of their own**, behind a bottom-left button in
+  the licence window. Every entry now links to its project's repository, underlined and
+  tappable, and each address was checked to resolve before it was written down — Room and
+  DataStore have no repository of their own because they are part of AndroidX, which is what
+  they link to.
+
+### Changed
+
+- **The licence window says only what a reader needs to know**: where the records are, and
+  the one thing the app does over the network. The dependency tree is a page away rather than
+  in the middle of it.
+
 ## [0.1.0-beta.3] — what this build is, and how to leave it
 
 ### Added
@@ -405,6 +441,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.0-beta.4]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.4
 [0.1.0-beta.3]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.3
 [0.1.0-beta.2]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.2
 [0.1.0-beta.1]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-beta.1

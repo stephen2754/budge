@@ -33,6 +33,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.draw.alpha
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -132,24 +134,28 @@ fun StatsScreen(viewModel: StatsViewModel = hiltViewModel()) {
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
         ) {
-            // The way back to today lives here rather than in the app bar, which is a fixed
-            // height: a second line inside it pushed the date itself upwards the moment the
-            // hint appeared. Below the bar it sits directly under the date and the date does
-            // not move at all. It is drawn only when the anchor is somewhere else, so it
-            // says nothing when there is nothing to go back from.
-            if (uiState.currentDate != today) {
-                Text(
-                    text = stringResource(R.string.stats_jump_to_today),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    textAlign = TextAlign.Center,
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { viewModel.jumpToToday() }
-                            .padding(vertical = 4.dp),
-                )
-            }
+            // The way back to today is drawn whether or not there is anywhere to go back
+            // from, and only its visibility and clickability change. Taking it out of the
+            // layout when the anchor *is* today moved the period selector and everything
+            // below it down the moment it appeared — a row that has to shift to make room for
+            // a hint is a row that moves every time the reader changes period. Keeping the
+            // same text in the same place means the line reserves exactly its own height
+            // whatever the font scale, and nothing under it ever moves. A hidden one is
+            // removed from the accessibility tree so it is not read out as a control.
+            val onToday = uiState.currentDate == today
+            Text(
+                text = stringResource(R.string.stats_jump_to_today),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .alpha(if (onToday) 0f else 1f)
+                        .clickable(enabled = !onToday) { viewModel.jumpToToday() }
+                        .then(if (onToday) Modifier.clearAndSetSemantics {} else Modifier)
+                        .padding(vertical = 4.dp),
+            )
 
             // Centered period selector: each chip takes equal width so the
             // active period always sits in the middle of the row.

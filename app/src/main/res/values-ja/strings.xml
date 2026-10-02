@@ -130,6 +130,8 @@
     <string name="update_status_unconfigured">更新元が未設定です（仮のアドレス）</string>
     <string name="update_download">ダウンロード</string>
     <string name="update_history">更新履歴</string>
+    <string name="update_include_alpha">アルファ版を含める</string>
+    <string name="update_exclude_alpha">アルファ版を隠す</string>
     <string name="update_join_beta">ベータ版に参加</string>
     <string name="close">閉じる</string>
     <string name="changelog_title">更新履歴</string>
@@ -138,7 +140,8 @@
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Beta</string>
     <string name="channel_stable">正式版</string>
-    <string name="licenses_intro">記録はこの端末のローカルデータベースに保存され、送信されることはありません。アプリが行う唯一の通信は更新の確認で、設定されたアドレスへの読み取り専用のリクエストであり、記録の内容も識別情報も含みません。エクスポートとインポートは、選んだローカルの JSON ファイルで行います。</string>
+    <string name="licenses_intro">記録はこの端末内のローカルデータベースに保存され、アップロードされません。唯一の通信は更新確認で、記録データも識別情報も含みません。エクスポートとインポートは、選んだローカルの JSON ファイルを使います。</string>
+    <string name="licenses_components">オープンソースコンポーネント</string>
     <string name="licenses_third_party">オープンソースコンポーネント</string>
     <string name="licenses_full_text_note">各コンポーネントのライセンス全文は、そのプロジェクトページで確認できます。</string>
     <string name="update_status_no_releases">更新元にはまだ公開されたバージョンがありません</string>

@@ -129,6 +129,8 @@
     <string name="update_status_unconfigured">尚未配置更新源（当前为占位地址）</string>
     <string name="update_download">下载</string>
     <string name="update_history">历史更新记录</string>
+    <string name="update_include_alpha">包括alpha版本</string>
+    <string name="update_exclude_alpha">不包括alpha版本</string>
     <string name="update_join_beta">加入测试版</string>
     <string name="close">关闭</string>
     <string name="changelog_title">版本更新记录</string>
@@ -137,9 +139,11 @@
     <string name="channel_alpha">Alpha 测试版</string>
     <string name="channel_beta">Beta 测试版</string>
     <string name="channel_stable">正式版</string>
-    <string name="licenses_intro">账目数据保存在本机数据库中，不会上传。应用唯一的联网行为是检查更新：它只向配置好的版本发布地址发起一次只读请求，不包含任何账目数据，也不包含任何标识信息。导出与导入使用你自己选择的本地 JSON 文件。</string>
+    <string name="licenses_intro">账目保存在本机数据库中，不会上传。应用唯一的联网行为是检查更新，其中不含账目数据与标识信息。导出与导入使用你自己选择的本地 JSON 文件。</string>
+    <string name="licenses_components">本软件使用的开源组件</string>
     <string name="licenses_third_party">开源组件</string>
     <string name="licenses_full_text_note">各组件的完整许可文本见其项目主页。</string>
+    <string name="release_notes_0_1_0_beta_4">属于对话框左下角的按钮现在真的在左下角；beta 构建可在历史记录中加入 alpha 版本；许可窗口只保留必要内容，开源组件及其链接移到独立页面；统计页的“跳转至今日”不再挤动页面。</string>
     <string name="release_notes_0_1_0_beta_3">版本号窗口现在只讲这个版本改了什么，历史更新记录移至左下角按钮；正式版落后于某个 beta 时，更新窗口左下角会出现“加入测试版”。</string>
     <string name="release_notes_0_1_0_beta_2">数据库损坏或安装旧版后不再无法进入；旋转屏幕或切换主题时输入内容不再丢失；首帧不再显示零余额；深色模式不再先闪白屏；导入文件不会再撑爆内存。</string>
     <string name="release_notes_0_1_0_beta_1">首个 beta：偏好设置的读写不再可能导致崩溃；删除失败会给出提示而不是崩溃；导出改为一次性快照；并逐条核对了热点查询的索引命中。</string>

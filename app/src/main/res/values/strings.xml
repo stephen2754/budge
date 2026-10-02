@@ -132,6 +132,8 @@
     <string name="update_status_unconfigured">No update source is configured yet (placeholder address)</string>
     <string name="update_download">Download</string>
     <string name="update_history">Update history</string>
+    <string name="update_include_alpha">Include alpha versions</string>
+    <string name="update_exclude_alpha">Hide alpha versions</string>
     <string name="update_join_beta">Join the beta</string>
     <string name="close">Close</string>
     <string name="changelog_title">Release history</string>
@@ -140,9 +142,11 @@
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Beta</string>
     <string name="channel_stable">Stable</string>
-    <string name="licenses_intro">Your records live in a local database on this device and are never uploaded. The one network request the app can make is the update check: a read-only request to the configured releases address, carrying no ledger data and no identifier. Export and import work on a local JSON file you choose.</string>
+    <string name="licenses_intro">Your records stay in a local database on this device and are never uploaded. The only network request is the update check, which carries no ledger data and no identifier. Export and import use a local JSON file you choose.</string>
+    <string name="licenses_components">Open-source components</string>
     <string name="licenses_third_party">Open-source components</string>
     <string name="licenses_full_text_note">The full licence text of each component is available at its project page.</string>
+    <string name="release_notes_0_1_0_beta_4">Buttons that belong in a dialog corner now sit there; a beta build can add the alpha releases to the history; the licence window keeps only what matters, with the components and their links on their own page; and the jump-to-today line no longer moves the statistics screen.</string>
     <string name="release_notes_0_1_0_beta_3">The version row now says what this build changed, with an update history a button away; a stable build that is behind a beta is offered a way onto the test line from the update window.</string>
     <string name="release_notes_0_1_0_beta_2">A damaged or older database can no longer lock you out, the entry form keeps what you typed through a rotation or theme change, the first frame stops showing a balance of zero, dark mode no longer opens with a white flash, and an oversized import can no longer exhaust the memory available.</string>
     <string name="release_notes_0_1_0_beta_1">First beta: preference reads and writes can no longer take the app down, a failed delete says so instead of crashing, an export is taken in one piece, and the hot queries were checked against the database indexes.</string>

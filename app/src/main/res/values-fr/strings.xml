@@ -132,6 +132,8 @@
     <string name="update_status_unconfigured">Aucune source de mise à jour n’est configurée (adresse provisoire)</string>
     <string name="update_download">Télécharger</string>
     <string name="update_history">Historique des mises à jour</string>
+    <string name="update_include_alpha">Inclure les versions alpha</string>
+    <string name="update_exclude_alpha">Masquer les versions alpha</string>
     <string name="update_join_beta">Rejoindre la bêta</string>
     <string name="close">Fermer</string>
     <string name="changelog_title">Historique des versions</string>
@@ -140,7 +142,8 @@
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Bêta</string>
     <string name="channel_stable">Stable</string>
-    <string name="licenses_intro">Vos écritures restent dans une base locale sur cet appareil et ne sont jamais envoyées. La seule requête réseau de l’application est la recherche de mises à jour : une requête en lecture seule vers l’adresse configurée, sans aucune donnée comptable ni identifiant. L’export et l’import utilisent un fichier JSON local que vous choisissez.</string>
+    <string name="licenses_intro">Vos opérations restent dans une base de données locale sur cet appareil et ne sont jamais envoyées. La seule requête réseau est la recherche de mise à jour, sans données ni identifiant. L’export et l’import utilisent un fichier JSON local que vous choisissez.</string>
+    <string name="licenses_components">Composants open source</string>
     <string name="licenses_third_party">Composants open source</string>
     <string name="licenses_full_text_note">Le texte complet de la licence de chaque composant est disponible sur sa page de projet.</string>
     <string name="update_status_no_releases">La source de mises à jour n’a encore publié aucune version</string>

@@ -132,6 +132,8 @@
     <string name="update_status_unconfigured">Es ist noch keine Update-Quelle eingerichtet (Platzhalteradresse)</string>
     <string name="update_download">Herunterladen</string>
     <string name="update_history">Versionsverlauf</string>
+    <string name="update_include_alpha">Alpha-Versionen einbeziehen</string>
+    <string name="update_exclude_alpha">Alpha-Versionen ausblenden</string>
     <string name="update_join_beta">Der Beta beitreten</string>
     <string name="close">Schließen</string>
     <string name="changelog_title">Versionsverlauf</string>
@@ -140,7 +142,8 @@
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Beta</string>
     <string name="channel_stable">Stabil</string>
-    <string name="licenses_intro">Deine Buchungen liegen in einer lokalen Datenbank auf diesem Gerät und werden nie hochgeladen. Die einzige Netzwerkanfrage der App ist die Update-Suche: eine reine Leseanfrage an die eingerichtete Adresse, ohne Buchungsdaten und ohne Kennung. Export und Import arbeiten mit einer lokalen JSON-Datei deiner Wahl.</string>
+    <string name="licenses_intro">Ihre Buchungen bleiben in einer lokalen Datenbank auf diesem Gerät und werden nie hochgeladen. Die einzige Netzwerkanfrage ist die Update-Prüfung, ohne Buchungsdaten und ohne Kennung. Export und Import nutzen eine lokale JSON-Datei Ihrer Wahl.</string>
+    <string name="licenses_components">Open-Source-Komponenten</string>
     <string name="licenses_third_party">Open-Source-Komponenten</string>
     <string name="licenses_full_text_note">Der vollständige Lizenztext jeder Komponente steht auf ihrer Projektseite.</string>
     <string name="update_status_no_releases">Die Update-Quelle hat noch keine Version veröffentlicht</string>

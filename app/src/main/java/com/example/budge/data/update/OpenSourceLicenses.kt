@@ -17,9 +17,12 @@ data class OpenSourceComponent(
 /**
  * Everything the app ships that carries a licence notice.
  *
- * Every runtime dependency of this build is Apache-2.0, which is why the licence column
- * is uniform; the full text of each licence lives at the linked project page rather than
- * being copied into the app.
+ * Every runtime dependency of this build is Apache-2.0, which is why the licence column is
+ * uniform; the full text of each licence lives at the linked project page rather than being
+ * copied into the app — every link here is the project's own repository, and each one was
+ * checked to resolve. Room and DataStore have no repository of their own because they are
+ * part of AndroidX, whose monorepo (and the DataStore directory inside it) is what they
+ * link to.
  */
 val openSourceComponents: List<OpenSourceComponent> =
     listOf(
@@ -27,7 +30,7 @@ val openSourceComponents: List<OpenSourceComponent> =
         OpenSourceComponent("Kotlin standard library", "Apache-2.0", "https://github.com/JetBrains/kotlin"),
         OpenSourceComponent("kotlinx.coroutines", "Apache-2.0", "https://github.com/Kotlin/kotlinx.coroutines"),
         OpenSourceComponent("Dagger / Hilt", "Apache-2.0", "https://github.com/google/dagger"),
-        OpenSourceComponent("Room", "Apache-2.0", "https://developer.android.com/jetpack/androidx/releases/room"),
-        OpenSourceComponent("DataStore", "Apache-2.0", "https://developer.android.com/jetpack/androidx/releases/datastore"),
+        OpenSourceComponent("Room", "Apache-2.0", "https://github.com/androidx/androidx"),
+        OpenSourceComponent("DataStore", "Apache-2.0", "https://github.com/androidx/androidx/tree/androidx-main/datastore"),
         OpenSourceComponent("Gson", "Apache-2.0", "https://github.com/google/gson"),
     )

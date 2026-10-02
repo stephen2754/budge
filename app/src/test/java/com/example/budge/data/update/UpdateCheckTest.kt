@@ -88,6 +88,24 @@ class UpdateCheckTest {
     }
 
     @Test
+    fun `only a beta build may look at the alphas on request`() {
+        assertTrue("a beta build may ask", alphasFor(ReleaseChannel.BETA).isNotEmpty())
+        assertTrue("an alpha build already has them in its history", alphasFor(ReleaseChannel.ALPHA).isEmpty())
+        assertTrue("a stable build is not on the test programme", alphasFor(ReleaseChannel.STABLE).isEmpty())
+    }
+
+    @Test
+    fun `what a beta build may look at is alphas only, newest first`() {
+        val alphas = alphasFor(ReleaseChannel.BETA)
+
+        assertTrue(
+            "revealing the alphas must not smuggle in another channel",
+            alphas.all { it.version.channel == ReleaseChannel.ALPHA },
+        )
+        assertEquals(alphas.sortedByDescending { it.version }, alphas)
+    }
+
+    @Test
     fun `a stable build can be offered the newest beta worth joining`() {
         val offer =
             selectBetaOffer(

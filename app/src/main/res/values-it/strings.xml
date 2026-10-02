@@ -132,6 +132,8 @@
     <string name="update_status_unconfigured">Nessuna origine di aggiornamento configurata (indirizzo provvisorio)</string>
     <string name="update_download">Scarica</string>
     <string name="update_history">Cronologia aggiornamenti</string>
+    <string name="update_include_alpha">Includi versioni alpha</string>
+    <string name="update_exclude_alpha">Nascondi versioni alpha</string>
     <string name="update_join_beta">Partecipa alla beta</string>
     <string name="close">Chiudi</string>
     <string name="changelog_title">Cronologia delle versioni</string>
@@ -140,7 +142,8 @@
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Beta</string>
     <string name="channel_stable">Stabile</string>
-    <string name="licenses_intro">I tuoi movimenti restano in un database locale su questo dispositivo e non vengono mai caricati. L’unica richiesta di rete dell’app è il controllo degli aggiornamenti: una richiesta di sola lettura all’indirizzo configurato, senza dati contabili né identificatori. Esportazione e importazione usano un file JSON locale che scegli tu.</string>
+    <string name="licenses_intro">I tuoi movimenti restano in un database locale su questo dispositivo e non vengono mai caricati. L’unica richiesta di rete è il controllo aggiornamenti, senza dati dei movimenti né identificatori. Esportazione e importazione usano un file JSON locale che scegli tu.</string>
+    <string name="licenses_components">Componenti open source</string>
     <string name="licenses_third_party">Componenti open source</string>
     <string name="licenses_full_text_note">Il testo completo della licenza di ogni componente è disponibile nella sua pagina di progetto.</string>
     <string name="update_status_no_releases">L’origine degli aggiornamenti non ha ancora pubblicato versioni</string>

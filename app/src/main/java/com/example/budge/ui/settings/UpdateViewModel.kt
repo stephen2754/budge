@@ -13,6 +13,7 @@ import com.example.budge.data.update.selectBetaOffer
 import com.example.budge.data.update.UpdateConfig
 import com.example.budge.data.update.UpdateStatus
 import com.example.budge.data.update.releaseHistoryFor
+import com.example.budge.data.update.alphasFor
 import com.example.budge.data.update.selectUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,6 +57,17 @@ class UpdateViewModel
          * away, so the two never have to be read as the same thing.
          */
         val currentRelease: ReleaseNotes? = history.firstOrNull { it.version == currentVersion }
+
+        /**
+         * The alpha records this build may look at on request, newest first.
+         *
+         * Empty for anything but a beta build (see [alphasFor]), so the button that reveals
+         * them cannot appear where it has nothing to reveal or is not allowed.
+         */
+        val alphas: List<ReleaseNotes> = alphasFor(channel)
+
+        /** [history] with those alphas merged in, newest first, for the button that asks. */
+        val historyWithAlphas: List<ReleaseNotes> = (history + alphas).sortedByDescending { it.version }
 
         private val _betaOffer = MutableStateFlow<RemoteRelease?>(null)
 

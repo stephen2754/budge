@@ -136,6 +136,8 @@
     <string name="update_status_unconfigured">Источник обновлений ещё не настроен (адрес-заглушка)</string>
     <string name="update_download">Скачать</string>
     <string name="update_history">История обновлений</string>
+    <string name="update_include_alpha">Включить альфа-версии</string>
+    <string name="update_exclude_alpha">Скрыть альфа-версии</string>
     <string name="update_join_beta">Присоединиться к бета-версии</string>
     <string name="close">Закрыть</string>
     <string name="changelog_title">История версий</string>
@@ -144,7 +146,8 @@
     <string name="channel_alpha">Alpha</string>
     <string name="channel_beta">Beta</string>
     <string name="channel_stable">Стабильная</string>
-    <string name="licenses_intro">Записи хранятся в локальной базе на этом устройстве и никуда не отправляются. Единственный сетевой запрос приложения — проверка обновлений: запрос только на чтение по настроенному адресу, без данных о записях и без идентификаторов. Экспорт и импорт работают с локальным файлом JSON, который выбираете вы.</string>
+    <string name="licenses_intro">Записи остаются в локальной базе данных на этом устройстве и никуда не отправляются. Единственный сетевой запрос — проверка обновлений, без данных записей и без идентификаторов. Экспорт и импорт используют локальный JSON-файл, который вы выбираете.</string>
+    <string name="licenses_components">Компоненты с открытым исходным кодом</string>
     <string name="licenses_third_party">Открытые компоненты</string>
     <string name="licenses_full_text_note">Полный текст лицензии каждого компонента доступен на его странице проекта.</string>
     <string name="update_status_no_releases">В источнике обновлений ещё нет опубликованных версий</string>
