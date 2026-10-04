@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Download the latest release
+    url: https://github.com/stephen2754/budge/releases/latest
+    about: The APK, the checksum, and what changed in each version.
+  - name: How to build it and how to contribute
+    url: https://github.com/stephen2754/budge/blob/main/CONTRIBUTING.md
+    about: Build commands, the rules that keep the build green, and how pull requests are reviewed.

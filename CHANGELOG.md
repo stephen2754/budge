@@ -18,6 +18,22 @@ release. The app shows this same history under *Settings → About → Version*,
 the channels the installed build may see, and the strings for it live in
 `app/src/main/res/values*/strings.xml`.
 
+## [0.1.1] — copy that reads like a person wrote it
+
+Every user-facing string was rewritten. Not the vocabulary — the structure. Release notes were
+semicolon chains carrying six clauses in one breath, the licence page used a colon-and-list
+frame and a "Neither…" tail, and some sentences narrated the app's own honesty instead of
+stating a limit. Chinese had the same tells in its own shape: 分号串, 四字并列, 书面语 connectors.
+
+**Nothing else changed.** No behaviour, no feature, no fix, no data: the diff against `0.1.0`
+touches two files, `values/strings.xml` and `values-zh/strings.xml`, and contains no line that
+is not a string value. The other seven locales keep their previous phrasing for now, so their
+prose is one voice behind; keys and format specifiers are unchanged everywhere.
+
+Also in this release, on the repository rather than in the app: a bug report form, a feature
+request form, a pull request template and [CONTRIBUTING.md](CONTRIBUTING.md), so that reporting
+a bug or proposing a change has a stated route instead of a guess.
+
 ## [0.1.0] — the first stable release
 
 Identical to `0.1.0-rc.2` apart from the version string and this entry. That is not a
@@ -570,6 +586,7 @@ under "Known limitations".
   skip the vital check (`checkReleaseBuilds = false`). See the note in
   [README.md](README.md).
 
+[0.1.1]: https://github.com/stephen2754/budge/releases/tag/v0.1.1
 [0.1.0]: https://github.com/stephen2754/budge/releases/tag/v0.1.0
 [0.1.0-rc.2]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-rc.2
 [0.1.0-rc.1]: https://github.com/stephen2754/budge/releases/tag/v0.1.0-rc.1

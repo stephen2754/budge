@@ -154,6 +154,7 @@
     <string name="licenses_components">本软件使用的开源组件</string>
     <string name="licenses_third_party">开源组件</string>
     <string name="licenses_full_text_note">各组件的完整许可文本见其项目主页。</string>
+    <string name="release_notes_0_1_1">把应用里的文案重写了一遍，读起来像人写的。其他没有任何变化：行为、功能、数据都和 0.1.0 一样。</string>
     <string name="release_notes_0_1_0">首个正式版。除版本号与本条说明外，与 0.1.0-rc.2 完全一致。</string>
     <string name="release_notes_0_1_0_rc_2">后缀无法识别的发布标签不再被丢弃，会按预发布版读取。新类型的标签也不会再让某个发布对所有人都不可见。首页余额整行着色，“余额：”几个字也算在内。</string>
     <string name="release_notes_0_1_0_rc_1">候选版本。除了版本号以外，和即将发布的正式版完全一样，其他内容没有任何区别。</string>

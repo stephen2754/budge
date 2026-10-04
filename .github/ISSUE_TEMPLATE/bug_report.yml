@@ -1,0 +1,74 @@
+name: Bug report
+description: Something in the app is wrong, crashes, or loses data.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Two things make a bug report much easier to act on: the
+        exact version you are running, and the steps that get you there.
+
+        Where to find your version: open the app, go to **Settings** and look at the version
+        row at the bottom. It reads something like `0.1.1`. Tapping it shows what changed in
+        that release, and the **update history** button lists earlier ones.
+
+        Please search the existing issues first — if yours is already there, add a comment
+        with your version and device instead of opening a duplicate.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Describe the problem in your own words. What did you see, and what did you expect instead?
+      placeholder: |
+        I tapped X and the app showed Y. I expected Z.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The shortest path that makes it happen. If it only happens sometimes, say so — that is useful information too.
+      placeholder: |
+        1. Open the app
+        2. Tap ...
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Settings → the version row. Exactly as written there, including any suffix such as `-beta.6`.
+      placeholder: "0.1.1"
+    validations:
+      required: true
+  - type: input
+    id: android
+    attributes:
+      label: Android version and device
+      description: Settings → About phone, or whatever you know. "Android 14, Pixel 7" is plenty.
+      placeholder: "Android 14, Pixel 7"
+    validations:
+      required: true
+  - type: dropdown
+    id: install-source
+    attributes:
+      label: How did you install this build
+      options:
+        - From the GitHub release page, by opening the APK
+        - From inside the app (Settings → check for updates → download and install)
+        - Built it myself from source
+        - Somewhere else
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or anything else
+      description: |
+        Drag an image in here if it helps. The app deliberately writes no logs of its own and
+        sends nothing anywhere, so there is no log file to attach — a screenshot or an exact
+        wording of an error message is the most useful thing.
+    validations:
+      required: false

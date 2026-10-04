@@ -5,7 +5,7 @@
 
 | | |
 | --- | --- |
-| **Version** | 0.1.0 (stable) — see [CHANGELOG.md](CHANGELOG.md) |
+| **Version** | 0.1.1 (stable) — see [CHANGELOG.md](CHANGELOG.md) |
 | **Platform** | Android 8.0+ (minSdk 26), targetSdk 35 |
 | **Stack** | Kotlin 2.0.21, Jetpack Compose (Material 3), Room, Hilt, DataStore |
 | **Languages** | English, 中文, Français, Deutsch, Español, Русский, 日本語, Italiano, Português |
@@ -163,6 +163,16 @@ A **release candidate** (`0.1.0-rc.1`) is the stable release with nothing change
 version number: the same source, the same strings, the same behaviour. A beta build is
 offered it, the candidate is offered the release it leads to, and a stable build is never
 shown either — the candidate is the last check, not a stream stable users are on.
+
+## Contributing
+
+Bug reports, translations and pull requests are welcome, in Chinese or English. Start with
+[CONTRIBUTING.md](CONTRIBUTING.md) — it covers how to build the app, the rules that keep the
+build green, and the voice user-facing copy should be written in.
+
+- [Report a bug](https://github.com/stephen2754/budge/issues/new?template=bug_report.yml) — the form asks for your version, your steps and your device.
+- [Suggest a change](https://github.com/stephen2754/budge/issues/new?template=feature_request.yml) — describe the problem before the solution.
+- [Open a pull request](https://github.com/stephen2754/budge/compare) — small and focused, one change per request.
 
 ## Licence
 

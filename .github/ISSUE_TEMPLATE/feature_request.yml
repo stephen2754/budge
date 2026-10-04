@@ -1,0 +1,33 @@
+name: Feature request
+description: Suggest a change, a new option, or a different way of doing something.
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Budge is deliberately small: it tracks expenses in one local database and stays out of
+        the way. A suggestion that keeps it small is much easier to accept than one that makes
+        it a platform. It is also worth knowing what is already planned — see the
+        "Not implemented yet" list in the README.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve
+      description: Describe the situation you are in, not the solution yet. The problem is the part that matters.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What you have in mind
+      description: If you have a specific idea, describe it here. Sketches or mockups are welcome.
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you do instead today
+      description: How do you handle this now, and what is annoying about it?
+    validations:
+      required: false
