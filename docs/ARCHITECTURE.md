@@ -704,8 +704,8 @@ proguard files `proguard-android-optimize.txt` and `proguard-rules.pro`.
 `*.jks`, `*.keystore`, `*.p12`, `keystore.properties`). When the file exists a `release` signing
 config is created and `enableV3Signing = true` is set (`:74`). When it does not, no `signingConfig`
 is assigned, the build still succeeds, and the APK comes out unsigned and therefore not
-installable (`:88-93`). `enableV2Signing` is not written here, so v1 and v2 are left at AGP's
-defaults. The comment on v3 (`:69-73`) records the reason: v3 carries a key-rotation proof, so a
+installable (`:88-93`). `enableV2Signing = true` is written alongside it (`:78`), so the
+release APK verifies with both v2 and v3; v1 is left off, which is correct at minSdk 26. The comment on v3 (`:69-73`) records the reason: v3 carries a key-rotation proof, so a
 compromised release key could be rotated instead of forcing every user to uninstall, which for this
 app would mean losing the ledger.
 
@@ -845,8 +845,9 @@ draws or measures (including the swipe-to-delete threshold and its haptic),
   field as "the first millisecond of the month". That comment is stale. The code is `yyyyMM`.
 - The DataStore path is DataStore's own convention for `preferencesDataStoreFile("settings")`. The
   code passes only the name, so the path was not read out of a built artifact.
-- `enableV2Signing` is not set in `app/build.gradle.kts`. The claim that v2 signing is active rests
-  on AGP's default and was not verified against a signed APK here.
+- Signing: `enableV2Signing` and `enableV3Signing` are both written explicitly. The built release
+  APK was verified with `apksigner verify -v` (v2 true, v3 true, v1 false), so this one is
+  checked rather than inferred.
 - The provenance stamp is described as `README.md` describes it. The Gradle feature that writes it
   is not configured anywhere in this repository, so its presence was not verified from the build
   files.
