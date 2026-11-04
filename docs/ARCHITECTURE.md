@@ -45,17 +45,20 @@ DataStore. minSdk 26, compileSdk and targetSdk 35, JDK 17.
 ui ──▶ data/repository ──▶ data/local ──▶ entity
  │          │
  │          └──▶ model
- ├──▶ data/prefs
- ├──▶ data/backup ──▶ data/local/entity
- └──▶ data/update   (depends on model only)
+ ├──▶ data/prefs        (imports nothing outside the package)
+ ├──▶ data/backup ──▶ data/local/entity, model
+ └──▶ data/update ──▶ data/BoundedRead.kt, R
 ```
 
 `ui/` never touches a DAO or an entity: no file under `ui/` imports
 `com.example.budge.data.local`. No file under `data/` imports `com.example.budge.ui`. The one
 reverse-looking edge is `data/backup/BackupCodec.kt` importing the three entities, because the
 backup document is the entity list. `model/` imports nothing from the app or from Android, which
-is why the money and formatting tests run on a plain JVM. `di/` is the only place that constructs
-the database, the DataStore, the HTTP client, the downloader, the installer and the file store.
+is why the money and formatting tests run on a plain JVM. `data/update` imports no domain type at
+all: its versions, releases and download states are its own, and `Changelog.kt` reaches
+`R.string.release_notes_*` directly. `di/` is where the database, the DataStore, the HTTP client,
+the downloader, the installer and the file store are wired, with one exception noted in §5:
+`MainActivity` reaches `settingsDataStore` itself, before injection is available.
 
 There is one module, so no compiler check stops a `ui/` file from importing a DAO. The rules hold
 by convention, and the import graph is the whole of it. `internal` marks helpers that tests reach
@@ -753,7 +756,7 @@ The release routine, from `README.md:100-141` and `DESIGN.md:503-511`, checked a
 
 ## 12. Tests
 
-`app/src/test/java/com/example/budge/`, 20 files, 165 `@Test` methods, JUnit 4, all JVM. There is
+`app/src/test/java/com/example/budge/`, 19 files, 165 `@Test` methods, JUnit 4, all JVM. There is
 no `app/src/androidTest/` directory, although the instrumentation dependencies are declared
 (`app/build.gradle.kts:178-182`). The command is `./gradlew :app:testDebugUnitTest`, and
 `.github/workflows/android.yml` runs exactly that on every push to `main` and every pull request.

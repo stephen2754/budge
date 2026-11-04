@@ -71,6 +71,11 @@ android {
                 // uninstall — which for this app would mean losing the ledger. Android 8
                 // ignores v3 and verifies v2, so nothing is lost on the oldest releases this
                 // app supports.
+                // Stated rather than inherited: both schemes are what the release
+                // verification step checks, and a future AGP default change should be a build
+                // failure here rather than a silent downgrade. v2 covers API 26-27, v3 carries
+                // the key-rotation proof.
+                enableV2Signing = true
                 enableV3Signing = true
             }
         }

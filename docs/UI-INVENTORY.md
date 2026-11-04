@@ -28,8 +28,6 @@ relative to `app/src/main/java/com/example/budge/` unless they start with `app/`
 | `ui/theme/Theme.kt` | 22-98 schemes; 108-169 `BudgeTheme`; 180 `incomeColor`; 190 `pageWindowInsets` |
 | `ui/theme/Color.kt` | 6-40 light; 43-77 dark; 83-84 income colours |
 
----
-
 # Shared shell — `MainActivity` + `NavGraph`
 
 **Purpose.** One activity draws a three-page horizontal pager with a bottom navigation bar, and
@@ -58,7 +56,7 @@ Tab order is Stats, Home, Settings; Home is the initial page (`NavGraph.kt:128-1
 | --- | --- | --- |
 | `weight(1f)` | pager `Box`, the height left above the nav bar | 221 |
 | `fillMaxSize()` / `matchParentSize()` | pager; both `OverlayHost` modifiers, so an overlay covers the pager area exactly | 225; 251, 258 |
-| `fillMaxWidth()` | `NavigationBar`; no height set, so the component default | 265 |
+| `fillMaxWidth()` | `NavigationBar`, with no height set (component default) | 265 |
 | `tween(300, FastOutSlowInEasing)` | overlay enter: `slideInVertically { it }` + `fadeIn` | 105-106 |
 | `tween(250, FastOutSlowInEasing)` | overlay exit: `slideOutVertically { it }` + `fadeOut` | 110-111 |
 | `tween(300)` / `tween(200)` | `animateScrollToPage`; 200 ms when `abs(currentPage - index) > 1` | 170, 179 |
@@ -85,8 +83,6 @@ horizontal swipe between pages; system back.
 **Accessibility.** The three tab icons pass `contentDescription = null` (273) with the comment that
 the label already names the tab, so each item is announced once via its text. No explicit role or
 state description from app code; targets are `NavigationBarItem` defaults.
-
----
 
 # HomeScreen — `ui/home/HomeScreen.kt`
 
@@ -116,9 +112,7 @@ Scaffold → TopAppBar(title = Text(month)) + SnackbarHost + FloatingActionButto
 | `12dp` | `spacedBy` between figures; avatar→text spacer | 172, 538 |
 | `8dp` | above balance; day expense→income; text column→amount; day header vertical | 197, 371, 556, 354 |
 | `96dp` | `deleteSwipeDistance`, the swipe threshold and haptic trigger; `LazyColumn` bottom padding clearing the FAB | 93; 300 |
-| `40dp` | category avatar diameter | 527 |
-| `20dp` | swipe background horizontal padding | 478 |
-| `4dp` | transaction card vertical padding between rows | 494 |
+| `40dp` / `20dp` / `4dp` | avatar diameter; swipe background padding; card vertical padding | 527, 478, 494 |
 | `2dp` / `1dp` | card elevations, summary vs row | 164, 515 |
 | `weight(1f)` | both figures; text column; the null/empty `Box` (with `fillMaxSize`) | 187, 194, 539, 238/245 |
 
@@ -136,22 +130,21 @@ swipe background (479).
 | Expense and income figures | `amountTextStyle` ladder | 24 / 16 / 14sp | SummaryFigure.kt:38 |
 | Figure labels | `bodyMedium` | 14sp | SummaryFigure.kt:31 |
 | Transaction amount; avatar letter | `titleMedium` | 16sp | 566, 535 |
-| Category name; empty-state message | `bodyLarge` | 16sp | 542, 250 |
-| Day header date | `titleSmall` | 14sp | 359 |
-| Day subtotals; note | `bodySmall` | 12sp | 366, 374, 549 |
+| Category name; empty message | `bodyLarge` | 16sp | 542, 250 |
+| Day date; day subtotals; note | `titleSmall` / `bodySmall` | 14 / 12sp | 359, 366/374, 549 |
 
 Same role, different jobs: `titleMedium` is both the avatar letter and the row amount; `bodySmall`
 is both the day subtotals and the note. Expense vs income is carried by colour only — both
 subtotals are `bodySmall`, both amounts `titleMedium`. The largest text here is `headlineSmall`
 (24sp), reached only when the formatted figure is ≤12 characters (`Formats.kt:136`).
 
-**Colour.** `onSurfaceVariant` for figure labels, day date, note, empty message (360, 550, 251);
-`error` for the expense figure, day expense and row expense (185, 367, 567); `incomeColor()`
-(`Color.kt:83-84`) for income in the same three places (192, 375, 567); the balance line is
-`incomeColor()` above zero, `error` below, and `Color.Unspecified` at exactly zero (208-213);
-`surfaceContainer` for the day header background (353); `Color.Transparent` — a **hardcoded literal**
-— for the swipe background (477); `onErrorContainer` for the delete icon (484); the avatar is
-`Color(transaction.categoryColor)` with its letter in `Color(categoryInitialColor(...))` (529, 534).
+**Colour.** `onSurfaceVariant` for figure labels, day date, note and empty message (360, 550, 251);
+`error` for expense (185, 367, 567) and `incomeColor()` (`Color.kt:83-84`) for income in the same
+three places (192, 375, 567); balance is `incomeColor()` above zero, `error` below,
+`Color.Unspecified` at exactly zero (208-213); `surfaceContainer` for the day header (353);
+`Color.Transparent` — a **hardcoded literal** — for the swipe background (477); `onErrorContainer`
+for the delete icon (484); avatar `Color(transaction.categoryColor)` with a letter in
+`Color(categoryInitialColor(...))` (529, 534).
 
 **States**
 
@@ -165,23 +158,19 @@ subtotals are `bodySmall`, both amounts `titleMedium`. The largest text here is 
 
 No progress indicator and no retry on this screen.
 
-**Interaction.** FAB opens the entry overlay with id `-1` (144). Tapping a card opens the overlay for
-that id (`Modifier.clickable`, 495). Swiping left is `SwipeToDismissBox` with
-`enableDismissFromStartToEnd = false` (488); `positionalThreshold = minOf(96dp, totalDistance)`, and
-the confirm dialog opens only if the row actually travelled ≥ 96dp (418-425). A
-`HapticFeedbackType.LongPress` fires once per crossing and re-arms when the row falls back
-(435-447). `confirmValueChange` always returns `false` (423), so the row snaps back and a dialog
-opens; a custom accessibility action "Delete transaction" opens the same dialog (505-513). Dialog
-buttons are `TextButton` Delete / Cancel (455, 463). `animateContentSize()` on the card (514) uses
-the default spring. No pull-to-refresh, no month navigation, no long-press.
+**Interaction.** FAB opens the entry overlay with id `-1` (144); tapping a card opens it for that id
+(`Modifier.clickable`, 495). Swipe left is `SwipeToDismissBox` with `enableDismissFromStartToEnd =
+false` (488); `positionalThreshold = minOf(96dp, totalDistance)`, and the dialog opens only if the row
+travelled ≥ 96dp (418-425). `HapticFeedbackType.LongPress` fires once per crossing and re-arms on the
+way back (435-447). `confirmValueChange` always returns `false` (423), so the row snaps back and a
+dialog opens; the accessibility action "Delete transaction" opens the same dialog (505-513); its
+buttons are `TextButton` Delete / Cancel (455, 463). `animateContentSize()` (514) uses the default
+spring. No pull-to-refresh, no month navigation, no long-press.
 
-**Accessibility.** FAB icon described (`cd_add_transaction`, 145); the delete icon in the swipe
-background is described too (`cd_delete`, 483) although it sits behind the card. The swipe gesture is
-not in the accessibility tree, which is why the custom action exists (comment 502-504). Targets: FAB
-default 56dp, row ≥ 72dp (40dp avatar + 2×16dp), dialog buttons `TextButton` defaults. The row's
-`clickable` passes no `role`.
-
----
+**Accessibility.** FAB icon described (`cd_add_transaction`, 145); the swipe background's delete icon
+is described too (`cd_delete`, 483) although it sits behind the card. The swipe is not in the
+accessibility tree, hence the custom action (comment 502-504). Targets: FAB default 56dp, row ≥ 72dp
+(40dp avatar + 2×16dp), dialog buttons `TextButton` defaults. The row's `clickable` passes no `role`.
 
 # StatsScreen — `ui/stats/StatsScreen.kt`
 
@@ -191,35 +180,18 @@ budget bar when the month has a budget, and per-category donut charts for expens
 **Composition tree**
 
 ```
-Scaffold                                                                     StatsScreen.kt:92
-├─ topBar → Column(fillMaxWidth, statusBars inset, top 16dp, CenterHorizontally)  :98-163
-│  ├─ Row(fillMaxWidth, CenterVertically)
-│  │  ├─ IconButton(prev) → Icon(ArrowBack, cd_previous_period)
-│  │  ├─ Text(period title) titleLarge, weight 1f, Center
-│  │  └─ IconButton(next) → Icon(ArrowForward, cd_next_period)
-│  └─ Text("Jump to today") labelMedium primary, alpha 0f/1f, clickable,
-│           clearAndSetSemantics when today
-└─ Column(verticalScroll, padding 16/16/8/16)                                StatsScreen.kt:169
-   ├─ Row(spacedBy 8dp) → FilterChip ×3 (weight 1f, centred label)
-   ├─ Spacer(16dp)
-   ├─ monthlySummary?.let → Card(2dp) → Column(16dp)                          StatsScreen.kt:210
-   │  ├─ Text(period name) titleMedium Bold; Spacer(12dp)
-   │  ├─ Row(spacedBy 12dp): SummaryFigure ×2 (weight 1f); Spacer(8dp)
-   │  └─ Text(balance) amountTextStyle Bold
-   ├─ Spacer(16dp)
-   ├─ budget?.let → Card(2dp) → Column(16dp)                                  StatsScreen.kt:267
-   │  ├─ Row(SpaceBetween): Text("Budget") titleMedium Bold, Text("x / y") bodyMedium
-   │  ├─ Spacer(8dp) → LinearProgressIndicator(height 8dp, clip shapes.small)
-   │  ├─ Spacer(4dp) → Text("… remaining") bodySmall onSurfaceVariant
-   ├─ Spacer(16dp)
-   ├─ expenseCategories non-empty → Card(2dp) → Column(16dp)                  StatsScreen.kt:330
-   │  ├─ Text("Expense") titleMedium Bold; Spacer(12dp)
-   │  ├─ CategoryDonutChart(height 180dp) → Canvas(stroke 40dp)               StatsScreen.kt:407
-   │  ├─ Spacer(12dp); per category: CategorySummaryItem + Spacer(8dp)        StatsScreen.kt:452
-   │  │  └─ Row(CenterVertically): Box(12dp circle), Spacer(8dp),
-   │  │     Text(name) bodyMedium weight 1f, Text(total) bodyMedium error/income
-   ├─ Spacer(16dp)
-   └─ incomeCategories non-empty → same card shape                            StatsScreen.kt:365
+Scaffold → topBar: Column → Row(IconButton prev, Text(period) titleLarge,
+                                  IconButton next) + Text("Jump to today")     :92-168
+└─ Column(verticalScroll)                                                       :169
+   ├─ Row → FilterChip ×3                                                       :182-205
+   ├─ monthlySummary?.let → Card → Column(Text(period name), Row(SummaryFigure ×2),
+   │                                        Text(balance))                      :210-262
+   ├─ budget?.let → Card → Column(Row(Text("Budget"), Text("x / y")),
+   │                              LinearProgressIndicator, Text("… remaining"))   :267-324
+   ├─ expenseCategories → Card → Column(Text("Expense"), CategoryDonutChart,      :330-359
+   │                                    CategorySummaryItem ×N)
+   │  └─ CategorySummaryItem → Row(Box(dot), Text(name), Text(total))            :452-482
+   └─ incomeCategories → same card shape                                        :365-394
 ```
 
 **Dimensions and spacing**
@@ -227,12 +199,11 @@ Scaffold                                                                     Sta
 | Value | Where it is used | Line |
 | --- | --- | --- |
 | `16dp` | top-bar padding under the status bar; spacer between chips and each of the four cards; every card's inner padding | 105; 207/264/326/361; 215/273/335/370 |
-| `16/16/8/16` | content padding: start, end, top, bottom | 178 |
+| `16/16/8/16` | content padding (start, end, top, bottom) | 178 |
 | `8dp` | `spacedBy` between period chips; above the balance; above and under the progress bar; after each category row; progress bar height | 184, 248, 293/311, 355/390, 307 |
 | `12dp` | jump-link horizontal padding; spacer under card headings; `spacedBy` between figures; category dot diameter | 161, 226/341/351/376/386, 229, 464 |
 | `4dp` | jump-link vertical padding; spacer under the progress bar | 161, 311 |
-| `180dp` | donut height, both charts | 348, 383 |
-| `40dp` | donut arc stroke (`40.dp.toPx()`) | 425 |
+| `180dp` / `40dp` | donut height (both charts) / arc stroke (`40.dp.toPx()`) | 348, 383; 425 |
 | `2dp` | elevation of all four cards | 213, 271, 333, 368 |
 | `weight(1f)` | each `FilterChip` (thirds); period title; each figure; category name | 202; 129; 238/245; 472 |
 
@@ -255,11 +226,10 @@ heading row (276); `Alignment.CenterHorizontally` (109); `Alignment.CenterVertic
 `bodyMedium` carries three jobs: figure labels, the budget ratio, and both columns of a category row.
 Largest text is `headlineSmall` (24sp), via `amountTextStyle`.
 
-**Colour.** `primary` for "Jump to today" (152); `error` for the expense figure and expense category
-totals (236, 477); `incomeColor()` for income (243, 477); the balance is `incomeColor()` when
-`balance >= 0` — **including zero** — else `error` (255); the progress bar is `error` above ratio 0.9
-and `primary` below (309); `onSurfaceVariant` for "… remaining" (319); arcs and dots are
-`Color(categoryColor)` (415, 466). No hardcoded literal in this file.
+**Colour.** `primary` for "Jump to today" (152); `error` for expense (236, 477) and `incomeColor()`
+for income (243, 477); balance is `incomeColor()` when `balance >= 0` — **including zero** — else
+`error` (255); the bar is `error` above ratio 0.9 and `primary` below (309); `onSurfaceVariant` for
+"… remaining" (319); arcs and dots are `Color(categoryColor)` (415, 466). No hardcoded literal here.
 
 **States**
 
@@ -275,17 +245,15 @@ and `primary` below (309); `onSurfaceVariant` for "… remaining" (319); arcs an
 
 No loading indicator and no error state on this screen.
 
-**Interaction.** Previous/next `IconButton` shift the anchor by one unit of the active period (115,
-132). The three `FilterChip`s switch period, each `weight(1f)` with a centred label (187-203). "Jump
-to today" is `clickable(enabled = !onToday)`; its target is the text plus 12dp/4dp padding
-(157-161). Vertical scroll only (174). No animation on this screen.
+**Interaction.** Previous/next `IconButton` shift the anchor one unit of the active period (115, 132);
+the three `FilterChip`s switch period, each `weight(1f)` with a centred label (187-203); "Jump to
+today" is `clickable(enabled = !onToday)` with a target of the text plus 12dp/4dp padding (157-161).
+Vertical scroll only (174). No animation.
 
-**Accessibility.** Previous/next described (`cd_previous_period`, `cd_next_period`, 118, 135). The
-hidden jump link is removed from the tree with `clearAndSetSemantics {}` (158). The `Canvas` carries
+**Accessibility.** Previous/next described (`cd_previous_period`, `cd_next_period`, 118, 135); the
+hidden jump link is removed with `clearAndSetSemantics {}` (158); the `Canvas` carries
 `contentDescription` from the `stats_donut_description` plural (421-423). The jump-link target is a
-12sp line plus 8dp of padding — below 48dp. Expense vs income in the category rows is colour only.
-
----
+12sp line plus 8dp of padding — below 48dp. Expense vs income in category rows is colour only.
 
 # SettingsScreen — `ui/settings/SettingsScreen.kt`
 
@@ -296,48 +264,43 @@ confirmation).
 **Composition tree**
 
 ```
-Scaffold                                                                   SettingsScreen.kt:348
-├─ TopAppBar(title = Text(settings_title))                                 :350
-├─ SnackbarHost                                                            :352
-└─ Column(verticalScroll, 16dp padding)                                   :357
-   ├─ SettingsSection(currency) → SettingsItem(title, subtitle, onClick)   :949, 971
-   │  └─ Column: Text(section title) titleSmall primary, bottom 8dp; content()
-   │     └─ Column(clickable(role = Button), vertical 12dp):
-   │        Text(title) bodyLarge; Text(subtitle) bodyMedium onSurfaceVariant [if non-empty]
-   ├─ HorizontalDivider(vertical 8dp)                                      :375
-   ├─ SettingsSection(appearance) → 2 items                                :377
-   ├─ HorizontalDivider(8dp) → SettingsSection(categories) → 1 item        :395-406
-   ├─ HorizontalDivider(8dp) → SettingsSection(data) → 3 items             :408-426
-   └─ HorizontalDivider(8dp) → SettingsSection(about) → 3 items            :428-449
+Scaffold → TopAppBar(Text(settings_title)) + SnackbarHost                          :348-356
+└─ Column(verticalScroll, 16dp)                                                    :357-450
+   ├─ SettingsSection(currency) → SettingsItem                                    :367-373
+   ├─ HorizontalDivider(vertical 8dp)                                             :375
+   ├─ SettingsSection(appearance) → SettingsItem ×2                               :377-393
+   ├─ HorizontalDivider(8dp) → SettingsSection(categories) → SettingsItem         :395-406
+   ├─ HorizontalDivider(8dp) → SettingsSection(data) → SettingsItem ×3            :408-426
+   └─ HorizontalDivider(8dp) → SettingsSection(about) → SettingsItem ×3           :428-449
+      SettingsSection = Column → Text(title) + content()                          :949-964
+      SettingsItem    = Column(clickable) → Text(title) + Text(subtitle)          :971-1004
 ```
 
-Dialogs, in file order:
+Dialogs, in file order (all values on the lines cited):
 
 ```
-AlertDialog currency: Column(verticalScroll) → Row(selectable, RadioButton, vertical 12dp):
-  Text(token) titleLarge primary/onSurface, Spacer(weight 1f), if selected Text("✓") bodyLarge  :454-506
-AlertDialog language: Text("label" or "label  ✓") bodyLarge, clickable, vertical 12dp            :513-545
-AlertDialog clear-all                                                                            :549-566
-CorneredAlertDialog changelog                                                                    :570-601
-└─ BasicAlertDialog → Surface(width IntrinsicSize.Max, shapes.extraLarge,
-                              surfaceContainerHigh, tonalElevation 6dp)                          :116-161
-   └─ Column(24dp): title (headlineSmall/onSurface via CompositionLocalProvider), Spacer(16dp),
-      Box(weight 1f, fill = false) text (bodyMedium/onSurfaceVariant), Spacer(8dp),
-      Row(SpaceBetween): Box{startButton?}, Spacer(8dp), Box{endButton}
-   DialogButton = TextButton → Text(maxLines 1, Ellipsis)                                        :172-180
-CorneredAlertDialog update history: ReleaseEntry ×N, HorizontalDivider(vertical 12dp) between    :608-658
+AlertDialog currency → Column(verticalScroll) → Row(selectable, RadioButton, vertical 12dp):
+  Text(token) titleLarge primary/onSurface, Spacer(weight 1f), if selected Text("✓")   :454-506
+AlertDialog language → Text("label" or "label  ✓") bodyLarge, clickable, vertical 12dp  :513-545
+AlertDialog clear-all                                                                   :549-566
+CorneredAlertDialog changelog                                                           :570-601
+└─ BasicAlertDialog → Surface(IntrinsicSize.Max, shapes.extraLarge,
+                              surfaceContainerHigh, tonalElevation 6dp) → Column(24dp):
+      title (headlineSmall/onSurface), Spacer(16dp), Box(weight 1f, fill = false) text
+      (bodyMedium/onSurfaceVariant), Spacer(8dp), Row(SpaceBetween) start/end buttons  :116-161
+   DialogButton = TextButton → Text(maxLines 1, Ellipsis)                              :172-180
+CorneredAlertDialog update history → ReleaseEntry ×N, HorizontalDivider(vertical 12dp)  :608-658
   ReleaseEntry: Text("version · channel") titleSmall primary; [Text(current) labelSmall];
-                Spacer(6dp); Text(notes) bodyMedium                                              :188-210
-CorneredAlertDialog licences                                                                     :660-680
-CorneredAlertDialog components: ComponentLicence ×N, Spacer(8dp), footnote bodySmall             :682-703
-  ComponentLicence: Column(bottom 12dp): Text(name) bodyMedium,
-                    Text(license) bodySmall onSurfaceVariant,
-                    Text(url) bodySmall primary underline, clickable, vertical 4dp                :902-931
-CorneredAlertDialog update result: Text(status) bodyMedium; if Available: Text("old → new")
-  titleSmall primary; when(download): Downloading (bodySmall + bar), Verifying (indeterminate bar
-  + bodySmall), Ready / DownloadFailed / VerificationFailed / InstallFailed (bodySmall, failures in
-  error), Idle (notes bodySmall)                                                                 :705-880
-AlertDialog import overwrite                                                                     :882-898
+                Spacer(6dp); Text(notes) bodyMedium                                    :188-210
+CorneredAlertDialog licences                                                            :660-680
+CorneredAlertDialog components → ComponentLicence ×N, Spacer(8dp), footnote             :682-703
+  ComponentLicence: Text(name) bodyMedium; Text(license) bodySmall onSurfaceVariant;
+                    Text(url) bodySmall primary underline, clickable, vertical 4dp      :902-931
+CorneredAlertDialog update result: Text(status) bodyMedium; if Available Text("old → new")
+  titleSmall primary; when(download): Downloading (bodySmall + bar), Verifying (bar + bodySmall),
+  Ready / DownloadFailed / VerificationFailed / InstallFailed (bodySmall, failures in error),
+  Idle (notes bodySmall)                                                               :705-880
+AlertDialog import overwrite                                                            :882-898
 ```
 
 **Dimensions and spacing**
@@ -347,8 +310,7 @@ AlertDialog import overwrite                                                    
 | `16dp` | page padding, all sides | 365 |
 | `12dp` | `SettingsItem` vertical padding — the only vertical rhythm in a row; currency and language dialog rows; divider between history entries; `ComponentLicence` bottom; six spacers in the update dialog | 990; 476, 535; 622; 907; 718/729/754/764/780/789 |
 | `8dp` | `HorizontalDivider` vertical padding ×4; section title bottom; dialog text→buttons; start↔end button; spacer before the components footnote; four update-dialog spacers | 375/395/408/428; 960; 147; 156; 691; 742/756/770/808 |
-| `24dp` | `CorneredAlertDialog` content padding | 129 |
-| `IntrinsicSize.Max` | `CorneredAlertDialog` surface width | 124 |
+| `24dp` / `IntrinsicSize.Max` | `CorneredAlertDialog` content padding / surface width | 129; 124 |
 | `6dp` | dialog tonal elevation; `ReleaseEntry` version→notes spacer | 127, 205 |
 | `16dp` / `4dp` | dialog title→text spacer; `ComponentLicence` URL vertical padding | 136; 928 |
 | `weight(1f, fill = false)` / `weight(1f)` | dialog text box, bounded height; `Spacer` pushing "✓" right | 145; 489 |
@@ -365,11 +327,9 @@ Arrangement/alignment: `Arrangement.SpaceBetween` for the dialog button row (150
 | `CorneredAlertDialog` title / body | `headlineSmall` / `bodyMedium` via `LocalTextStyle` | 24 / 14sp | 132, 139 |
 | Currency symbol rows | `titleLarge` | 22sp | 481 |
 | Language rows; "✓" in the currency dialog | `bodyLarge` | 16sp | 522, 493 |
-| Release version; version→new line | `titleSmall` + primary | 14sp | 195, 721 |
-| "Current" marker | `labelSmall` | 11sp | 201 |
+| Release version; version→new line; "Current" marker | `titleSmall` / `labelSmall` | 14 / 11sp | 195, 721; 201 |
 | Release notes; update status | `bodyMedium` | 14sp | 208, 715 |
-| Download and failure lines; footnote | `bodySmall` | 12sp | 740, 774, 694 |
-| Component name / licence / URL | `bodyMedium` / `bodySmall` / `bodySmall` | 14 / 12 / 12sp | 910, 914, 922 |
+| Download and failure lines; footnote; licence and URL; component name | `bodySmall` (name: `bodyMedium`) | 12 (name 14)sp | 740, 774, 694, 914, 922; 910 |
 
 The section title (`titleSmall`, 14sp) is smaller than the row titles beneath it (`bodyLarge`,
 16sp). The same "pick one from a list" role is `titleLarge` (22sp) in the currency dialog and
@@ -379,9 +339,8 @@ The section title (`titleSmall`, 14sp) is smaller than the row titles beneath it
 version→new line and component URLs (959, 484/494, 525, 196, 722, 923); `onSurfaceVariant` for row
 subtitles, status lines, the channel note and licences (1000, 582, 915); `onSurface` for unselected
 dialog rows (486, 527); `surfaceContainerHigh` for the dialog surface (126), with `onSurface` /
-`onSurfaceVariant` supplied through `LocalContentColor` (131, 138); `error` for download and install
-failures (774, 784, 793, 802); `TextDecoration.Underline` on component URLs (924). No hardcoded
-colour literal; the "✓" is a text character, not an icon.
+`onSurfaceVariant` through `LocalContentColor` (131, 138); `error` for download and install failures
+(774, 784, 793, 802); URLs underlined (924). No hardcoded colour literal; "✓" is text, not an icon.
 
 **States**
 
@@ -408,12 +367,9 @@ ripples and the progress bars.
 
 **Accessibility.** Every row is a clickable `Column` with `Role.Button` and no explicit
 `contentDescription`, so the announcement is title plus subtitle concatenated. Currency rows expose
-`Role.RadioButton` and a selected state; language rows expose neither (the "✓" is inside the text, so
-it is read as part of the label). The component URL is a 12sp line with 4dp vertical padding — well
-below 48dp. A single-line `SettingsItem` is 16sp text plus 12dp above and below, about 48dp; two-line
-rows are taller.
-
----
+`Role.RadioButton` and a selected state; language rows expose neither (the "✓" is inside the text).
+The component URL is a 12sp line with 4dp padding — well below 48dp. A single-line `SettingsItem` is
+16sp text plus 12dp above and below, about 48dp; two-line rows are taller.
 
 # EntryScreen — `ui/entry/EntryScreen.kt`
 
@@ -455,8 +411,7 @@ Scaffold(fillMaxSize)                                                       Entr
 | `8dp` | spacer under each of the three field labels; `spacedBy` in the type row, date/time row, and both axes of the category `FlowRow` | 170/210/242; 173, 213-214, 245 |
 | `24dp` | spacer before the save button — the largest gap on the screen | 273 |
 | `16dp` | category swatch diameter inside `leadingIcon` | 225 |
-| `weight(1f)` | the two type chips and the two date/time buttons | 179, 185, 249, 255 |
-| `minLines 2` / `maxLines 4` | note field height, in lines rather than dp | 269-270 |
+| `weight(1f)` / `minLines 2` / `maxLines 4` | two type chips and two date/time buttons; note field height in lines | 179, 185, 249, 255; 269-270 |
 
 `Arrangement.spacedBy(8dp)` at 173, 213-214, 245. No explicit `Alignment` value in this file.
 
@@ -465,36 +420,31 @@ Scaffold(fillMaxSize)                                                       Entr
 (`TopAppBar` title, `OutlinedTextField` label and value, `FilterChip`, `OutlinedButton`, `Button`).
 The labels (14sp) are smaller than the field values they introduce.
 
-**Colour.** Field labels `onSurfaceVariant`; chip swatch `Color(category.color)` (data-driven);
-nothing else explicit. Selected chips take the theme's `FilterChip` defaults. No hardcoded literal.
+**Colour.** Field labels `onSurfaceVariant`; chip swatch `Color(category.color)`; nothing else
+explicit. Selected chips take the `FilterChip` defaults. No hardcoded literal.
 
 **States**
 
 | State | What the user sees | Distinguishable? |
 | --- | --- | --- |
-| New entry | Title "New transaction", empty amount, first category of the type preselected, date/time now | Yes — title |
-| Editing | Title "Edit transaction", fields populated from the row | Yes — title |
+| New / editing | Title "New transaction" or "Edit transaction"; new form has an empty amount, the first category of the type preselected and date/time now, the edit form is populated from the row | Yes — title |
 | Editing, row still loading | Blank fields for a frame or two, no indicator | No — looks like an empty new form |
 | Saving | Toolbar check and bottom button disabled; bottom label "Saving…" | Yes |
 | Invalid amount / no category / save failed | Snackbar only; no field-level error, no error colour on the field | Yes, transient |
 | No categories at all | `FlowRow` renders nothing under "Category"; the view model re-seeds a default after 750 ms (`EntryViewModel.kt:35, 175-188`) | No — a gap with no explanation |
-| Future time chosen | Clamped to now, snackbar explains | Yes |
-| Future date | Not selectable (`pastDatesOnly`, 384-389) | Yes, by disabled cells |
+| Future time / future date | Time clamped to now with a snackbar; future dates are not selectable (`pastDatesOnly`, 384-389) | Yes |
 
 **Interaction.** Back `IconButton` closes the overlay (128). Save exists twice — toolbar `IconButton`
-(135-140) and full-width `Button` (276-281) — both call `viewModel.save()` and both are disabled
-while saving. Two type chips switch expense/income and reselect a category of that type (175-186);
-category chips select one category (217-230); the date and time `OutlinedButton`s open
-`DatePickerDialog` and an `AlertDialog` with `TimePicker` (247-258). Vertical scroll plus
-`imePadding()` (159-161). No long-press, no swipe, no drag; no animation other than dialog
-transitions and the overlay slide.
+(135-140) and full-width `Button` (276-281) — both calling `viewModel.save()`, both disabled while
+saving. Type chips switch expense/income and reselect a category of that type (175-186); category
+chips select one category (217-230); date and time `OutlinedButton`s open `DatePickerDialog` and an
+`AlertDialog` with `TimePicker` (247-258). Vertical scroll plus `imePadding()` (159-161). No
+long-press, no swipe, no drag; no animation beyond dialog transitions and the overlay slide.
 
-**Accessibility.** Back and save icons described (`cd_back`, `cd_save`). The save action exists twice
-with the same effect. Validation errors appear only as snackbars, not as field errors; the amount
-field has a label, a currency prefix and a decimal keyboard. Chip labels are their own accessible
-names. Chips have no explicit size modifier; their height is the component default.
-
----
+**Accessibility.** Back and save icons described (`cd_back`, `cd_save`); the save action exists twice
+with the same effect. Validation errors appear only as snackbars, not field errors; the amount field
+has a label, a currency prefix and a decimal keyboard. Chips have no explicit size modifier — their
+height is the component default.
 
 # CategoryScreen — `ui/category/CategoryScreen.kt`
 
@@ -533,8 +483,7 @@ Scaffold(fillMaxSize)                                                       Cate
 | `8dp` | `spacedBy` between cards; in the type row; both axes of the colour `FlowRow` | 129, 281, 301-302 |
 | `16dp` | card inner padding | 204 |
 | `12dp` | avatar→text spacer; dialog spacers under the name field and above the colour label | 221, 274, 294 |
-| `40dp` | avatar circle | 210 |
-| `48dp` / `32dp` / `24dp` | swatch touch target (the comment calls it the Material minimum) / visible swatch / selection marker | 311, 324, 333 |
+| `40dp` / `48dp` / `32dp` / `24dp` | avatar / swatch touch target (comment: the Material minimum) / swatch / selection marker | 210, 311, 324, 333 |
 | `1dp` | card elevation | 198 |
 | `weight(1f)` | text column | 222 |
 
@@ -545,8 +494,7 @@ Scaffold(fillMaxSize)                                                       Cate
 
 | Element | Role | Size | Line |
 | --- | --- | --- | --- |
-| Category name | `bodyLarge` | 16sp | 225 |
-| Avatar letter | `titleMedium` | 16sp | 218 |
+| Category name / avatar letter | `bodyLarge` / `titleMedium` | 16 / 16sp | 225, 218 |
 | Type line ("Expense" / "Income") | `bodySmall` | 12sp | 229 |
 | Dialog labels ("Type", "Colour") | `titleSmall` | 14sp | 277, 297 |
 | Dialog title | `AlertDialog` default (`headlineSmall`) | 24sp | 264 |
@@ -556,11 +504,11 @@ letter-spacing.
 
 **Colour.** Avatar `Color(category.color)` with its letter in `Color(categoryInitialColor(...))`
 (212, 217); `onSurfaceVariant` for the type line (230); `error` for the delete icon (240); swatches
-are `Color(color)` from the fixed palette (326); the selection marker is
-`Color.White.copy(alpha = 0.4f)` — a **hardcoded literal** (335). The palette is ten hardcoded
-literals (71-80: `0xFFE57373`, `0xFF81C784`, `0xFF64B5F6`, `0xFFFFB74D`, `0xFFBA68C8`, `0xFF4DB6AC`,
-`0xFF90A4AE`, `0xFFFFF176`, `0xFF7986CB`, `0xFFA1887F`), duplicated as
-`DEFAULT_CATEGORY_COLOR = 0xFFE57373` (`CategoryViewModel.kt:47`).
+`Color(color)` from the fixed palette (326); the selection marker is `Color.White.copy(alpha = 0.4f)`
+— a **hardcoded literal** (335). The palette is ten hardcoded literals (71-80: `0xFFE57373`,
+`0xFF81C784`, `0xFF64B5F6`, `0xFFFFB74D`, `0xFFBA68C8`, `0xFF4DB6AC`, `0xFF90A4AE`, `0xFFFFF176`,
+`0xFF7986CB`, `0xFFA1887F`), duplicated as `DEFAULT_CATEGORY_COLOR = 0xFFE57373`
+(`CategoryViewModel.kt:47`).
 
 **States**
 
@@ -583,11 +531,8 @@ the screen beyond the dialog's default transition.
 
 **Accessibility.** All four icon-only controls are described (`cd_back`, `cd_add_category`,
 `cd_edit`, `cd_delete`). Each swatch has `contentDescription` "Colour N" (1-based, string
-`category_color_option`), `Role.RadioButton`, and a selected state from `selectable`; selection is
-also drawn as a translucent circle, so it does not rely on hue alone for a screen reader. Swatch
-targets are exactly 48dp; `IconButton` targets 48dp; the FAB 56dp.
-
----
+`category_color_option`), `Role.RadioButton` and a selected state from `selectable`, and selection is
+also drawn as a translucent circle. Swatch targets are exactly 48dp; `IconButton` 48dp; FAB 56dp.
 
 # Cross-screen observations
 
@@ -617,14 +562,12 @@ returns nothing, so no component's colours or shape are overridden anywhere.
 | 8dp | 35 | the default gap: spacers, `spacedBy`, section padding |
 | 16dp | 29 | screen padding, card padding, row padding |
 | 12dp | 26 | inner card spacers, dialog rows, avatar gap |
-| 2dp | 5 | elevation of summary/stats cards |
+| 2dp / 1dp | 5 / 2 | elevation: summary and stats cards / row cards |
 | 4dp | 4 | `Stats` spacer, swipe card vertical padding, jump-link padding, URL padding |
 | 96dp | 3 | FAB clearance ×2, swipe threshold |
-| 40dp | 3 | avatar diameter ×2, donut stroke |
 | 24dp | 3 | dialog padding, pre-save gap, colour selection marker |
 | 6dp | 2 | `ReleaseEntry` spacer, dialog tonal elevation |
-| 180dp | 2 | donut height |
-| 1dp | 2 | row card elevation |
+| 180dp / 40dp | 2 / 3 | donut height / avatar diameter ×2 and donut stroke |
 | 48dp, 32dp, 20dp | 1 each | swatch target, swatch, swipe background padding |
 
 The distribution is 4dp multiples plus two exceptions: `6.dp` once (`SettingsScreen.kt:205`) and
@@ -731,8 +674,6 @@ the licence URL) are below 48dp.
 (StatsScreen 174, SettingsScreen 364, EntryScreen 161) and two `LazyColumn`s (HomeScreen 292,
 CategoryScreen 120).
 
----
-
 ## Coverage
 
 Read in full, line by line: `MainActivity.kt` (145), `ui/navigation/NavGraph.kt` (290),
@@ -742,22 +683,15 @@ Read in full, line by line: `MainActivity.kt` (145), `ui/navigation/NavGraph.kt`
 `ui/category/CategoryScreen.kt` (357), `ui/SummaryFigure.kt` (45), `ui/Formats.kt` (356),
 `ui/theme/Theme.kt` (190), `ui/theme/Color.kt` (84).
 
-Skimmed only, for the state values they feed the screens:
-
-- `ui/category/CategoryViewModel.kt` — `CategoryUiState` fields (32-44) and `DEFAULT_CATEGORY_COLOR`
-  (47); the delete and validation rules were not traced.
-- `ui/settings/SettingsViewModel.kt` — not read; the screen's states are described from the strings
-  and branches it renders.
-- `ui/settings/UpdateViewModel.kt` — not read; `UpdateStatus`, `UpdateDownload` and `betaOffer` are
-  described only as the screen consumes them (`SettingsScreen.kt:212-237, 705-880`).
-- `data/repository/TransactionRepository.kt` — only `getSummary` / `getCategorySummaries` (28-90), to
-  establish that an empty period yields a zero summary rather than null.
-- `data/local/dao/TransactionDao.kt` — only the two aggregate queries (75-118).
-- `app/src/main/res/values/strings.xml` — only the keys whose text appears in a state above.
+Skimmed only, for the state values they feed the screens: `ui/category/CategoryViewModel.kt` (only
+`CategoryUiState`, 32-44, and `DEFAULT_CATEGORY_COLOR`, 47); `ui/settings/SettingsViewModel.kt` and
+`ui/settings/UpdateViewModel.kt` (not read at all — the states above are described from the branches
+`SettingsScreen.kt:212-237, 705-880` renders); `data/repository/TransactionRepository.kt` (only
+`getSummary` / `getCategorySummaries`, 28-90, to establish that an empty period yields a zero summary
+rather than null); `data/local/dao/TransactionDao.kt` (only the two aggregate queries, 75-118);
+`app/src/main/res/values/strings.xml` (only keys whose text appears in a state above).
 
 Not read at all: backup, update-download, APK-install and preferences internals, the Room entities,
-the DI modules, and the tests. Nothing above depends on them.
-
-Every `.dp` literal, typography role, colour literal, `contentDescription` and animation spec in the
-five screens was enumerated from the source rather than sampled; the greps for the cross-screen claims
-are quoted beside each claim.
+the DI modules, and the tests. Nothing above depends on them. Every `.dp` literal, typography role,
+colour literal, `contentDescription` and animation spec in the five screens was enumerated from the
+source rather than sampled; the greps behind the cross-screen claims are quoted beside each claim.

@@ -48,8 +48,10 @@ object DatabaseModule {
                 MIGRATION_3_1,
             ).build()
 
-    // The DAOs are short-lived and tied to the database instance, so they are
-    // provided as singletons via the component scope rather than re-created.
+    // Deliberately unscoped. Room returns a stateless DAO that holds the database
+    // reference, so a fresh instance per injection costs nothing and keeping it out of the
+    // component scope avoids holding a facade alive for the life of the process. What must be
+    // a singleton is the database itself, and that binding is scoped above.
     @Provides
     fun provideTransactionDao(database: BudgeDatabase): TransactionDao = database.transactionDao()
 
